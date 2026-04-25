@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "gQ5Fge5JWk2PJWWzQM6p3"
+uri = "file://docs/WHIMSEY_DISCORD_SETUP.md"
+type = "text"
+title = "WHIMSEY Discord — Complete Setup Reference"

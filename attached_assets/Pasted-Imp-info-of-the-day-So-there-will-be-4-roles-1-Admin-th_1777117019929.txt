@@ -1,0 +1,101 @@
+Imp info of the day —🎠
+
+So, there will be 4 roles, 1) Admin 💗, this will be me, and will have the administrator permission, and will be the head of the server. 2) Moderator ☁️, these will be the team members, and will handle a lot of things. 3) Holder 🌌, these are the community people who own a NFT from our collection, we will be having Vulcan bot for the verification of the individual's wallet to check for our NFT, if they own one, they will get this role, and they will be having a additional category for them, it's called 
+🌌 | HOLDERS ONLY, so here they will get the exclusivity, and will be special, now there are 3 channels in there #holder-verify, #holder-chat, #holder-announcements, and the people who just verified to the server, will get the role Verified 🩵, and they will be able to see the channel #holder-verify, so they can get to verify, and once they do verify, the other 2 channels will be unlocked too, so the Verified 🩵 is the normal community and the Holder 🌌, is the exclusive one! So I have decided that there will be 4 bots, 1) Auth gg bot, which will be the verification system of the server, this will be verifying everyone, when they will enter the server. 2) Collab.land bot for the #holder-verify, it will verify the wallet of the individual for the verification of our asset. 3) Ticket tool bot, it will be for the problem solving of the community, it will be in the support category. 4) Carl.bot, actually my team mate told me to add it, so it will handle the server on behalf of me whenever I'll be busy! So please can you tell me how it will manage the server. 
+So now as you know what duty the bot will be having, so accordingly manage with the permissions, and the roles as well!
+
+8 categories, 27 channels
+Categories —
+1) VERIFY
+2) START HERE
+3) THE UNIVERSE
+4) COMMUNITY
+5) HOLDERS ONLY
+6) COLLECTORS
+7) EVENTS
+8) SUPPORT
+————————————
+1) 💗 | VERIFY
+#verify 
+#access-info
+2) 🌊 | START HERE
+#welcome
+#rules
+#announcements
+3) ❄️ | THE UNIVERSE
+#about-whimsey
+#whimsey-universe
+#sneak-peeks
+#roadmap
+#official-links
+4) 📌 | COMMUNITY
+#general-chat
+#whimsey-talk
+#fan-creations
+#whimsey-of-the-day
+#suggestions
+5) 🌌 | HOLDERS ONLY 
+#holder-verify
+#holder-chat
+#holder-announcements
+6) 🌷 | COLLECTORS
+#show-your-whimsey
+#trading-post
+#market-talk
+7) 🩵 | EVENTS
+#giveaways
+#polls
+8) ☁️ | SUPPORT
+#support
+#faqs
+#scam-alerts
+#open-tickets
+
+Working of the channels and categories —
+1) 💗 | VERIFY (This category will be visible to the unverified members, and will disappear once they verify, rest all the categories will be hidden for the unverified, it will disappear after the verification)
+#verify (Auth gg bot will be here, this is the channel where the verification will be happening for the unverified members)
+#access-info (This is the channel where the unverified members will first see, basically when they click on the link of our server, they should first land here, as it has the info of how to verify, and then they will go to #verify and then verify themselves)
+2) 🌊 | START HERE (This is a readme typa of channel, here there will be important info shared, we have to to make sure that the people after verifying should enter the #rules channel, and then go into #welcome, and read the assets)
+#welcome (people will come here after rules)
+#rules (this is a very important channel, people will be coming up here after they verify themselves on the server)
+#announcements (this is also a read me + reaction channel)
+3) ❄️ | THE UNIVERSE (This will be all about the collection, the company and the universe, even this is a readme category!)
+#about-whimsey
+#whimsey-universe
+#sneak-peeks
+#roadmap
+#official-links
+4) 📌 | COMMUNITY (This will be the category where people will be talking around, on the channel #whimsey-of-the-day, Us the team will be uploading up, and meme, or anything fan creation, or one of our NFT images, and will be declaring it as the WHIMSEY of the day, this will be a readme channel, we will be posting up here)
+#general-chat (people will talk here)
+#whimsey-talk (people will talk here)
+#fan-creations (people will upload their creations here)
+#whimsey-of-the-day 
+#suggestions (they will suggest us ideas)
+5) 🌌 | HOLDERS ONLY (this is an exclusive channel for the people who own a NFT)
+#holder-verify (this will be the channel which will be visible to verified people, as they will be verifying here if they own and NFT)
+#holder-chat (this channel will appear if they verify successfully)
+#holder-announcements (this will be were, we the team will be making exclusive announcements, this will be a read me)
+6) 🌷 | COLLECTORS (in all the 3 channels, people will be talking)
+#show-your-whimsey (this will also be a fan creation type of channel, were people will be show casing the WHIMSEY they own!)
+#trading-post 
+#market-talk
+7) 🩵 | EVENTS (this is were there will be events)
+#giveaways
+#polls
+8) ☁️ | SUPPORT (This will be the safety channel)
+#support
+#faqs
+#scam-alerts
+#open-tickets (people will raise tickets here, for their quiry)
+
+See make sure the flow, will be correct everything should be in the correct flow, and, and I don't have any idea of how the permissions will be enabled and everything, so make sure that the reference should be ultra detailed, and should have all the info about the process, and all the permissions written in detailed manner, and make sure that the permissions, the bots, and the roles, everything is perfect, no error at all, try to understand the flow accordingly, like if a individual will join after this, this will be there, and accordingly work with the permissions, it will be like doodles, cool cats, pudgy penguins, discord server.
+Collection info —
+Collection Name: WHIMSEY
+Symbol: $CNDY
+Total Supply: 30,000 NFTs
+Mint Price: ₹60,000 per NFT
+So because there will be so many people, i want the whole server to be perfect, as this will be our community hub!🩵
+Please enhance the quality, and make sure everything is perfect!
+Now about the reference, make it extremely detailed, and with the exact names of the permissions which are there work the discord app! Make it very detailed and organised and simple for me to understand, make sure everything is perfectly written, all the points, all the permissions and everything! Do a detailed research on it and then give the reference mention everything in it! Make it super detailed, and mention all the permissions, and at the side, show whether to enable it or not! Do the same for the roles, categories, channel, and bots! Make sure everything is going in a perfect sync, nothing is colliding, and everything is on the perfect flow! 
+My current working stage is that, I am made the discord server, turned it into a community server, make the categories, made the channels, and added the text assets and the visual assets into the channels, the permissions, the bots and the server check through is remaining!☁️💗
+Now also give me the private channels for the the audits given by the bots, give all the extra works also which I need to do, for the server, and all the details! Give me the complete check through of a successful NFT collection discord server!🩵
