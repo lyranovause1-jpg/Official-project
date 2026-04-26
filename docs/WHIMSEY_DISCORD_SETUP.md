@@ -80,8 +80,8 @@ Tick each step as you finish it. Do NOT do them out of order.
 - [ ] **Step 6.** Configure `Holder 🌌` permissions (section 7).
 - [ ] **Step 7.** Configure `Verified 🩵` permissions (section 8).
 - [ ] **Step 8.** Lock down `@everyone` (section 9). This is the most important step.
-- [ ] **Step 9.** Create the 2 new private categories `🔒 | STAFF` and `🎫 | TICKETS` and the channels inside them (section 10).
-- [ ] **Step 10.** Apply category-level permissions to ALL 10 categories (sections 16–25). Do all of these BEFORE touching individual channels.
+- [ ] **Step 9.** Create the 4 new private categories `🔒 | STAFF`, `📋 | AUDITS`, `📈 | MOMENTUM`, and `🎫 | TICKETS` and all the channels inside them (section 10).
+- [ ] **Step 10.** Apply category-level permissions to ALL 12 categories (sections 16–25). Do all of these BEFORE touching individual channels.
 - [ ] **Step 11.** Apply per-channel overrides only to the channels listed in section 26.
 - [ ] **Step 12.** Invite Auth bot (section 11). Drag its role into position. Configure it.
 - [ ] **Step 13.** Invite Collab.Land (section 12). Drag its role into position. Configure it.
@@ -643,34 +643,96 @@ Open **Server Settings → Roles → @everyone → Permissions tab**.
 
 ## 10) NEW PRIVATE CATEGORIES YOU MUST CREATE
 
-You currently have 8 categories. Add these 2 NEW ones for staff operations and ticket support. They should sit at the **bottom of your category list** so they don't visually clutter the sidebar (regular members can't see them anyway, but it keeps things tidy).
+You currently have 8 categories. Add these **4 NEW** categories for staff chat, granular event auditing, real-time momentum tracking, and ticket support. Position them at the **bottom of your category list** — regular members can't see them anyway, so it keeps the sidebar tidy for the team.
+
+The audit philosophy here: **one channel per event type**, never mixed. That way if you ever need to investigate "what happened to that role last Tuesday" you go to ONE channel and scroll, instead of fishing through a wall of mixed logs.
 
 ### Category 9: `🔒 | STAFF`
 
-Create this category, then create these channels INSIDE it:
+The team's private discussion area. Kept lean — only chat-style channels. All logging lives in `📋 | AUDITS`.
 
 | Channel | Type | Purpose |
 |---|---|---|
 | `#staff-chat` | Text | The team's private discussion space. |
-| `#staff-announcements` | Announcement (Discord's "Announcement" channel type) | You post directives to the team here. Mods can react but not post. |
-| `#mod-commands` | Text | Mods run bot slash commands here so the public channels stay clean. |
-| `#mod-logs` | Text | Carl-bot logs every mod action here (kick/ban/timeout/role change). |
-| `#message-logs` | Text | Carl-bot logs every edited and deleted message here. |
-| `#join-leave-logs` | Text | Carl-bot logs every join, leave, role-add, role-remove. |
-| `#voice-logs` | Text | Carl-bot logs voice-channel joins/leaves/mutes (for when you add VC). |
-| `#scam-watch` | Text | Carl-bot's AutoMod posts here when a scam keyword/link is caught. |
+| `#staff-announcements` | Announcement | You post directives to the team here. Mods can react but not post. |
+| `#mod-commands` | Text | Mods run bot slash commands here so public channels stay clean. |
+| `#staff-vc-text` | Text | Optional: text companion for a future staff voice channel. |
 
-### Category 10: `🎫 | TICKETS`
+### Category 10: `📋 | AUDITS` (granular real-time event log)
 
-Create this category, then create ONE channel inside it:
+Every event in the server gets captured here in its OWN channel — nothing is buried under unrelated noise. Carl-bot is the primary log writer; Discord's native AutoMod, Collab.Land, and Ticket Tool also feed their own. **Humans (including mods and you) should NEVER post here.** Logs must stay tamper-free for forensics.
+
+#### User-action logs
+
+| Channel | What gets logged | Source bot |
+|---|---|---|
+| `#audit-mod-actions` | Every kick, ban, timeout, unban, untimeout — by who, on who, with reason | Carl-bot |
+| `#audit-messages` | Every edited message (before/after) and deleted message (full content + author) | Carl-bot |
+| `#audit-joins-leaves` | Every join (with account-age stamp), every leave (with how-long-they-stayed) | Carl-bot |
+| `#audit-role-changes` | Every role added or removed from a member, by who | Carl-bot |
+| `#audit-nicknames` | Every nickname change | Carl-bot |
+| `#audit-member-updates` | Username changes, avatar changes (impersonator detection) | Carl-bot |
+| `#audit-voice` | VC joins, leaves, mutes, deafens, moves | Carl-bot |
+
+#### Server-structure logs
+
+| Channel | What gets logged | Source bot |
+|---|---|---|
+| `#audit-channels` | Channel created, renamed, edited, deleted; permission overwrite changes | Carl-bot |
+| `#audit-roles` | Role created, renamed, recolored, deleted; role permission changes | Carl-bot |
+| `#audit-server` | Server settings changes (name, region, AutoMod, vanity, icon, banner) | Carl-bot |
+| `#audit-emoji-stickers` | Emoji / sticker / soundboard added, renamed, removed | Carl-bot |
+| `#audit-threads-events` | Threads created/archived/deleted; scheduled events created/edited/cancelled | Carl-bot |
+| `#audit-invites` | Every invite created (with creator + expiry), used (member-attribution), deleted | Carl-bot |
+| `#audit-bots` | Bots, integrations, and webhooks added or removed | Carl-bot |
+
+#### Safety logs
+
+| Channel | What gets logged | Source |
+|---|---|---|
+| `#audit-automod` | Every Discord native AutoMod hit (spam, slurs, mention spam) | Discord native AutoMod |
+| `#audit-scam-watch` | Every Carl-bot scam-keyword or scam-link hit | Carl-bot |
+
+#### Holder / collection logs
+
+| Channel | What gets logged | Source |
+|---|---|---|
+| `#audit-wallet-verifications` | Every Collab.Land wallet-verify attempt (success / failure / wallet address) | Collab.Land |
+| `#audit-holder-changes` | Every `Holder 🌌` role grant or revoke | Carl-bot (mirrors Collab.Land actions) |
+
+#### Ticket + boost logs
+
+| Channel | What gets logged | Source |
+|---|---|---|
+| `#audit-tickets` | Every ticket opened/closed (one-line summary; full transcript still goes to `#ticket-logs`) | Ticket Tool |
+| `#audit-boosts` | Every server boost added or removed (so you can thank the booster publicly) | Carl-bot |
+
+> **Total in AUDITS: 17 channels.** Yes, it's a lot — but each is dead-quiet 95% of the time and screams loud when something matters. This is exactly how big NFT servers (Pudgy, Doodles, Cool Cats) keep clean trails.
+
+### Category 11: `📈 | MOMENTUM` (server + collection real-time pulse)
+
+Dashboards and recurring stats — the heartbeat of WHIMSEY. All channels here are bot-written on a schedule, read-only for the team. This is what you check every morning to know how the community + collection are doing.
+
+| Channel | What lives here | Source |
+|---|---|---|
+| `#momentum-daily-recap` | Every day at 23:55 IST: joins, leaves, messages, active members, top 3 channels, top 3 contributors, AutoMod hits, tickets opened/closed | Carl-bot scheduled embed |
+| `#momentum-weekly-recap` | Sunday 23:55 IST: weekly version + week-over-week % change | Carl-bot scheduled embed |
+| `#momentum-monthly-recap` | Last day of month, 23:55 IST: month-over-month rollup | Carl-bot scheduled embed |
+| `#momentum-holder-snapshot` | Daily 00:05 IST: total Holder count, new today, lost today, % of 30,000 supply verified-on-Discord, top-10-wallet concentration | Mod runs Collab.Land `/list-holders` (Carl-bot reminds at 00:00) |
+| `#momentum-server-stats` | Live counts: total members, online now, Verified count, Holder count (auto-updated voice-channel-style or pinned embed) | Carl-bot custom command + manual refresh, or Statbot if you add it later |
+| `#momentum-collection-feed` | (Optional, see section 32) Real-time on-chain sales, listings, transfers, mints of $CNDY | NFT-tracker bot — separate add-on |
+| `#momentum-twitter-feed` | Your official @WHIMSEY tweets auto-mirrored here for team awareness | Webhook (IFTTT / Zapier / Make.com) |
+| `#momentum-team-pulse` | Weekly Monday 12:00 IST: top 3 message-count members + top 3 reaction-receivers, so the team can recognize them in `#announcements` | Carl-bot scheduled |
+
+### Category 12: `🎫 | TICKETS`
 
 | Channel | Type | Purpose |
 |---|---|---|
-| `#ticket-logs` | Text | Ticket Tool posts the closed-ticket transcripts here. |
+| `#ticket-logs` | Text | Ticket Tool posts the full transcript when a ticket is closed. |
 
-> Each opened ticket will become a temporary text channel inside `🎫 | TICKETS` automatically (created by Ticket Tool). Don't create those manually.
+> Each opened ticket becomes a temporary text channel inside this category automatically — Ticket Tool handles that. Don't create those manually.
 
-Both new categories' permissions are configured in sections 24 and 25.
+All four new categories' permissions are configured in sections 24, 24A, 24B, and 25.
 
 ---
 
@@ -1191,7 +1253,7 @@ Voice, Stage, Events — Neutral ➖.
 
 ## 24) CATEGORY 9 — `🔒 | STAFF` (NEW PRIVATE)
 
-**Visibility goal:** Visible to ONLY `Admin 💗`, `Moderator ☁️`, and `Carl-bot`. Hidden from everyone else.
+**Visibility goal:** Visible to ONLY `Admin 💗`, `Moderator ☁️`, and `Carl-bot`. Hidden from everyone else. This category is now lean — only chat-style channels live here. All event logging lives in `📋 | AUDITS` (section 24A).
 
 ### General Category Permissions
 
@@ -1230,7 +1292,105 @@ All other rows — Neutral ➖.
 
 ---
 
-## 25) CATEGORY 10 — `🎫 | TICKETS` (NEW PRIVATE)
+## 24A) CATEGORY 10 — `📋 | AUDITS` (NEW PRIVATE — granular event log)
+
+**Visibility goal:** Visible to ONLY `Admin 💗`, `Moderator ☁️`, `Carl-bot`, `Collab.Land`, and `Ticket Tool`. Hidden from everyone else. **Critical:** even though humans can VIEW these channels, they must NOT be able to send messages here. Only bots write. This protects the audit trail from being tampered with (or accidentally polluted).
+
+### General Category Permissions
+
+| Permission | @everyone | Verified 🩵 | Holder 🌌 | Moderator ☁️ | Admin 💗 | Carl-bot | Collab.Land | Ticket Tool |
+|---|---|---|---|---|---|---|---|---|
+| View Channels | ❌ Deny | ❌ Deny | ❌ Deny | ✅ Allow | ✅ Allow | ✅ Allow | ✅ Allow | ✅ Allow |
+| Manage Channels | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ➖ | ➖ | ➖ | ➖ |
+| Manage Permissions | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ➖ | ➖ | ➖ | ➖ |
+| Manage Webhooks | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ➖ | ✅ Allow | ➖ | ➖ |
+
+### Membership Permissions
+
+| Permission | @everyone | Verified 🩵 | Holder 🌌 | Moderator ☁️ | Admin 💗 | Carl-bot | Collab.Land | Ticket Tool |
+|---|---|---|---|---|---|---|---|---|
+| Create Invite | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ➖ | ➖ | ➖ | ➖ |
+
+### Text Channel Permissions
+
+| Permission | @everyone | Verified 🩵 | Holder 🌌 | Moderator ☁️ | Admin 💗 | Carl-bot | Collab.Land | Ticket Tool |
+|---|---|---|---|---|---|---|---|---|
+| Send Messages and Create Posts | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny *(humans must NOT pollute the audit trail)* | ✅ Allow *(only Admin can post a manual annotation if needed)* | ✅ Allow | ✅ Allow | ✅ Allow |
+| Send Messages in Threads and Posts | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ✅ Allow | ✅ Allow | ✅ Allow | ✅ Allow |
+| Create Public Threads | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ✅ Allow | ✅ Allow | ➖ | ➖ |
+| Create Private Threads | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ➖ | ➖ | ➖ | ➖ |
+| Embed Links | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ✅ Allow | ✅ Allow | ✅ Allow | ✅ Allow |
+| Attach Files | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ✅ Allow | ✅ Allow | ✅ Allow | ✅ Allow |
+| Add Reactions | ❌ Deny | ❌ Deny | ❌ Deny | ✅ Allow *(let mods react ✅ "investigated" / 👀 "watching" on log entries)* | ✅ Allow | ➖ | ➖ | ➖ |
+| Use External Emojis | ❌ Deny | ❌ Deny | ❌ Deny | ✅ Allow | ✅ Allow | ➖ | ➖ | ➖ |
+| Use External Stickers | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ➖ | ➖ | ➖ | ➖ |
+| Mention @everyone, @here and All Roles | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ✅ Allow | ✅ Allow *(so Carl-bot can ping @Moderator on a critical log entry — e.g. mass-ban detected)* | ➖ | ➖ |
+| Manage Messages | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny *(NEVER let mods delete log entries)* | ✅ Allow | ✅ Allow | ✅ Allow | ✅ Allow |
+| Pin Messages | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ✅ Allow | ➖ | ➖ | ➖ |
+| Bypass Slowmode | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ✅ Allow | ✅ Allow | ✅ Allow | ✅ Allow |
+| Manage Threads and Posts | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ✅ Allow | ➖ | ➖ | ➖ |
+| Read Message History | ❌ Deny | ❌ Deny | ❌ Deny | ✅ Allow | ✅ Allow | ✅ Allow | ✅ Allow | ✅ Allow |
+| Send Text-to-speech Messages | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ➖ | ➖ | ➖ |
+| Send Voice Messages | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ➖ | ➖ | ➖ |
+| Create Polls | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ➖ | ➖ | ➖ |
+
+### Apps Permissions
+
+| Permission | @everyone | Verified 🩵 | Holder 🌌 | Moderator ☁️ | Admin 💗 | Carl-bot | Collab.Land | Ticket Tool |
+|---|---|---|---|---|---|---|---|---|
+| Use Application Commands | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny *(no slash commands here — keeps the trail pure)* | ✅ Allow | ✅ Allow | ✅ Allow | ✅ Allow |
+| Use Activities | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ➖ | ➖ | ➖ |
+| Use External Apps | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ➖ | ➖ | ➖ |
+
+All other rows — Neutral ➖.
+
+> **Why mods are denied Send Messages here even though they're trusted:** an audit trail is only useful if it's untouched. If a mod could delete a log entry, they could cover up a mistake (or worse, an abuse). Keep humans out. Use reactions (✅ "investigated", 👀 "watching", ⚠️ "needs follow-up") to mark entries instead of replying.
+
+---
+
+## 24B) CATEGORY 11 — `📈 | MOMENTUM` (NEW PRIVATE — server + collection pulse)
+
+**Visibility goal:** Same as AUDITS — visible to team + log-writing bots. Humans CAN post manual annotations here (unlike AUDITS), because Momentum is a dashboard you discuss, not a forensic trail.
+
+### General Category Permissions
+
+| Permission | @everyone | Verified 🩵 | Holder 🌌 | Moderator ☁️ | Admin 💗 | Carl-bot | Collab.Land |
+|---|---|---|---|---|---|---|---|
+| View Channels | ❌ Deny | ❌ Deny | ❌ Deny | ✅ Allow | ✅ Allow | ✅ Allow | ✅ Allow |
+| Manage Channels | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ➖ | ➖ | ➖ |
+| Manage Permissions | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ➖ | ➖ | ➖ |
+| Manage Webhooks | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ➖ | ✅ Allow *(for Twitter-feed webhook + scheduled embeds)* | ➖ |
+
+### Text Channel Permissions
+
+| Permission | @everyone | Verified 🩵 | Holder 🌌 | Moderator ☁️ | Admin 💗 | Carl-bot | Collab.Land |
+|---|---|---|---|---|---|---|---|
+| Send Messages and Create Posts | ❌ Deny | ❌ Deny | ❌ Deny | ✅ Allow *(mods can comment on a recap, e.g. "spike from the AMA")* | ✅ Allow | ✅ Allow | ✅ Allow |
+| Send Messages in Threads and Posts | ❌ Deny | ❌ Deny | ❌ Deny | ✅ Allow | ✅ Allow | ✅ Allow | ✅ Allow |
+| Create Public Threads | ❌ Deny | ❌ Deny | ❌ Deny | ✅ Allow | ✅ Allow | ✅ Allow | ➖ |
+| Embed Links | ❌ Deny | ❌ Deny | ❌ Deny | ✅ Allow | ✅ Allow | ✅ Allow | ✅ Allow |
+| Attach Files | ❌ Deny | ❌ Deny | ❌ Deny | ✅ Allow | ✅ Allow | ✅ Allow | ✅ Allow |
+| Add Reactions | ❌ Deny | ❌ Deny | ❌ Deny | ✅ Allow | ✅ Allow | ✅ Allow | ➖ |
+| Use External Emojis | ❌ Deny | ❌ Deny | ❌ Deny | ✅ Allow | ✅ Allow | ➖ | ➖ |
+| Mention @everyone, @here and All Roles | ❌ Deny | ❌ Deny | ❌ Deny | ✅ Allow *(useful for "@Moderator — recap is up")* | ✅ Allow | ✅ Allow | ➖ |
+| Manage Messages | ❌ Deny | ❌ Deny | ❌ Deny | ✅ Allow | ✅ Allow | ✅ Allow | ✅ Allow |
+| Pin Messages | ❌ Deny | ❌ Deny | ❌ Deny | ✅ Allow *(pin the most important monthly recap)* | ✅ Allow | ➖ | ➖ |
+| Read Message History | ❌ Deny | ❌ Deny | ❌ Deny | ✅ Allow | ✅ Allow | ✅ Allow | ✅ Allow |
+| Create Polls | ❌ Deny | ❌ Deny | ❌ Deny | ✅ Allow *(quick team votes on what to feature)* | ✅ Allow | ➖ | ➖ |
+
+### Apps Permissions
+
+| Permission | @everyone | Verified 🩵 | Holder 🌌 | Moderator ☁️ | Admin 💗 | Carl-bot | Collab.Land |
+|---|---|---|---|---|---|---|---|
+| Use Application Commands | ❌ Deny | ❌ Deny | ❌ Deny | ✅ Allow *(e.g. `/list-holders` posts here)* | ✅ Allow | ✅ Allow | ✅ Allow |
+| Use Activities | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ➖ | ➖ |
+| Use External Apps | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ❌ Deny | ➖ | ➖ |
+
+All other rows — Neutral ➖.
+
+---
+
+## 25) CATEGORY 12 — `🎫 | TICKETS` (NEW PRIVATE)
 
 **Visibility goal:** Visible to ONLY `Admin 💗`, `Moderator ☁️`, and `Ticket Tool`. Each opened ticket-channel inside this category will have ADDITIONAL per-channel overwrites added by Ticket Tool to also allow the user who opened the ticket — that's automatic, you don't configure it.
 
@@ -1542,18 +1702,35 @@ Read-only for mods, write for Admin only.
 
 ---
 
-### 26.22) `#mod-logs`, `#message-logs`, `#join-leave-logs`, `#voice-logs`, `#scam-watch` (all in `🔒 | STAFF`)
+### 26.22) Every channel inside `📋 | AUDITS`
 
-All five are bot-write-only. Mods read; only Carl-bot writes.
+All 17 audit channels stay **Synced with category** — they inherit section 24A's table exactly. Mods read, react, but cannot post; only the source bot for that channel writes.
 
-| Permission | Moderator ☁️ | Admin 💗 | Carl-bot |
-|---|---|---|---|
-| Send Messages | ❌ Deny | ✅ Allow | ✅ Allow |
-| Manage Messages | ❌ Deny | ✅ Allow | ✅ Allow |
-| Embed Links | ❌ Deny | ✅ Allow | ✅ Allow |
-| Read Message History | ✅ Allow | ✅ Allow | ✅ Allow |
+The category-level table in section 24A is sufficient for **all** channels in this category. The only optional per-channel tweak: for the bot that "owns" each audit channel, you can additionally allow that specific bot to manage messages there (e.g. Collab.Land on `#audit-wallet-verifications`, Ticket Tool on `#audit-tickets`). This is already covered in section 24A.
 
-> Why deny mods Send? So a mod can't accidentally pollute the audit trail. The logs must be untouched.
+> ⚠️ **Critical reminder:** even YOU as Admin should resist posting in audit channels. Use reactions to mark entries instead. The integrity of the trail is more valuable than any one comment.
+
+#### 26.22a) `#audit-wallet-verifications` and `#audit-holder-changes` (additional Collab.Land binding)
+
+Make sure Collab.Land has explicit Allow for these two:
+
+| Permission | Collab.Land |
+|---|---|
+| Send Messages | ✅ Allow |
+| Embed Links | ✅ Allow |
+| Manage Messages | ✅ Allow |
+
+#### 26.22b) `#audit-tickets` (additional Ticket Tool binding)
+
+| Permission | Ticket Tool |
+|---|---|
+| Send Messages | ✅ Allow |
+| Embed Links | ✅ Allow |
+| Manage Messages | ✅ Allow |
+
+#### 26.22c) `#audit-automod` (Discord native AutoMod target)
+
+In **Server Settings → AutoMod → each rule** → set "Send alert message to channel" → `#audit-automod`. No per-channel override needed; native AutoMod posts as Discord itself, which always has access.
 
 ---
 
@@ -1580,6 +1757,33 @@ Ticket Tool dumps closed-ticket transcripts here.
 | Embed Links | ❌ Deny | ✅ Allow | ✅ Allow |
 | Attach Files | ❌ Deny | ✅ Allow | ✅ Allow |
 | Read Message History | ✅ Allow | ✅ Allow | ✅ Allow |
+
+---
+
+### 26.25) Every channel inside `📈 | MOMENTUM`
+
+All channels stay **Synced with category** — they inherit section 24B's table. The team CAN post comments on a recap (unlike AUDITS) so threads can grow under each daily/weekly report.
+
+Two channels need a small extra binding:
+
+#### 26.25a) `#momentum-twitter-feed` (webhook target)
+
+When you set up the IFTTT/Zapier/Make webhook that posts your @WHIMSEY tweets here, Discord generates a webhook URL. The webhook itself bypasses role permissions — you just need the webhook to exist on this channel. No per-role override needed.
+
+| Permission | Moderator ☁️ | Admin 💗 |
+|---|---|---|
+| Manage Webhooks | ❌ Deny | ✅ Allow *(only Admin manages webhooks for security)* |
+
+#### 26.25b) `#momentum-collection-feed` (optional NFT-tracker bot — see section 32)
+
+If you add a 5th bot for on-chain tracking, give that bot:
+
+| Permission | NFT-tracker bot |
+|---|---|
+| View Channel | ✅ Allow |
+| Send Messages | ✅ Allow |
+| Embed Links | ✅ Allow |
+| Attach Files | ✅ Allow |
 
 ---
 
@@ -1632,56 +1836,212 @@ Configure Ticket Tool to post:
 
 ## 28) THE CARL-BOT OPERATIONS PLAYBOOK
 
-This is what Carl-bot does for you when you're asleep / busy. Configure all of these in the Carl-bot dashboard at carl.gg.
+This is the full configuration for Carl-bot — the brain of your server. It does the work of 4 mods at the same time, 24/7. Configure everything below in the Carl-bot dashboard at **carl.gg → Dashboard → [WHIMSEY server]**.
 
 ### 28.1) AutoMod rules (replaces a 24/7 mod)
 
+In Carl-bot dashboard → **AutoMod** → enable each:
+
 - **Anti-invite filter:** auto-delete any non-WHIMSEY Discord invite link in any public channel.
   - Whitelist: your own server's invite.
-  - 1st violation: delete + warn in `#scam-watch`. 3rd violation: 1-hour timeout.
+  - 1st violation: delete + warn in `#audit-scam-watch`. 3rd violation: 1-hour timeout.
 - **Anti-link filter:** in `#general-chat`, `#whimsey-talk`, `#fan-creations`, `#suggestions`, `#show-your-whimsey`, `#trading-post`, `#market-talk`, `#support`, auto-delete suspicious crypto/scam links.
   - Whitelist: your official site, OpenSea/Magic Eden listing URL, your verified Twitter, your Linktree.
-- **Anti-spam filter:** 5+ messages in 3 seconds → 10-minute timeout + log to `#mod-logs`.
+- **Anti-spam filter:** 5+ messages in 3 seconds → 10-minute timeout + log.
 - **Anti-mention-spam filter:** more than 5 mentions in one message → delete + 30-minute timeout.
-- **Anti-caps filter:** message with >70% caps → auto-delete (warning only, no timeout — caps aren't malicious, just annoying).
-- **Banned-words filter:** paste your scam keyword list (the same one from section 3.6). Action: delete + post alert in `#scam-watch`.
-- **NSFW image filter:** Discord's classifier; if confidence > 80%, delete + 24-hour timeout.
+- **Anti-caps filter:** message with >70% caps → auto-delete (warning only, no timeout).
+- **Banned-words filter:** paste your scam keyword list (section 3.6). Action: delete + post alert in `#audit-scam-watch`.
+- **NSFW image filter:** Discord's classifier; confidence > 80% → delete + 24-hour timeout.
+- **Anti-zalgo / unicode-spam filter:** filter messages with excessive combining characters → delete.
+- **Anti-newline-spam filter:** messages with > 8 newlines → delete.
 
-### 28.2) Logging
+### 28.2) Real-time logging — bind EVERY event to its dedicated audit channel
 
-Bind Carl-bot's logs:
-- Server log → `#mod-logs` — kicks, bans, timeouts, role adds/removes by humans
-- Message log → `#message-logs` — every edited and deleted message
-- Member log → `#join-leave-logs` — joins, leaves, role adds/removes by anyone (including bots)
-- Voice log → `#voice-logs` — VC joins/leaves/mutes (when you add VC)
-- AutoMod log → `#scam-watch` — every AutoMod hit
+This is the core of your "track everything" architecture. Carl-bot can log 30+ distinct event types. In **Carl-bot dashboard → Logging**, enable each event with the corresponding destination channel.
+
+#### User-action log bindings
+
+| Carl-bot event | Destination channel |
+|---|---|
+| Member kick | `#audit-mod-actions` |
+| Member ban | `#audit-mod-actions` |
+| Member unban | `#audit-mod-actions` |
+| Member timeout (mute) | `#audit-mod-actions` |
+| Member untimeout (unmute) | `#audit-mod-actions` |
+| Carl-bot warning issued | `#audit-mod-actions` |
+| Message edit | `#audit-messages` |
+| Message delete (single) | `#audit-messages` |
+| Message bulk delete (purge) | `#audit-messages` |
+| Member join | `#audit-joins-leaves` (include account-age stamp + invite used) |
+| Member leave | `#audit-joins-leaves` (include join-date so you can see how long they stayed) |
+| Member role added | `#audit-role-changes` |
+| Member role removed | `#audit-role-changes` |
+| Member nickname changed | `#audit-nicknames` |
+| Member username changed | `#audit-member-updates` |
+| Member avatar changed | `#audit-member-updates` *(only flag for staff + Holders to detect account hijacks)* |
+| Voice channel join | `#audit-voice` |
+| Voice channel leave | `#audit-voice` |
+| Voice channel move | `#audit-voice` |
+| Voice mute / deafen / undeafen | `#audit-voice` |
+| Voice video on/off, screen-share start/stop | `#audit-voice` |
+
+#### Server-structure log bindings
+
+| Carl-bot event | Destination channel |
+|---|---|
+| Channel created | `#audit-channels` |
+| Channel renamed | `#audit-channels` |
+| Channel edited (topic, slowmode, NSFW flag) | `#audit-channels` |
+| Channel deleted | `#audit-channels` |
+| Channel permission overwrite changed | `#audit-channels` |
+| Channel position moved | `#audit-channels` |
+| Role created | `#audit-roles` |
+| Role renamed | `#audit-roles` |
+| Role recolored | `#audit-roles` |
+| Role permissions changed | `#audit-roles` |
+| Role hoist / mention setting changed | `#audit-roles` |
+| Role deleted | `#audit-roles` |
+| Server name changed | `#audit-server` |
+| Server icon / banner / splash changed | `#audit-server` |
+| Server region changed | `#audit-server` |
+| AutoMod rule added / edited / deleted | `#audit-server` |
+| Vanity URL changed | `#audit-server` |
+| Verification level / explicit-content filter changed | `#audit-server` |
+| Emoji added / renamed / removed | `#audit-emoji-stickers` |
+| Sticker added / renamed / removed | `#audit-emoji-stickers` |
+| Soundboard sound added / removed | `#audit-emoji-stickers` |
+| Thread created / archived / unarchived / deleted | `#audit-threads-events` |
+| Forum post created / locked / pinned | `#audit-threads-events` |
+| Scheduled event created / edited / cancelled / completed | `#audit-threads-events` |
+| Invite created | `#audit-invites` (with creator, expiry, max uses) |
+| Invite used (member-join attribution) | `#audit-invites` |
+| Invite deleted | `#audit-invites` |
+| Bot/integration added | `#audit-bots` |
+| Bot/integration removed | `#audit-bots` |
+| Webhook created / edited / deleted | `#audit-bots` |
+
+#### Safety log bindings
+
+| Event | Destination |
+|---|---|
+| Carl-bot AutoMod hit (anti-invite, anti-spam, anti-caps, anti-mention-spam, banned-words, NSFW image) | `#audit-scam-watch` |
+| Discord native AutoMod hit (configure in Server Settings → AutoMod → each rule's "Send alert" → set channel) | `#audit-automod` |
+
+#### Holder / boost log bindings
+
+| Event | Destination |
+|---|---|
+| `Holder 🌌` role added (Carl-bot detects role-add events) | `#audit-holder-changes` *(mirrors Collab.Land's grant for easy auditing in one place)* |
+| `Holder 🌌` role removed | `#audit-holder-changes` |
+| `Verified 🩵` role added | `#audit-holder-changes` *(optional, gives a single feed of "membership state changes")* |
+| Server boost added | `#audit-boosts` *(post a celebration message — boosters love being recognized)* |
+| Server boost removed | `#audit-boosts` |
+
+> **Note on Collab.Land's wallet-verification logs:** Collab.Land posts its own log to `#audit-wallet-verifications`. In Collab.Land's Command Center → Logs → set the destination channel. This is separate from Carl-bot.
+
+> **Note on Ticket Tool's ticket logs:** Ticket Tool posts a one-line summary to `#audit-tickets` (ticket opened by X, ticket closed by Y after Z minutes) and the FULL transcript to `#ticket-logs` inside `🎫 | TICKETS`. Set both in Ticket Tool's dashboard → Logging.
 
 ### 28.3) Reaction roles (optional self-assigned roles)
 
-Create a new channel `#roles` inside `🌊 | START HERE` (read-only for community, like rules). Pin a Carl-bot reaction-role panel:
+Create a new channel `#roles` inside `🌊 | START HERE` (read-only for community, like `#rules`). Pin a Carl-bot reaction-role panel:
 
 > Pick the pings you want:
 > 🔔 — Announcement Pings (you'll be pinged for `#announcements`)
 > 🎉 — Giveaway Pings (you'll be pinged when a giveaway opens)
 > 🗳️ — Poll Pings
 > 🧑‍🎨 — Fan Artist (you'll be pinged when we do art calls)
+> 🛒 — Trader Pings (you'll be pinged for trading-post heat / floor moves)
 
 This way you don't need to `@everyone` for non-critical updates.
 
 ### 28.4) Auto-responses
 
-Set Carl-bot triggers:
-- Trigger: messages containing "how do I verify", "how to verify", "where do i verify"
+Set Carl-bot triggers in **Dashboard → Tags / Auto-Responder**:
+
+- Trigger: "how do I verify", "how to verify", "where do i verify"
   → Reply: "Head to `#access-info`, then click Verify in `#verify` 💗"
 - Trigger: "is this a scam", "is this real", "got a dm"
   → Reply: "Read `#scam-alerts` — and remember: the team will NEVER DM you first."
 - Trigger: "when mint", "wen mint", "when launch"
   → Reply: "Mint info is always live in `#roadmap` and `#announcements`."
+- Trigger: "how do I become a holder", "holder role"
+  → Reply: "Head to `#holder-verify` and click the Collab.Land button to verify your wallet 🌌"
+- Trigger: "support", "i need help"
+  → Reply: "Ask publicly in `#support`. For private help (wallet/scam/sensitive issues), open a ticket in `#open-tickets` 🎫"
 
-### 28.5) Scheduled messages
+### 28.5) Scheduled "momentum" reports — the heart of real-time tracking
 
-- Daily 14:00 IST in `#whimsey-of-the-day`: "📌 Time for today's Whimsey of the Day!" (just a nudge for staff to post)
-- Weekly Monday 12:00 IST in `#general-chat`: "🩵 Weekly reminder: never share your seed phrase. Never click DM links. Report scammers in `#scam-alerts`."
+Carl-bot's scheduled-message system can post recurring summaries. Set these up in **Dashboard → Scheduled Messages**:
+
+#### Daily server recap → `#momentum-daily-recap` at 23:55 IST
+
+Use a Carl-bot scheduled embed with the following template (Carl-bot fills the placeholders):
+
+```
+📊 WHIMSEY Daily Recap — {date}
+
+🆕 Joins today: {joins_today}
+👋 Leaves today: {leaves_today}
+📈 Net growth: {net_growth_today}
+💬 Messages today: {messages_today}
+🟢 Active members today: {active_members_today}
+🔝 Top 3 channels: {top_channels_today}
+🏆 Top 3 contributors: {top_contributors_today}
+🌌 New Holders today: {new_holders_today}
+😢 Lost Holders today: {lost_holders_today}
+🛡️ AutoMod hits today: {automod_hits_today}
+🎫 Tickets opened: {tickets_opened_today}
+🎫 Tickets closed: {tickets_closed_today}
+```
+
+> If Carl-bot's free tier doesn't support every placeholder, the team can run a slash command at end of day to generate the recap manually. Either way, this channel becomes your daily heartbeat.
+
+#### Weekly server recap → `#momentum-weekly-recap` at Sunday 23:55 IST
+
+Same structure as daily, but for the past 7 days, with week-over-week comparison (e.g. "+12% messages vs last week", "+47 net members vs last week"). Pin the most recent 4 weeks for at-a-glance trend.
+
+#### Monthly server recap → `#momentum-monthly-recap` on the last day of the month at 23:55 IST
+
+Month-over-month rollup. This is what you'd share with potential partners ("WHIMSEY did 12,000 messages and gained 380 net members in November").
+
+#### Daily holder snapshot → `#momentum-holder-snapshot` at 00:05 IST
+
+Carl-bot posts a reminder at 00:00 IST to `#staff-chat`: "📸 Holder snapshot time — run `/list-holders` in `#mod-commands` and post in `#momentum-holder-snapshot`."
+
+The snapshot should track:
+- Total `Holder 🌌` count (verified-on-Discord)
+- New Holders since yesterday
+- Holders lost since yesterday
+- % of 30,000 supply that is verified-on-Discord (verified holders / 30,000 × 100)
+- Top-10-wallet concentration (% of supply held by top 10 wallets — concentration risk indicator)
+
+#### Live server stats pinboard → `#momentum-server-stats`
+
+Pin a Carl-bot embed that the team manually refreshes weekly via slash command:
+- Total members
+- Verified members
+- Holders
+- Boost level + boost count
+- Online now (refresh-on-demand)
+
+#### Weekly community contributor recognition → `#momentum-team-pulse` at Monday 12:00 IST
+
+Carl-bot scheduled embed: top 3 message-count members + top 3 reaction-receivers + top 3 forum/thread starters from the past week. Use this to pick a "Whimsey of the Week" hero to spotlight in `#announcements`.
+
+#### Daily safety reminder → `#general-chat` at 12:00 IST every day
+
+Rotating tip-of-the-day:
+- Mon: "🩵 Reminder: never share your seed phrase. The team will NEVER DM you first."
+- Tue: "🌌 Holders — re-verify in `#holder-verify` if your role goes missing after a wallet move."
+- Wed: "🚨 Suspicious DM? Screenshot it and report in `#scam-alerts`."
+- Thu: "✨ Forgot how to verify? Head to `#access-info`."
+- Fri: "🎉 Got fan art? Drop it in `#fan-creations` or `#show-your-whimsey`."
+- Sat: "🗳️ Vote on community polls in `#polls`."
+- Sun: "📊 Weekly recap is up in `#momentum-weekly-recap` (staff only)."
+
+#### Daily nudge to staff → `#whimsey-of-the-day` at 14:00 IST
+
+"📌 Time for today's Whimsey of the Day! Pick one and post."
 
 ### 28.6) Auto-slowmode
 
@@ -1689,15 +2049,45 @@ Carl-bot can auto-enable slowmode if a channel hits >30 messages/minute. Enable 
 - `#general-chat`
 - `#whimsey-talk`
 - `#trading-post`
+- `#support`
 
 ### 28.7) Anti-impersonator nickname filter
 
-Add a Carl-bot custom rule: if any non-staff member sets their nickname to contain "Admin", "Mod", "Moderator", "WHIMSEY Support", "WHIMSEY Team", "Support" — auto-revert their nickname and time them out for 1 hour. Log to `#mod-logs`.
+Add a Carl-bot custom rule: if any non-staff member sets their nickname to contain "Admin", "Mod", "Moderator", "WHIMSEY Support", "WHIMSEY Team", "Support", "Team", "Official", "Founder" — auto-revert their nickname and time them out for 1 hour. Log to `#audit-mod-actions` AND `#audit-nicknames`.
 
 ### 28.8) Welcome system
 
 - Send a DM to new joiners: "Welcome to WHIMSEY! Read `#access-info` and verify in `#verify` to unlock the server. The team will NEVER DM you first."
-- Optional: post a welcome card in `#welcome` AFTER they verify (Carl-bot can be triggered by role-add).
+- Post a welcome card in `#welcome` AFTER they verify (Carl-bot triggered by `Verified 🩵` role-add).
+- Account-age check on join: if account is < 24 hours old, auto-flag in `#audit-joins-leaves` with ⚠️ emoji so mods can watch.
+
+### 28.9) Carl-bot permission overrides it needs to make logging work
+
+For Carl-bot to write into every audit + momentum channel, give Carl-bot's role at the **category** level for both `📋 | AUDITS` and `📈 | MOMENTUM`:
+
+- View Channels ✅ Allow
+- Send Messages and Create Posts ✅ Allow
+- Embed Links ✅ Allow
+- Attach Files ✅ Allow
+- Read Message History ✅ Allow
+- Manage Messages ✅ Allow (so it can clean up its own old logs if needed)
+- Use External Emojis ✅ Allow
+- Mention @everyone, @here and All Roles ✅ Allow (so it can `@Moderator` on critical events like mass-ban detection)
+
+These are already in the section 24A and 24B tables — just verify after invite that nothing got dropped.
+
+### 28.10) Optional but powerful: Carl-bot tag commands for the team
+
+Use Carl-bot tags to give your team one-letter shortcuts:
+
+- `?tag rules` → posts the rules summary
+- `?tag scam` → posts the scam-warning template
+- `?tag verify` → posts the verify instructions
+- `?tag holder` → posts the holder-verify instructions
+- `?tag stats` → posts a live stats summary
+- `?tag snapshot` → posts the latest holder snapshot pulled from `#momentum-holder-snapshot`
+
+Saves the team typing the same answers 50 times a day.
 
 ---
 
@@ -1895,3 +2285,89 @@ Quick lookup for every permission used above, exactly as Discord names it.
 Lock everything down for `@everyone`. The only category they can see is `💗 | VERIFY`. Once they verify with the Auth bot, they get `Verified 🩵` and the rest of the public server appears. If they prove they own a $CNDY NFT via Collab.Land in `#holder-verify`, they get `Holder 🌌` and the exclusive `#holder-chat` + `#holder-announcements` appear. The team has `Moderator ☁️` (everything except Administrator). You have `Admin 💗` (Administrator). The 4 bots — Auth (verify), Collab.Land (wallet check), Ticket Tool (private support), Carl-bot (24/7 mod automation + logs) — sit between Mod and Holder in the hierarchy. Two new private categories `🔒 | STAFF` and `🎫 | TICKETS` exist for the team's eyes only. `#support` is open public help; `#open-tickets` is the door to private 1-on-1 help. Before launching, run section 29's checklist with a second account.
 
 You're ready to launch WHIMSEY. 💗
+
+---
+
+
+## 32) OPTIONAL: ADD A 5TH BOT FOR ON-CHAIN COLLECTION TRACKING
+
+You said you want to keep the bot count low (4 confirmed: Auth, Carl-bot, Collab.Land, Ticket Tool). But because you specifically asked to track EVERYTHING in the collection in real time, here's what a 5th bot would unlock — and how to add it cleanly without bloat.
+
+### 32.1) Why you might want it
+
+The 4 confirmed bots cover the SERVER side perfectly. They do not, however, watch the BLOCKCHAIN. So:
+
+- A new $CNDY mint, sale, listing, transfer, or de-list happens → no Discord notification.
+- A whale picks up 50 in a single transaction → no Discord notification.
+- The floor price drops 20% in an hour → no Discord notification.
+
+If you want `#momentum-collection-feed` to actually be live (instead of just a manual post-board), you need a bot that subscribes to your contract address and posts these events automatically.
+
+### 32.2) Three recommended candidates (pick one)
+
+All three are free or freemium and work without any code from you.
+
+| Bot | Best for | Setup time |
+|---|---|---|
+| **NFTSalesBot (botghost / Vulcan)** | Ethereum / Polygon NFT sales + listings + bids feed. Most popular. | ~10 min |
+| **Hashlist** | Solana NFT collections (if $CNDY is on Solana). Posts mints, sales, listings, floor moves. | ~10 min |
+| **OpenSea Sales Bot / Sweep Bot** | OpenSea-native, simple sales-only feed. | ~5 min |
+
+> Pick based on **which chain $CNDY lives on**. The doc assumes Ethereum/Polygon by default; if you confirm Solana later, swap to Hashlist.
+
+### 32.3) Setup (using NFTSalesBot as the example)
+
+1. Go to **nftsalesbot.com** (or the bot's official site).
+2. Click "Add to Discord" → select WHIMSEY server.
+3. On the OAuth page, grant ONLY: View Channels, Send Messages, Embed Links, Attach Files. Tick nothing else.
+4. After it joins, create a NEW role for it called **`NFT Tracker`** with **zero** server-wide permissions.
+5. Move `NFT Tracker` role in the role list ABOVE `Verified 🩵` but BELOW `Ticket Tool`. New stack:
+   - 0. `Admin 💗`
+   - 1. `Moderator ☁️`
+   - 2. `Carl-bot`
+   - 3. `Auth`
+   - 4. `Collab.Land`
+   - 5. `Ticket Tool`
+   - 6. `NFT Tracker` ← new
+   - 7. `Holder 🌌`
+   - 8. `Verified 🩵`
+   - 9. `@everyone`
+6. Open `#momentum-collection-feed` → Edit Channel → Permissions → Add `NFT Tracker` role:
+   - View Channel ✅ Allow
+   - Send Messages ✅ Allow
+   - Embed Links ✅ Allow
+   - Attach Files ✅ Allow
+   - Read Message History ✅ Allow
+7. In the bot's own dashboard (or via slash command in `#mod-commands`), point it at:
+   - **Contract address:** `0xYourContractAddress` (your $CNDY collection)
+   - **Channel:** `#momentum-collection-feed`
+   - **Events to watch:** Sales, Listings, De-listings, Transfers, Mints (tick all)
+   - **Min sale price filter:** none (you want everything for a 30,000 supply with this floor)
+
+### 32.4) What you'll see in `#momentum-collection-feed` after setup
+
+Every blockchain event posts as an embed:
+
+> 🛒 **WHIMSEY #4218 SOLD**
+> Price: 0.32 ETH (~₹68,000)
+> Buyer: `0x9ab…3f1` ([wallet on Etherscan])
+> Seller: `0x7c2…9de`
+> Marketplace: OpenSea
+> Floor at sale: 0.29 ETH
+
+Combined with Carl-bot's daily holder snapshot in `#momentum-holder-snapshot`, you now have a true 360° view: every wallet move on-chain + every Discord membership change in one server.
+
+### 32.5) Why this doesn't bloat your stack
+
+This bot:
+- Has zero overlap with Carl-bot, Collab.Land, Auth, or Ticket Tool.
+- Only writes to one channel.
+- Only reads from the blockchain (not from Discord).
+- Has no slash-commands users can spam.
+- Has no DM behaviour.
+
+It's a one-purpose appliance. So the "4 bots is the limit" instinct doesn't really apply here — this is a different category of tool (off-chain reader, not server-management).
+
+### 32.6) If you decide NOT to add it
+
+That's totally fine. Then `#momentum-collection-feed` becomes a manual post-board where the team drops noteworthy mints/sales/whale moves (use a screenshot from OpenSea / Magic Eden + a one-line caption). Set a Carl-bot scheduled message: every Monday 12:00 IST, "📊 Team — drop this week's notable on-chain moves in this channel." That keeps the channel useful even without automation.
