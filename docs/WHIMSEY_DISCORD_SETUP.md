@@ -2879,3 +2879,541 @@ Lessons / changes needed: [bullet list]
 
 This is the single most important habit. Three months from now, you'll be able to look back at 90 incident reports and see exactly which scams / raids / bot bugs are recurring — and harden against them.
 
+
+---
+
+## 34) BOT AUTOPILOT — THE 24/7 AUTONOMOUS OPERATIONS SETUP 💗❄️
+
+**The promise of this section:** when you and the team are asleep, working, eating, traveling, or just unavailable — the server keeps running smoothly, dangerous things get blocked automatically, the daily/weekly/monthly momentum reports post on time, and you only get pinged when a HUMAN is genuinely needed. Everything else is handled by the bots.
+
+This section is **click-by-click**. Every dashboard path is spelled out. Every threshold is given. Every embed template is ready to paste. By the end you'll have a server that runs itself.
+
+---
+
+### 34.1) THE AUTOPILOT PHILOSOPHY (read first, takes 60 seconds)
+
+A perfectly tuned bot setup does FOUR things:
+
+1. **PREVENTS** bad things from happening (AutoMod, anti-raid, anti-impersonator, anti-link).
+2. **DETECTS** events as they happen (logging every event type to the right audit channel).
+3. **REPORTS** the state of the server on a schedule (daily/weekly/monthly momentum recaps).
+4. **ESCALATES** to a human ONLY when a human is genuinely needed (smart pings instead of dumb spam).
+
+Most servers fail at #4 — they ping the team for everything, the team gets ping fatigue, and real emergencies get missed. We solve this with **tiered alerts** (sections 34.7).
+
+---
+
+### 34.2) BOT-BY-BOT DASHBOARD SETUP — IN ORDER
+
+Set up the bots in this exact order. Each one depends on the previous being live.
+
+#### Order:
+1. **Carl-bot** — the brain (logging, AutoMod, scheduling, autopilot reports)
+2. **Auth** — the front door (verification only)
+3. **Collab.Land** — the wallet bouncer (holder verification only)
+4. **Ticket Tool** — the customer service desk (private support only)
+5. **(Optional) NFT-tracker bot** — the on-chain watcher (section 32)
+
+---
+
+### 34.3) CARL-BOT FULL AUTOPILOT CONFIGURATION (the most important bot)
+
+Carl-bot does ~70% of all the autopilot work. Get this perfect and the server effectively runs itself.
+
+#### 34.3.1) Initial setup
+
+1. Go to **carl.gg** → "Login with Discord" → "Add Carl-bot to server" → pick WHIMSEY.
+2. On the OAuth page, grant Carl-bot the suggested permissions BUT then immediately:
+3. Go to **Server Settings → Roles → Carl-bot** → set its color to a calm cloud-grey (so it visually blends, not screams).
+4. Move `Carl-bot` role in the role list to position **#3** (under Admin 💗 and Moderator ☁️) — confirmed in section 6.
+5. Open **carl.gg/dashboard → WHIMSEY**.
+
+#### 34.3.2) Prefix and basic settings
+
+- **Dashboard → Server → Settings:**
+  - Prefix: `?` (default)
+  - Embed color: `#FFB6C1` (your pink) so all Carl-bot embeds match brand
+  - Delete commands after use: ✅ ON (keeps channels clean)
+  - Mention prefix: ✅ ON (so `@Carl-bot help` also works)
+
+#### 34.3.3) Logging — bind every channel exactly per section 28.2
+
+This is the foundation of "always supervising." Open **Dashboard → Logging** and go through every event type:
+
+For each event in the section 28.2 tables, click "Enable" and set the destination channel from the dropdown. Don't skip any. If a channel doesn't exist yet, go create it first then come back.
+
+**Important:** Carl-bot's logging dropdown groups events. Map them like this:
+
+| Carl-bot logging group | Destination |
+|---|---|
+| **Server Events** | `#audit-server` |
+| **Channel Events** | `#audit-channels` |
+| **Role Events** | `#audit-roles` |
+| **Member Updates** | `#audit-member-updates` |
+| **Nickname Updates** | `#audit-nicknames` |
+| **Voice Events** | `#audit-voice` |
+| **Member Joins/Leaves** | `#audit-joins-leaves` |
+| **Message Events** | `#audit-messages` |
+| **Mod Actions** | `#audit-mod-actions` |
+| **Role Add/Remove** | `#audit-role-changes` |
+| **Emoji/Sticker Events** | `#audit-emoji-stickers` |
+| **Thread/Forum Events** | `#audit-threads-events` |
+| **Invite Events** | `#audit-invites` |
+| **Bot/Webhook Events** | `#audit-bots` |
+| **AutoMod Events** | `#audit-automod` and `#audit-scam-watch` (mirror to both) |
+| **Boost Events** | `#audit-boosts` |
+
+**Verify:** kick yourself from a test channel. Check `#audit-channels` — there should be a log entry within 2 seconds. If yes, logging is live.
+
+#### 34.3.4) AutoMod — paste this exact ruleset
+
+**Dashboard → AutoMod → Add new rule.** Create EACH of these:
+
+**Rule A: Anti-invite (auto-block external server invites)**
+- Trigger: `discord.gg/`, `discord.com/invite/`
+- Whitelist: your own server's invite code
+- Action: Delete message + add 1 strike to user
+- Punish at 1 strike: warn user (DM)
+- Punish at 3 strikes: 1-hour timeout
+- Punish at 5 strikes: 24-hour timeout + ping `@Moderator` in `#audit-mod-actions`
+- Apply to: all channels EXCEPT `#staff-chat`, `#trading-post`
+
+**Rule B: Anti-spam (5+ messages in 3 seconds)**
+- Trigger: 5 messages in 3 seconds from same user
+- Action: Delete + 10-minute timeout
+- Notify: `#audit-scam-watch`
+
+**Rule C: Anti-mention-spam (5+ mentions in one message)**
+- Trigger: > 5 user/role mentions in single message
+- Action: Delete + 30-minute timeout
+- Notify: `#audit-scam-watch`
+
+**Rule D: Anti-caps (>70% caps)**
+- Trigger: messages > 10 chars where > 70% are uppercase
+- Action: Delete (warning only)
+- Apply to: `#general-chat`, `#whimsey-talk`, `#announcements`
+
+**Rule E: Banned-words (the scam keyword filter)**
+- Open the dashboard → AutoMod → Banned Words → paste this list:
+  ```
+  airdrop, claim now, free mint, exclusive mint, wallet drainer, connect wallet, validate wallet, 
+  verify wallet, sync wallet, restore wallet, seed phrase, secret phrase, 12 words, 24 words, 
+  metamask issue, metamask error, opensea support, magic eden support, urgent action, 
+  immediate action, last chance, only 24 hours, only 1 hour, click here to claim, 
+  whitelist closing, whitelist ends, presale, pre-sale, free nft, win nft, free eth, free sol
+  ```
+- Action: Delete + post alert in `#audit-scam-watch` + add 1 strike
+- Punish at 3 strikes: 24-hour timeout
+
+**Rule F: NSFW image filter**
+- Trigger: Discord's image classifier > 80% confidence
+- Action: Delete + 24-hour timeout
+- Notify: `#audit-scam-watch`
+
+**Rule G: Anti-zalgo / unicode-spam**
+- Trigger: messages with > 8 combining characters
+- Action: Delete
+
+**Rule H: Anti-newline-spam**
+- Trigger: messages with > 8 newlines
+- Action: Delete
+
+**Rule I: Anti-impersonator nickname filter** (Carl-bot custom)
+- Dashboard → Auto Moderation → Nickname filter → block these substrings (case-insensitive, including Unicode look-alikes):
+  ```
+  admin, moderator, mod, support, team, official, founder, whimsey support, whimsey team, 
+  whimsey staff, whimsey official, аdmin, mоderator, supрort, оfficial
+  ```
+- Action: Auto-revert nickname + 1-hour timeout + log to `#audit-nicknames` AND `#audit-mod-actions`
+
+**Rule J: Anti-raid (the most important one)**
+- Trigger: > 10 joins in 60 seconds
+- Action: Auto-enable Discord's Verification Level → Highest + ping `@Admin` in `#audit-mod-actions`
+- Auto-revert verification level after 30 min of no new joins
+
+**Rule K: Account-age gate**
+- Trigger: any new member whose account is < 24 hours old
+- Action: do NOT block them, but flag with ⚠️ in `#audit-joins-leaves` so mods can monitor
+- Also: auto-add a `🆕 New Account` role to them so they can be filtered later
+
+**Rule L: Suspicious-link domain filter**
+- Trigger: any URL containing `bit.ly`, `tinyurl`, `t.co/` outside `#announcements`, or unicode-confusable domains (e.g. `0pensea.io`, `magiceden.app` if your real one is `.io`)
+- Action: Delete + post in `#audit-scam-watch`
+- Whitelist: your real official domains
+
+#### 34.3.5) Auto-responses — paste these triggers
+
+**Dashboard → Tags / AutoResponder → Add:**
+
+| Trigger words | Bot reply |
+|---|---|
+| how do i verify, how to verify, where do i verify | "Head to `#access-info`, then click Verify in `#verify` 💗" |
+| is this a scam, is this real, got a dm | "Read `#scam-alerts` — the team will NEVER DM you first." |
+| when mint, wen mint, when launch | "Mint info is always live in `#roadmap` and `#announcements`." |
+| how do i become a holder, holder role | "Head to `#holder-verify` and click the Collab.Land button to verify your wallet 🌌" |
+| support, i need help | "Ask publicly in `#support`. For private/sensitive issues, open a ticket in `#open-tickets` 🎫" |
+| where roadmap, where is roadmap | "It's pinned in `#roadmap` ❄️" |
+| how to buy, where buy, where can i buy | "Listings on [your marketplace] — link in `#announcements`. Always verify the contract address first 🛡️" |
+| what is whimsey, tell me about whimsey | "WHIMSEY is a 30,000-supply NFT collection with the $CNDY ticker. Read `#about-whimsey` and `#roadmap` for the full story 🌌💗" |
+
+#### 34.3.6) Scheduled messages — the "always-on" momentum reports
+
+**Dashboard → Scheduled Messages → Add new:**
+
+Create each of these as recurring scheduled embeds. Carl-bot supports `cron` style schedules.
+
+##### Schedule 1: Daily server recap → `#momentum-daily-recap` at 23:55 IST
+
+- Schedule: every day at 23:55 IST
+- Channel: `#momentum-daily-recap`
+- Embed title: `📊 WHIMSEY Daily Recap — {date}`
+- Embed color: `#FFB6C1`
+- Embed body:
+  ```
+  🆕 Joins today: {member_count_change_24h}
+  💬 Active members today: {active_member_count_24h}
+  📈 Total members now: {member_count}
+  🌌 Verified Holders: {role_count:Holder 🌌}
+  🩵 Verified members: {role_count:Verified 🩵}
+  🛡️ AutoMod hits today: {automod_hits_24h}
+  🎫 Open tickets right now: {ticket_open_count}
+  
+  Tomorrow we keep growing. ❄️
+  ```
+- Auto-pin latest? ✅ Yes (so the most recent recap is always pinned)
+- Auto-unpin previous? ✅ Yes
+
+> If a placeholder isn't supported by Carl-bot's free tier, replace with a `?stats` Carl-bot command that the team can run manually. Either way, the schedule fires.
+
+##### Schedule 2: Weekly server recap → `#momentum-weekly-recap` at Sunday 23:55 IST
+
+- Schedule: every Sunday 23:55 IST
+- Channel: `#momentum-weekly-recap`
+- Embed title: `📊 WHIMSEY Weekly Recap — Week of {week_start_date}`
+- Embed body:
+  ```
+  📈 Net members this week: {member_count_change_7d}
+  💬 Total messages this week: {message_count_7d}
+  🟢 Avg active members/day: {avg_dau_7d}
+  🔝 Most active channel: {top_channel_7d}
+  🏆 Top contributor: {top_contributor_7d}
+  🌌 Holders gained: {holder_gained_7d}
+  😢 Holders lost: {holder_lost_7d}
+  🛡️ Total AutoMod actions: {automod_hits_7d}
+  🎫 Tickets handled: {tickets_closed_7d}
+  
+  Onwards. 💗
+  ```
+
+##### Schedule 3: Monthly recap → `#momentum-monthly-recap` on last day of month 23:55 IST
+
+- Schedule: every month on the last day at 23:55 IST
+- Same template as weekly but with 30-day numbers + month-over-month comparison.
+
+##### Schedule 4: Daily holder snapshot reminder → `#staff-chat` at 00:00 IST
+
+- Schedule: every day at 00:00 IST
+- Channel: `#staff-chat`
+- Message: `📸 @Moderator @Admin — Holder snapshot time. Run /list-holders in #mod-commands and post the count + new + lost in #momentum-holder-snapshot. Takes 2 min.`
+
+##### Schedule 5: Daily safety reminder rotation → `#general-chat` at 12:00 IST
+
+Use Carl-bot's "rotate messages" feature (Dashboard → Scheduled Messages → Add → Rotation):
+
+- Mon: "🩵 Reminder: never share your seed phrase. The team will NEVER DM you first."
+- Tue: "🌌 Holders — re-verify in `#holder-verify` if your role goes missing."
+- Wed: "🚨 Suspicious DM? Screenshot it and report in `#scam-alerts`."
+- Thu: "✨ Forgot how to verify? Head to `#access-info`."
+- Fri: "🎉 Got fan art? Drop it in `#fan-creations` or `#show-your-whimsey`."
+- Sat: "🗳️ Vote on community polls in `#polls`."
+- Sun: "📊 Weekly recap is up in `#momentum-weekly-recap` (staff only)."
+
+##### Schedule 6: Daily nudge to staff → `#whimsey-of-the-day` at 14:00 IST
+
+"📌 Time for today's Whimsey of the Day! Pick one and post."
+
+##### Schedule 7: Weekly community contributor recognition → `#momentum-team-pulse` Mon 12:00 IST
+
+Embed listing top 3 message-count + top 3 reaction-receivers + top 3 thread starters from past week. Use this to pick a "Whimsey of the Week" hero.
+
+##### Schedule 8: Weekly server stats refresh → `#momentum-server-stats` Mon 09:00 IST
+
+Pinned embed with current totals. Carl-bot edits the pinned embed in place (so the channel stays clean — only one always-current message).
+
+##### Schedule 9: Hourly bot health check → `#audit-bots`
+
+Every hour at :00, Carl-bot posts "✅ Carl-bot heartbeat — all systems nominal." If you don't see this for > 90 minutes, Carl-bot is offline → see Crisis Scenario 33.9.
+
+#### 34.3.7) Auto-slowmode
+
+**Dashboard → Auto Slowmode → Enable on:**
+- `#general-chat` — trigger at 30 msg/min, set to 5s slowmode
+- `#whimsey-talk` — trigger at 30 msg/min, set to 5s slowmode
+- `#trading-post` — trigger at 20 msg/min, set to 10s slowmode
+- `#support` — trigger at 20 msg/min, set to 10s slowmode
+
+#### 34.3.8) Welcome system
+
+**Dashboard → Welcome → Configure:**
+- DM new joiners: "Welcome to WHIMSEY! Read `#access-info` and verify in `#verify` to unlock the server. The team will NEVER DM you first. 💗"
+- After they get `Verified 🩵` role: post a welcome card in `#welcome` with their avatar + "Welcome to WHIMSEY, {user}! 🩵"
+- After they get `Holder 🌌` role: post a celebration in `#holder-chat` "🎉 {user} is now a Holder! Welcome to the family 🌌"
+
+#### 34.3.9) Reaction roles for opt-in pings
+
+**Dashboard → Reaction Roles → Create panel in `#roles`:**
+
+```
+Pick the pings you want:
+🔔 — Announcement Pings
+🎉 — Giveaway Pings
+🗳️ — Poll Pings
+🧑‍🎨 — Fan Artist
+🛒 — Trader Pings
+```
+
+Each emoji maps to a self-assigned role. Admin can `@Announcement Pings` instead of `@everyone` for non-critical updates.
+
+#### 34.3.10) Custom Carl-bot tags (team productivity)
+
+**Dashboard → Tags → Create:**
+
+| Tag | What it posts |
+|---|---|
+| `?rules` | Quick rules summary embed |
+| `?scam` | Scam-warning template (for `#scam-alerts` use) |
+| `?verify` | Verify instructions |
+| `?holder` | Holder-verify instructions |
+| `?stats` | Live stats summary |
+| `?snapshot` | Pulls latest from `#momentum-holder-snapshot` |
+| `?lockdown #channel` | Locks the channel (Send Messages = ❌ for @everyone) |
+| `?unlock #channel` | Reverses lockdown |
+| `?safety` | Reposts the "team will NEVER DM you" warning |
+| `?roadmap` | Reposts the latest roadmap pin |
+
+---
+
+### 34.4) AUTH — VERIFICATION AUTOPILOT
+
+Auth is a one-purpose bot. Set it once, then forget it.
+
+#### 34.4.1) Setup
+1. Invite Auth via its official site (be careful — there are multiple bots called "Auth"; use the verified one with the highest member count).
+2. Grant ONLY: View Channels, Send Messages, Embed Links, Manage Roles.
+3. Move Auth role to position **#4** in role hierarchy (under Carl-bot, above Collab.Land).
+4. Auth role MUST be ABOVE `Verified 🩵` so it can grant that role.
+
+#### 34.4.2) Configure the verify panel
+
+In `#verify`, Auth's slash command: `/setup`
+- Verified role: `Verified 🩵`
+- Verification type: Captcha (NOT just a button — captcha stops bots cold)
+- Captcha difficulty: Medium
+- Failure action: Kick after 3 failed attempts
+- Success message: "🩵 Verified! Welcome to WHIMSEY — explore away."
+
+#### 34.4.3) Anti-bot extras
+
+- Enable: account-age check (block accounts < 1 day old from even attempting)
+- Enable: avatar check (block accounts with default avatar from verifying — optional, slightly aggressive)
+- Enable: send verification log to `#audit-mod-actions`
+
+---
+
+### 34.5) COLLAB.LAND — HOLDER VERIFICATION AUTOPILOT
+
+#### 34.5.1) Setup
+
+1. Invite Collab.Land from collab.land/discord. They'll walk you through their guided setup.
+2. Move Collab.Land role to position **#5** (under Auth, above Ticket Tool).
+3. Must be ABOVE `Holder 🌌` so it can grant that role.
+
+#### 34.5.2) Configure the token gate
+
+In Collab.Land's Command Center:
+- Add your $CNDY contract address.
+- Token type: ERC-721 (Ethereum) / SPL (Solana) / etc — match your chain.
+- Minimum balance: 1
+- Role to grant: `Holder 🌌`
+- Re-check frequency: every 4 hours (catches sales/transfers within 4h max)
+- Verification channel: `#holder-verify`
+- Welcome message: "🌌 Wallet verified — welcome, Holder."
+- Failure message: "We couldn't find $CNDY in this wallet. Buy at [marketplace], then re-verify here."
+
+#### 34.5.3) Logging
+
+- Send all wallet-verification events to `#audit-wallet-verifications`
+- Send all role-grant/revoke events to `#audit-holder-changes`
+
+#### 34.5.4) Backup & resilience
+
+- Weekly: export the holder→Discord-ID mapping from Collab.Land dashboard. Save to a private team Drive folder. This is your insurance policy if Collab.Land ever has data loss (Crisis 33.4).
+
+---
+
+### 34.6) TICKET TOOL — SUPPORT DESK AUTOPILOT
+
+#### 34.6.1) Setup
+
+1. Invite Ticket Tool. Move role to position **#6**.
+2. In Ticket Tool dashboard → Add panel to `#open-tickets`.
+
+#### 34.6.2) Configure the ticket panel
+
+- Buttons: `[General Question] [Wallet / Holder Issue] [Scam Report] [Bug / Server Issue]`
+- Each button creates a private channel inside `🎫 | TICKETS` category.
+- Auto-assign to: `Moderator ☁️`
+- Auto-greeting message in the new ticket: "Hi! A team member will help you shortly. Please describe your issue in detail. 💗"
+- Auto-close: if no member response for 48h, ask "Still need help?" — if no answer in another 24h, auto-close.
+- Auto-transcript: when closed, post full transcript to `#ticket-logs` AND a one-line summary to `#audit-tickets`.
+
+#### 34.6.3) Pre-typed responses (saves the team typing)
+
+In Ticket Tool → Saved Replies → add:
+- "I-need-wallet" → "Please share your wallet address (just the public 0x... address, NEVER your seed phrase) so we can verify your holder status."
+- "Scam-confirmed" → "Confirmed scam. Please don't sign any transaction. Move remaining assets to a fresh wallet. Revoke approvals at revoke.cash."
+- "Closing-no-response" → "Closing this ticket since we haven't heard back. Re-open anytime via `#open-tickets`. 💗"
+
+---
+
+### 34.7) TIERED ALERT SYSTEM — WHEN BOTS PING HUMANS
+
+The whole point of autopilot is: **bots handle 99% of events silently. Bots only ping humans for things that actually need a human.**
+
+Configure these alert tiers in Carl-bot:
+
+#### Tier 1: Silent (no ping, just log)
+
+These events log to audit channels but never ping anyone:
+- Every message edit / delete
+- Every join / leave
+- Every role grant by a bot
+- Every channel position move
+- Every emoji/sticker change
+- Every voice activity
+- Every standard AutoMod hit (anti-caps, anti-spam single user)
+
+#### Tier 2: Notify Mods (ping `@Moderator`)
+
+Bots ping `@Moderator` (a notification, not a crisis):
+- Banned-words filter triggered (`#audit-scam-watch`)
+- Suspicious link from a member (`#audit-scam-watch`)
+- New ticket opened in `#open-tickets`
+- Same user gets 3+ AutoMod strikes in a day
+- Member with `Holder 🌌` role gets timed out (something might be wrong)
+- A new bot/integration gets added to the server
+
+Configure: in Carl-bot → AutoMod → each rule → "Notify role: @Moderator"
+
+#### Tier 3: Wake Admins (ping `@Admin`)
+
+Bots ping `@Admin` (this is "wake me up if I'm asleep"):
+- Anti-raid triggered (10+ joins in 60s)
+- A mod issued > 5 bans in 60s (Crisis 33.3 trigger)
+- A channel was deleted (anyone)
+- A role with permissions was created or its permissions changed (anyone)
+- A webhook was created in a non-momentum channel
+- A bot/integration was REMOVED from server
+- Server-level settings changed (verification level, AutoMod rules, vanity URL)
+- Carl-bot itself loses its Manage Server permission
+- Any role above `Verified 🩵` is granted to a member who didn't have it before
+
+Configure: in Carl-bot → Logging → each event → "Mention role: @Admin"
+
+#### Tier 4: All-hands (ping `@everyone` in `#staff-chat`)
+
+Reserved for the absolute worst:
+- Mass-ban event (> 20 bans in 5 min by a single account — possible compromised admin)
+- Server boost level dropped from 3 to 0 (you lost vanity URL)
+- All audit channels stopped receiving events for > 10 minutes (logging is broken)
+
+This tier should fire MAYBE once a year. If it's firing more, lower its sensitivity.
+
+---
+
+### 34.8) AUDIT-CHANNEL HEARTBEAT MONITORING (so you know your eyes are open)
+
+The audit system is your nervous system. If it stops working silently, you're blind. Add this monitoring:
+
+1. Carl-bot Schedule → every hour at :00, post `✅ Heartbeat` in `#audit-mod-actions`.
+2. Carl-bot AutoMod custom rule → if `#audit-mod-actions` hasn't received a message in 90 minutes, ping `@Admin` in `#staff-chat` with: `🚨 #audit-mod-actions has been silent for >90 min — Carl-bot may be offline. Check status.`
+3. Same for `#audit-messages` (which should always have constant traffic).
+
+This means: even if Carl-bot dies, you find out within 90 minutes — automatically.
+
+---
+
+### 34.9) THE "WHEN HUMANS ARE GENUINELY NEEDED" CHECKLIST
+
+After all the above is configured, here are the ONLY things humans need to do regularly:
+
+| Task | Frequency | Who | Time required |
+|---|---|---|---|
+| Run `/list-holders` and post snapshot | Daily | Any mod | 2 min |
+| Read `#momentum-daily-recap` | Daily | Admin | 30 sec |
+| Read `#momentum-weekly-recap` | Weekly | Admin + mods | 2 min |
+| Respond to `#open-tickets` | As they come | Mods | varies |
+| Post in `#announcements` | When there's news | Admin only | varies |
+| Pick "Whimsey of the Week" from `#momentum-team-pulse` | Weekly | Admin | 2 min |
+| Review `#audit-mod-actions` for any anomalies | Weekly | Admin | 5 min |
+| Review `#audit-server` for any unauthorized server changes | Weekly | Admin | 2 min |
+| Export Collab.Land holder→Discord-ID backup | Weekly | Admin | 2 min |
+| Quarterly: tune AutoMod rules based on `#audit-automod` false-positive rate | Quarterly | Admin | 30 min |
+| Crisis response when a Tier 3 or Tier 4 ping fires | As needed | Admin | varies (Section 33) |
+
+**Total weekly human time required: ~30 minutes.** The bots do the rest.
+
+---
+
+### 34.10) PRE-FLIGHT VERIFICATION — TEST THE AUTOPILOT BEFORE LAUNCH
+
+Before you publish your invite link to Twitter, do this 30-minute test with a second Discord account:
+
+1. **Verify flow:** Join with second account → land in `#access-info` → click verify in `#verify` → captcha → get `Verified 🩵` → see the rest of the server.
+   - ✅ Welcome card posted in `#welcome`
+   - ✅ Join logged in `#audit-joins-leaves`
+   - ✅ Role grant logged in `#audit-role-changes`
+
+2. **Holder flow:** Use Collab.Land `/connect` → verify a wallet that holds $CNDY → get `Holder 🌌`.
+   - ✅ Verification logged in `#audit-wallet-verifications`
+   - ✅ Role grant logged in `#audit-holder-changes`
+   - ✅ Celebration posted in `#holder-chat`
+
+3. **AutoMod test:** Post "free mint click here" in `#general-chat`.
+   - ✅ Message deleted within 2 seconds
+   - ✅ Logged in `#audit-scam-watch`
+   - ✅ Mods pinged via Tier 2
+
+4. **Anti-spam test:** Post 6 messages in 3 seconds.
+   - ✅ You get 10-min timeout
+   - ✅ Logged in `#audit-scam-watch`
+
+5. **Anti-impersonator test:** Change second-account nickname to "WHIMSEY Support".
+   - ✅ Auto-reverted within 5 seconds
+   - ✅ Logged in `#audit-nicknames` AND `#audit-mod-actions`
+
+6. **Ticket test:** Click `[General Question]` in `#open-tickets`.
+   - ✅ Private channel created in `🎫 | TICKETS`
+   - ✅ Greeting message posted
+   - ✅ Mods pinged via Tier 2
+   - Close the ticket → ✅ transcript in `#ticket-logs` + summary in `#audit-tickets`.
+
+7. **Schedule test:** Wait until 23:55 IST (or temporarily set a test schedule for 1 minute from now).
+   - ✅ Daily recap posts in `#momentum-daily-recap`
+
+8. **Heartbeat test:** Confirm Carl-bot heartbeat ✅ posted at last hour mark in `#audit-mod-actions`.
+
+If ALL 8 pass — your autopilot is fully live. Launch with confidence. ❄️💗
+
+---
+
+### 34.11) THE GOLDEN RULE OF AUTOPILOT
+
+**The bots are silent partners. They never sleep. They never forget. They never get angry. But they also never have judgment.**
+
+That's why every Tier 3 and Tier 4 ping in section 34.7 needs a human. The bots flag, the human decides. The bots execute, the human reviews. The bots report, the human acts on the insight.
+
+When this loop is healthy, the team can be away for 12 hours and the server is still safe, growing, and momentum-tracked. When you come back online, you read 1 daily recap, scan 1 audit channel for Tier 3+ events, and you're caught up in 5 minutes.
+
+That is what "the bots manage the server on our behalf" actually looks like in practice. 💗❄️🌌🩵
+
