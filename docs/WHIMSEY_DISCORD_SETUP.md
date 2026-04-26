@@ -32,6 +32,143 @@ Each permission is a **three-state toggle**:
 
 ---
 
+## 📖 THE 4 PHASES — WHICH SECTIONS TO READ vs WORK ON 🌷
+
+This document is long because it's complete. But you don't do everything at once. Here's exactly what to do, when, and how long it takes. Follow the phases in order — don't jump ahead. ❄️
+
+### 🅰️ PHASE A — READ ONLY (don't touch Discord yet) — ~1.5 hours
+
+The goal of this phase is **understanding**. Sit back, read with a coffee. Don't open Discord. Just absorb how the server is going to work. If something is confusing, re-read it — but don't try to "do" it yet.
+
+| Section | What it is | Time |
+|---|---|---|
+| Top intro + "How To Read This Document" | The legend (ON/OFF, Allow/Deny/Neutral, priority order) | 5 min |
+| Section 2 — The Member Journey | A story walk-through: what a brand-new visitor sees vs what a verified holder sees | 10 min |
+| Section 4 — Role Hierarchy | The vertical order of roles (this is the spine of everything) | 5 min |
+| Sections 5–9 — Role overviews (just skim, don't toggle) | Get a feel for what each role can/can't do | 15 min |
+| Section 10 — The new private categories | Understand why we need STAFF, AUDITS, MOMENTUM, TICKETS | 10 min |
+| Section 28 — Carl-bot Playbook (skim) | What the autopilot brain does when you're away | 15 min |
+| Section 33 — Crisis Playbook (skim) | The 22 disaster scenarios and how the doc handles them | 15 min |
+| Section 34 — Bot Autopilot overview (skim only 34.1, 34.6, 34.12) | The 24/7 operating model | 10 min |
+
+**End of Phase A:** You should be able to tell a friend "here's how my Discord server will work" in plain English. **You haven't touched Discord yet — that's correct.**
+
+---
+
+### 🅱️ PHASE B — BUILD THE SERVER STRUCTURE (this is the real "work") — ~8 to 10 hours
+
+**Recommendation:** Split this across **2 sittings of 4–5 hours each**, OR **3 sittings of ~3 hours**. Don't try to do it in one day — your eyes will glaze over and you'll make mistakes. Discord is unforgiving when you misclick a permission.
+
+This is **Steps 1 through 18 in section 1** — the 18-step setup order. Tick each box as you go. Below is the time per step:
+
+| Step | What you're doing | Section to use | Time |
+|---|---|---|---|
+| Step 1 | Apply server-wide safety (AutoMod, 2FA, verification level, onboarding) | Section 3 | 15 min |
+| Step 2 | Create the 4 user roles (just names + colors, no permissions yet) | Sections 5–8 | 10 min |
+| Step 3 | Drag roles into vertical order | Section 4 | 5 min |
+| Step 4 | Configure `Admin 💗` (just turn ON Administrator — done) | Section 5 | 2 min |
+| Step 5 | Configure `Moderator ☁️` (this is the longest role — many toggles) | Section 6 | 25 min |
+| Step 6 | Configure `Holder 🌌` | Section 7 | 15 min |
+| Step 7 | Configure `Verified 🩵` | Section 8 | 15 min |
+| Step 8 | **Lock down `@everyone`** (the most important step in the entire doc) | Section 9 | 30 min |
+| Step 9 | Create 4 new private categories + all channels inside (~50 channels total) | Section 10 + 24/24A/24B/25 | 60 min |
+| Step 10 | Apply category-level permissions to **all 12 categories** | Sections 16–25 | 90 min |
+| Step 11 | Per-channel overrides (only the special channels listed) | Section 26 | 60 min |
+| Step 12 | Invite Auth bot, position role, configure | Section 11 | 15 min |
+| Step 13 | Invite Collab.Land, position role, configure | Section 12 | 20 min |
+| Step 14 | Invite Ticket Tool, position role, configure (ticket panel + categories) | Section 13 | 30 min |
+| Step 15 | Invite Carl-bot, position role, configure base settings | Section 14 | 30 min |
+| Step 16 | Confirm final bot role positioning matches section 15 | Section 15 | 5 min |
+| Step 17 | Pre-launch test with a second Discord account | Section 29 | 30 min |
+| Step 18 | Polish tasks (welcome message, banner, vanity URL, etc.) | Section 30 | 30 min |
+
+**Phase B subtotal: ~8 hours of focused work.** Add 2 hours of "I-need-a-break" buffer = ~10 hours.
+
+**End of Phase B:** Your server is ALIVE and SAFE. You could open it to the public right now and nothing would leak. But the bots aren't on autopilot yet — that's Phase C.
+
+---
+
+### 🅲 PHASE C — TURN ON THE 24/7 AUTOPILOT (the bots that babysit while you sleep) — ~4 to 5 hours
+
+This phase is what makes WHIMSEY feel "always alive" even when you and the team are offline. Spread across **2 sittings of ~2 hours**.
+
+| Step | What you're doing | Section to use | Time |
+|---|---|---|---|
+| C-1 | Configure all 30+ Carl-bot event-bindings (welcomes, joins, leaves, role-pings, etc.) | Section 28 | 90 min |
+| C-2 | Schedule the 9 Carl-bot momentum reports (daily recap, weekly digest, monthly report, etc.) | Section 28.6 / 34.3 | 45 min |
+| C-3 | Invite + configure the 5th core bot (NFT Tracker for $CNDY on-chain feed) | Section 32 + 34.7 | 30 min |
+| C-4 | Set up the Tiered Alert System (Tier 1/2/3/4 — when bots ping humans) | Section 34.8 | 30 min |
+| C-5 | Set up Heartbeat Monitoring (so you know if the autopilot ever dies) | Section 34.9 | 15 min |
+| C-6 | Set up cross-bot rules (NFT Tracker → Carl-bot whale alerts, dump alerts) | Section 34.7.4 | 20 min |
+| C-7 | Run pre-flight verification — the 8-test autopilot smoke test | Section 34.11 | 30 min |
+
+**Phase C subtotal: ~4 hours 20 min** of focused work. Add buffer = ~5 hours.
+
+**End of Phase C:** The bots are now your silent partners. They never sleep, never forget, never get angry. You're truly launch-ready. 💗
+
+---
+
+### 🅳 PHASE D — KEEP THIS DOC AS A REFERENCE FOREVER (do NOT read end-to-end) — lifetime
+
+After launch, these sections are **lookup-only**. You don't read them — you search them when something specific comes up.
+
+| Section | When to open it |
+|---|---|
+| Section 31 — Permission Glossary | Whenever Discord shows a permission name you've forgotten what it means |
+| Section 33 — Crisis Playbook | When something goes wrong (raid, scammer, leak, mod conflict, bot offline). Find the matching scenario, follow the steps. |
+| Section 34.10 — "Humans Needed" Checklist | Once a week, to remind the team what their ~30 min/week of human work is |
+| Section 26 — Per-Channel Overrides | Whenever you add a new channel and need to know what overrides to apply |
+| Section 28 — Carl-bot Playbook | Whenever you want to add or change an automated rule |
+
+**You will open these sections dozens of times over the life of the server. That's the right way to use them.**
+
+---
+
+### ⏱️ TOTAL TIME SUMMARY
+
+| Phase | What it is | Total time |
+|---|---|---|
+| 🅰️ Phase A — READ | Understand how it all works | **~1.5 hours** |
+| 🅱️ Phase B — BUILD | The 18-step setup of the server itself | **~8–10 hours** (split over 2–3 sittings) |
+| 🅲 Phase C — AUTOPILOT | Configure the bot brain that runs 24/7 | **~4–5 hours** (split over 2 sittings) |
+| 🅳 Phase D — REFERENCE | Lookup-only forever | **0 hours upfront** (used over time) |
+| | | |
+| **GRAND TOTAL TO LAUNCH** | Phase A + B + C | **~14 to 17 hours** of focused work |
+
+**Realistic calendar plan for a busy team of 1–2 people:**
+- **Week 1, Day 1 (evening, 1.5 hrs):** Phase A — read with coffee.
+- **Week 1, Day 2 (evening, 4 hrs):** Phase B Steps 1–10.
+- **Week 1, Day 3 (evening, 4 hrs):** Phase B Steps 11–18.
+- **Week 1, Day 4 (evening, 2 hrs):** Phase C C-1 + C-2 (Carl-bot config).
+- **Week 1, Day 5 (evening, 2.5 hrs):** Phase C C-3 through C-7 (NFT Tracker + alerts + heartbeat + smoke test).
+- **Week 1, Day 6:** Soft launch with friends only. Watch the audit channels for 24 hours.
+- **Week 1, Day 7:** Public launch. 🌷💗❄️🌌🩵
+
+---
+
+### 🚦 HOW TO TELL WHICH MODE A SECTION IS FOR — VISUAL LEGEND
+
+When you flip to any section in the doc, look at its number to know its mode:
+
+- **Sections 1, 3** = ✅ **DO** (action steps with checkboxes — open Discord and tick them off)
+- **Sections 2, 4** = 📖 **READ** (overview — sit back and absorb)
+- **Sections 5–9** = ✅ **DO** (toggle role permissions in Server Settings → Roles)
+- **Section 10** = ✅ **DO** (create categories + channels)
+- **Sections 11–15** = ✅ **DO** (invite + configure each bot)
+- **Sections 16–25** = ✅ **DO** (apply category-level permission tables)
+- **Section 26** = ✅ **DO** (per-channel overrides — only the listed channels)
+- **Section 27** = ✅ **DO** (paste exact verification panel content)
+- **Section 28** = ✅ **DO** (configure Carl-bot rules — autopilot brain)
+- **Sections 29, 30** = ✅ **DO** (test + polish before launch)
+- **Section 31** = 📚 **REFERENCE** (look up only — never read end-to-end)
+- **Section 32** = ✅ **DO** (invite + configure NFT Tracker, the 5th bot)
+- **Section 33** = 📚 **REFERENCE** (only when something goes wrong)
+- **Section 34** = ✅ **DO** for 34.1–34.7 (autopilot config), then 📚 **REFERENCE** for 34.8–34.12 (alert system definitions you re-read whenever you tune sensitivity)
+
+If you ever feel lost mid-section, scroll back to this legend. 🩵
+
+---
+
 ## TABLE OF CONTENTS
 
 1. The 18-step setup order (do these in this exact order)
