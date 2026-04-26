@@ -169,11 +169,57 @@ If you ever feel lost mid-section, scroll back to this legend. 🩵
 
 ---
 
+## 🌷 IMPORTANT — PRE-MINT TIMING (read this first!) 💗
+
+**The WHIMSEY collection mint is in ~15 days. The collection is NOT live on-chain yet.**
+
+That's actually perfect — the Discord server build is part of the pre-mint build process. Here's what that means for this checklist:
+
+### ✅ What you CAN do RIGHT NOW (the next 15 days, before mint)
+
+**99% of this checklist is pre-mint work.** Do it all now:
+
+- ✅ All of **Phase B** (server structure, roles, permissions, channels, categories, lockdown).
+- ✅ All of **Phase C** EXCEPT one item — the NFT Tracker (5th bot).
+- ✅ All Carl-bot autopilot rules — they're agnostic to whether the collection has minted yet.
+- ✅ All ticket-tool, AutoMod, audit-channel, and momentum-channel setup.
+- ✅ All daily/weekly/monthly Carl-bot scheduled reports — they'll start collecting community engagement data immediately.
+- ✅ All pre-flight smoke tests EXCEPT the on-chain test in C-3.11.
+
+### ⏸️ What WAITS until mint day (1 single item — but you can prep it now)
+
+The **NFT Tracker bot (Step C-3)** can be **invited and configured now**, but it won't have anything real to track until mint goes live. You have 2 options:
+
+**Option 1 (recommended):** Invite + configure NFT Tracker now using your **placeholder contract address** (or your testnet contract if you have one). On mint day, simply update the contract address in the bot dashboard — everything else is already wired up. Total post-mint work: ~5 minutes.
+
+**Option 2:** Skip Step C-3 entirely until mint day. Then do all 11 sub-steps on launch day.
+
+→ **Pick Option 1.** You don't want to be debugging bot setup at 3am on mint day. Set it up now with placeholders, swap the contract on mint day. ❄️
+
+### 📅 The new realistic 15-day calendar
+
+Here's how the work fits cleanly into the next 15 days:
+
+| Day | What you do | Hours |
+|---|---|---|
+| **Days 1–2** | Phase A (read everything) + Phase B Steps 1–8 (safety, roles, lockdown) | ~5 hrs |
+| **Days 3–5** | Phase B Steps 9–11 (categories, channels, all 12 permission tables, per-channel overrides) | ~4 hrs |
+| **Days 6–7** | Phase B Steps 12–18 (4 bots invite + configure, polish, pre-launch test) | ~3 hrs |
+| **Days 8–10** | Phase C Steps C-1, C-2 (all Carl-bot bindings + 9 scheduled reports) | ~2.5 hrs |
+| **Days 11–12** | Phase C Steps C-3 (NFT Tracker with placeholder contract), C-4, C-5, C-6 (alerts + heartbeat) | ~2 hrs |
+| **Day 13** | Phase C Step C-7 (8-test pre-flight smoke test) | ~30 min |
+| **Day 14** | Soft launch — open server to ~20 close friends + community alphas. Watch audit channels for 24 hrs. Fix anything that surfaces. | passive |
+| **Day 15 (MINT DAY)** | Update NFT Tracker contract address (5 min). Open invite link to public. Watch the autopilot run. 🌷💗❄️🌌🩵 | ~5 min + vibes |
+
+**You have plenty of time.** Don't rush. Don't skip steps. The autopilot is what makes this server feel "always alive" on mint day even when you've been awake for 36 hours straight.
+
+---
+
 ## ✅ THE MEGA WORKING-PHASE CHECKLIST — TICK EVERY BOX 💗
 
 This is the granular, hand-held version of Phase B + Phase C. Every line is one micro-action. Tick it off as you go. If you have to stop mid-day, you'll know exactly where to resume tomorrow.
 
-> 💡 **Tip:** Print this section, OR copy it into a Notion/Apple Notes page so you can tick the boxes outside the doc itself.
+> 💡 **Tip:** This doc is the master reference, but for actually ticking off boxes, use the **interactive checklist app** (built as a separate piece — your progress saves automatically to your browser, so you can close the tab and come back tomorrow without losing anything). 🩵
 
 ---
 
