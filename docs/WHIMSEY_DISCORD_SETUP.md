@@ -2371,3 +2371,511 @@ It's a one-purpose appliance. So the "4 bots is the limit" instinct doesn't real
 ### 32.6) If you decide NOT to add it
 
 That's totally fine. Then `#momentum-collection-feed` becomes a manual post-board where the team drops noteworthy mints/sales/whale moves (use a screenshot from OpenSea / Magic Eden + a one-line caption). Set a Carl-bot scheduled message: every Monday 12:00 IST, "📊 Team — drop this week's notable on-chain moves in this channel." That keeps the channel useful even without automation.
+
+---
+
+## 33) THE WHIMSEY CRISIS PLAYBOOK — EVERY DISASTER, EVERY FIX
+
+This is the single most important section for the team. Pin this section's summary in `#staff-chat` and `#staff-announcements`. When something goes wrong, panic kills servers. A playbook saves them.
+
+Every scenario below follows the same structure: **what's happening → first 60 seconds → next 5 minutes → next hour → post-mortem.** No improvisation. Just execute.
+
+---
+
+### 33.0) THE ONE-PAGE EMERGENCY SUMMARY (pin this)
+
+> 🚨 **WHIMSEY CRISIS QUICK CARD**
+>
+> **Step 1 (always first):** Post in `#staff-chat` — "🚨 INCIDENT: [type] — handling, do not act independently."
+> **Step 2:** Identify the playbook below (33.1 – 33.20).
+> **Step 3:** Execute the 60-second action.
+> **Step 4:** Screenshot everything to `#audit-mod-actions`.
+> **Step 5:** When stable, post a public update in `#announcements`.
+>
+> **Hard rules during ANY crisis:**
+> - 🩵 NEVER DM members "from the team" — even to help. Always reply in-channel.
+> - 💗 Only Admin can ban; mods can timeout up to 24h.
+> - ☁️ Mods do NOT delete audit logs, ever.
+> - 🌌 If unsure, default to LOCKDOWN, not action. You can always unlock later.
+> - 🚫 Never share screenshots of incidents publicly until 24h have passed.
+>
+> **Emergency lockdown command (have this ready):**
+> Carl-bot: `?lockdown #channel-name` — locks the channel for `@everyone`. `?unlock #channel-name` to reverse.
+> Server-wide lockdown: change `@everyone` Send Messages to ❌ Deny at the **server level** (Server Settings → Roles → @everyone).
+
+---
+
+### 33.1) Scenario: A scammer posts a fake mint link in `#general-chat`
+
+**What's happening:** A wallet-drainer URL was posted, possibly with a fake "official announcement" tone. Members may already be clicking.
+
+**First 60 seconds:**
+1. Delete the message immediately. Right-click → Delete.
+2. Timeout the poster for 24 hours. Right-click their name → Timeout → 1 day → reason: "Scam link."
+3. Post in `#general-chat`: "🚨 A scam link was just removed. We have NEVER announced anything outside `#announcements`. Do not click any link DM'd or posted by non-staff."
+
+**Next 5 minutes:**
+4. Check `#audit-messages` — was the scam URL edited from a benign message? If yes, the account is likely a sleeper.
+5. Search the URL in `#audit-messages` to see if it was posted in any other channel before being caught. Delete those too.
+6. Add the URL to Carl-bot's banned-words filter so it's auto-deleted on re-post.
+7. Add the URL to Discord native AutoMod's keyword filter as backup.
+
+**Next hour:**
+8. Post in `#scam-alerts`: "📢 Scam alert: a wallet-drainer link impersonating [thing it impersonated] was attempted today. Removed. Members affected: [count if any reported]. As always — the team will NEVER DM you, and all real announcements only happen in `#announcements`."
+9. Post a screenshot of the deleted message (with the URL censored) in `#audit-scam-watch` for the team's records.
+10. If the scammer's account was < 7 days old, ban (don't just timeout) — and use Discord's "Also delete messages from the past 7 days" option.
+
+**Post-mortem:**
+11. In `#staff-chat` next day: was the scammer a verified member, an unverified joiner, or a Holder? If Holder — that's a compromised wallet account, escalate to Admin and re-trigger Collab.Land verification on that wallet.
+
+---
+
+### 33.2) Scenario: Mass raid (50+ accounts join in 60 seconds and start posting)
+
+**What's happening:** A coordinated raid. Likely from a raid server. The accounts are usually < 24h old, no avatar, default Discord username.
+
+**First 60 seconds:**
+1. **Server lockdown.** Server Settings → Safety Setup → set Verification Level to **Highest** (must have verified phone). This stops new joiners cold.
+2. Server Settings → Roles → `@everyone` → Send Messages → ❌ Deny. The whole server goes read-only.
+3. Post in `#staff-chat`: "🚨 RAID — server locked. Admin handling."
+
+**Next 5 minutes:**
+4. In Server Settings → Members → sort by "Join Date" descending. You see the raid wave at the top.
+5. Multi-select all raiders (the ones with default avatars + recent join + no roles) → Ban → "Also delete messages from past 24 hours."
+6. If raid is too large to manually select, use Carl-bot: `?ban [user1] [user2] ...` or use a pre-saved Carl-bot command.
+7. Re-check `#audit-joins-leaves` to confirm raid wave is over (no new joins for 60+ seconds).
+
+**Next hour:**
+8. Once raid is dead, lift the @everyone Send Messages deny.
+9. Lower verification level back to Medium (or whatever your normal is).
+10. Post in `#announcements`: "🛡️ A small raid was contained at [time] — server is back to normal. Thanks for your patience, no member data or wallets were affected."
+11. In `#audit-server` you'll see the verification-level changes auto-logged. That's your forensic timestamp.
+
+**Post-mortem:**
+12. Check `#audit-invites` — which invite was used? If a single invite brought all raiders, delete that invite immediately (it's been leaked to a raid server).
+13. Going forward, use Carl-bot's auto-anti-raid: "if 10+ joins in 60s → auto-lockdown + ping Admin."
+
+---
+
+### 33.3) Scenario: A moderator's account got hacked
+
+**What's happening:** A mod's behaviour suddenly changes — they're banning people, deleting channels, posting scam links, or DMing members.
+
+**First 60 seconds:**
+1. **Admin only:** Server Settings → Roles → take `Moderator ☁️` away from that mod. Right-click their name → Roles → uncheck Moderator.
+2. Timeout the account for 28 days (Discord max). This stops further damage instantly.
+3. Post in `#staff-chat`: "🚨 [mod's name]'s account compromised. Powers revoked. Real [name] please contact Admin via [out-of-band channel — text/WhatsApp/etc]."
+
+**Next 5 minutes:**
+4. In `#audit-mod-actions` — scroll back to when the weird behaviour started. Identify EVERY action they took (bans, kicks, deletes, role grants).
+5. **Reverse them.** Unban every person they banned. Restore every role they removed.
+6. If they deleted channels, check Discord's server audit log (Server Settings → Audit Log) to see what was deleted — Discord can't restore channels but you can recreate them with the same name+permissions from this doc.
+
+**Next hour:**
+7. Once the real mod has recovered their account (changed Discord password, enabled 2FA, signed out all sessions), have them prove identity in `#staff-chat` by posting a pre-agreed phrase only the team knows.
+8. Re-grant `Moderator ☁️` only after they confirm 2FA is enabled.
+9. Audit all webhooks (`#audit-bots`) created during the compromise window — delete any unfamiliar ones.
+
+**Post-mortem:**
+10. Make 2FA mandatory for ALL staff. Server Settings → Safety Setup → Require 2FA for moderation.
+11. Add a Carl-bot rule: if any mod issues > 5 bans in 60 seconds, auto-strip the Moderator role and ping @Admin.
+
+---
+
+### 33.4) Scenario: Collab.Land breaks — Holders are losing their `Holder 🌌` role
+
+**What's happening:** Members who genuinely hold $CNDY are suddenly seeing the Holder channels disappear. They're DMing/pinging the team.
+
+**First 60 seconds:**
+1. Check Collab.Land's status page (status.collab.land). If their service is down, this is global, not your problem.
+2. Post in `#holder-announcements`: "🌌 Heads up — Collab.Land is having an issue verifying wallets right now. Your Holder role may temporarily disappear. Don't sell anything! Don't move wallets! We'll restore as soon as their service is back. Updates here."
+
+**Next 5 minutes:**
+3. **DO NOT** start manually granting `Holder 🌌` to people who claim to be holders. That bypasses the verification logic and creates real-world fraud risk.
+4. In `#audit-holder-changes` — confirm whether Collab.Land mass-revoked roles (you'll see a wave of "role removed" events from the Collab.Land bot in a short window). That confirms it's a bot bug, not real holders selling.
+
+**Next hour:**
+5. Wait for Collab.Land to recover. Re-trigger their re-verification command (`/connect` or as per their dashboard) — usually they auto-restore.
+6. Post in `#holder-announcements`: "✅ Collab.Land is back. If your role didn't auto-restore, head to `#holder-verify` and click the verify button again."
+
+**Post-mortem:**
+7. Pin a "Collab.Land downtime" template message in `#staff-chat` so anyone can post the same calm response next time.
+8. Keep a backup CSV of holder→Discord-ID mapping (export weekly via Collab.Land dashboard) so you can manually reconcile if their service ever has data loss.
+
+---
+
+### 33.5) Scenario: Someone is impersonating Admin or a Mod with a copied avatar + nickname
+
+**What's happening:** A member changed their nickname and avatar to look exactly like a staff member, and is DMing holders asking for seed phrases.
+
+**First 60 seconds:**
+1. Carl-bot's anti-impersonator filter (section 28.7) should catch this automatically and revert the nickname. If the filter missed (because they used a Unicode look-alike), do it manually:
+2. Right-click impersonator → Edit Server Profile → reset nickname.
+3. Timeout for 7 days.
+
+**Next 5 minutes:**
+4. Post in `#general-chat` and `#holder-chat`: "⚠️ An account just impersonated [staff name]. We've handled it. Reminder: real staff have ONE color (Admin = 💗 Pink, Mods = ☁️ Cloud color), and the Discord role badge appears next to their name. NEVER trust a DM."
+5. Add the Unicode characters they used to Carl-bot's banned-words filter so future variants get caught.
+
+**Next hour:**
+6. DM (yes, this is the rare time you DM) any holder who interacted with the impersonator in a public channel. Confirm they didn't share anything sensitive.
+7. If anyone reports they sent funds or shared a seed phrase, escalate to Admin immediately and post a `#scam-alerts` notice (without naming the victim).
+
+**Post-mortem:**
+8. Strengthen the anti-impersonator nickname list — add every common Unicode look-alike (А for A, Е for E, О for O, etc.) to Carl-bot's filter.
+
+---
+
+### 33.6) Scenario: Discord's native AutoMod is over-flagging real members
+
+**What's happening:** AutoMod is silently deleting normal messages. Members complain in `#support` that their message "didn't go through."
+
+**First 60 seconds:**
+1. Open `#audit-automod` — see what's being flagged. Identify the rule that's too aggressive.
+2. Server Settings → AutoMod → that rule → either lower its sensitivity or add the affected words to its allowlist.
+
+**Next 5 minutes:**
+3. Post in the channel where messages were being eaten: "Sorry team — our anti-spam was too aggressive on the word [X]. Fixed. Re-post if you got blocked."
+4. In `#audit-server` you'll see the AutoMod rule edit auto-logged. That's your timestamp.
+
+**Next hour:**
+5. Run a test message yourself in a quiet channel to confirm the rule no longer triggers.
+
+**Post-mortem:**
+6. Quarterly: review `#audit-automod` to see false-positive rate. If > 10% of flags are false positives, the rule is too broad.
+
+---
+
+### 33.7) Scenario: A holder claims their wallet was drained and they think it was through Discord
+
+**What's happening:** A holder says they lost NFTs/funds and blames a Discord interaction.
+
+**First 60 seconds:**
+1. **Stay calm and supportive.** Don't argue. Open a private ticket immediately via `#open-tickets`.
+2. Post in the ticket: "We're so sorry. Let's figure this out — please answer these so we can help: (1) which wallet? (2) when did the drain happen (UTC time)? (3) which links did you click in the past 24h? (4) did you sign any transaction? (5) did anyone DM you?"
+
+**Next 5 minutes:**
+3. In `#audit-messages` — search by the holder's username in the past 24h. See what links they clicked or who they interacted with.
+4. In `#audit-joins-leaves` and `#audit-role-changes` for that user — was their account behaviour normal?
+
+**Next hour:**
+5. If the drain came from a fake link posted in your server (and you missed it), this is a 🚨 SEV-1 incident. Pull all admins into `#staff-chat`. Post a public scam alert in `#announcements` AND `#scam-alerts` even if no one else was hit.
+6. If the drain came from a phishing site they found outside Discord — provide harm-reduction: "1. Move any remaining assets to a fresh wallet right now. 2. Revoke approvals at revoke.cash. 3. Report the wallet drainer to chainabuse.com."
+7. Their `Holder 🌌` role will auto-revoke when Collab.Land sees the wallet is empty. That's intended — don't manually re-grant.
+
+**Post-mortem:**
+8. Save the ticket transcript. If multiple holders report the same scam vector in a week, you have a campaign — escalate publicly.
+
+---
+
+### 33.8) Scenario: An invite link got leaked to a known raid/bot farm
+
+**What's happening:** Sudden 5x spike in joins, but they're not raiders — they're just bot accounts inflating member count.
+
+**First 60 seconds:**
+1. Open `#audit-invites` — sort by usage. The leaked invite will be obvious (one invite suddenly used 200 times).
+2. Server Settings → Invites → delete that invite.
+
+**Next 5 minutes:**
+3. Use Carl-bot to mass-kick (not ban — they may be innocent compromised accounts) all members who joined via that invite in the last 2 hours. Carl-bot command: `?kick-by-invite [invite-code]` (if your version supports it; otherwise sort `#audit-joins-leaves` by invite and kick manually).
+4. Lock down server registration: Verification Level → High temporarily.
+
+**Next hour:**
+5. Lower verification level back to normal.
+6. Going forward, do NOT publish a permanent vanity-style invite. Use Discord's vanity URL only (Server Settings → Server Profile → Vanity URL), which can't be brute-forced and is tied to your server identity.
+7. Audit who created the leaked invite (`#audit-invites` shows creator). If it was a mod, ask them to use vanity URL only going forward.
+
+**Post-mortem:**
+8. All public-facing invites (Twitter, Linktree, website) should use ONLY the vanity URL. Personal one-off invites for KOLs/partners should expire in 24h.
+
+---
+
+### 33.9) Scenario: A bot (Carl-bot/Auth/Collab.Land/Ticket Tool) goes offline
+
+**What's happening:** A bot's name greys out. It stops responding to commands.
+
+**First 60 seconds:**
+1. Check the bot's status page (carl.gg/status, status.collab.land, etc).
+2. Post in `#staff-chat`: "🤖 [Bot name] is offline — checked their status page, [global outage / our server only]."
+
+**Next 5 minutes:**
+3. **If global outage:** wait. Post in `#announcements`: "Heads up — [bot] is having a service outage. [Affected feature] may be temporarily down. We're monitoring."
+4. **If only our server:** kick + re-invite the bot using its official invite link. Re-grant it the same role + permissions per this doc.
+
+**Next hour:**
+5. Once it's back, run a test command in `#mod-commands`.
+6. If it was Collab.Land that went down and Holders' roles are now wrong, see Scenario 33.4.
+7. If it was Auth, no new joiners can verify until it's back. Post pinned message in `#verify`: "⚠️ Verify is temporarily unavailable. Please check back in a few minutes."
+
+**Post-mortem:**
+8. Track outage frequency in `#audit-bots`. If a bot has > 3 outages a month, evaluate alternatives.
+
+---
+
+### 33.10) Scenario: Discord-wide outage (status.discord.com is red)
+
+**What's happening:** Discord itself is down. Nothing works.
+
+**First 60 seconds:**
+1. Don't try to fix anything. Discord's outages always recover on their own.
+2. Post on Twitter (your @WHIMSEY account): "Discord is having a global outage — see status.discord.com. Our server is fine, just unreachable. We'll resume normal ops as soon as Discord recovers. Don't panic-sell, don't trust DMs."
+
+**Next 5 minutes:**
+3. Stay calm on Twitter. The community will see your Twitter post and not panic.
+
+**Next hour:**
+4. When Discord recovers, post in `#announcements`: "We're back. Discord's outage didn't affect any of your roles, NFTs, or wallets — those are all on-chain and independent."
+
+**Post-mortem:**
+5. Pin a "Discord outage response" template tweet in `#staff-chat` so anyone on the team can post it next time without thinking.
+
+---
+
+### 33.11) Scenario: An admin accidentally deleted a critical channel (e.g. `#announcements`)
+
+**What's happening:** A channel with months of history is gone. Discord cannot restore deleted channels.
+
+**First 60 seconds:**
+1. Don't refresh. Don't close Discord. Open `#audit-channels` and `#audit-server` immediately to see who deleted what at exactly what time.
+2. Post in `#staff-chat`: "Channel `[name]` deleted accidentally. Recreating now from documentation."
+
+**Next 5 minutes:**
+3. Recreate the channel using THIS DOCUMENT's spec for that channel — exact name, exact category, exact permission overrides (sections 11–25 + 26.X).
+4. If it was an announcements channel, repost the most recent critical announcements (the team's Twitter / pinned tweets serve as backup).
+
+**Next hour:**
+5. Apologize publicly in `#general-chat`: "🛠️ We accidentally deleted `#[channel]` and rebuilt it. Pre-deletion message history is unfortunately lost. The pinned posts have been restored."
+
+**Post-mortem:**
+6. Add a Carl-bot rule: notify @Admin in `#audit-channels` whenever ANY channel is deleted (separate ping, not just a log entry).
+7. Going forward, every "important" channel should have its pinned messages screenshotted weekly and saved to a private team Drive folder.
+
+---
+
+### 33.12) Scenario: A holder is selling a stolen NFT they "won" in a fake giveaway
+
+**What's happening:** Someone in `#trading-post` is offering a $CNDY NFT below floor — it turns out to be stolen.
+
+**First 60 seconds:**
+1. Don't accuse publicly. Open a ticket with the seller via `#open-tickets`.
+2. Verify on-chain: the NFT's transfer history (Etherscan / Solscan). Was it received from a known scammer wallet? Was there a recent flag on it on OpenSea?
+
+**Next 5 minutes:**
+3. If confirmed stolen: remove the seller's `Holder 🌌` role manually (Collab.Land won't catch this), and remove the listing message from `#trading-post`.
+4. Post in `#trading-post`: "⚠️ A listing was just removed because the NFT was flagged as stolen on-chain. Always verify NFTs at [marketplace link] before buying P2P."
+
+**Next hour:**
+5. If the seller knowingly listed stolen, ban them.
+6. If they were a victim themselves (received it innocently), educate them. Don't ban innocent victims.
+
+**Post-mortem:**
+7. Pin in `#trading-post`: "Before any P2P trade — verify NFT history on [Etherscan/Solscan] and check OpenSea/Magic Eden for flags. WHIMSEY does NOT mediate trades."
+
+---
+
+### 33.13) Scenario: Someone leaks an unreleased team announcement (e.g. a roadmap reveal) before the official drop
+
+**What's happening:** A staff member's screenshot of `#staff-chat` is on Twitter / outside the server.
+
+**First 60 seconds:**
+1. Don't denounce on Twitter immediately. Pull all staff into a voice call.
+2. Identify the source: in `#audit-messages`, see who was online + who edited/deleted messages around the leak window.
+
+**Next 5 minutes:**
+3. Strip the suspected leaker's `Moderator ☁️` role pending investigation.
+4. Save screenshots of the leak from outside the server.
+
+**Next hour:**
+5. If you decide to release the announcement early to control the narrative, do so officially in `#announcements`.
+6. If you decide NOT to release, address it on Twitter generically: "Speculation circulating. Official news is only ever posted in our server `#announcements` channel."
+
+**Post-mortem:**
+7. Move all sensitive plans out of `#staff-chat` and into a smaller `#admin-only` channel that even mods can't see. Update sections 7–9 of this doc accordingly.
+8. Add a 24h cool-down rule: any reveal goes from `#admin-only` to `#announcements` directly, never via `#staff-chat`.
+
+---
+
+### 33.14) Scenario: A bug in a giveaway — wrong winner picked
+
+**What's happening:** Carl-bot or your giveaway bot picks a winner who shouldn't be eligible (e.g. didn't have `Holder 🌌` for a holder-only giveaway).
+
+**First 60 seconds:**
+1. Don't reroll yet. Don't DM anyone yet.
+2. Verify the winner's eligibility by checking their roles at the time the giveaway ended (`#audit-role-changes` will show this).
+
+**Next 5 minutes:**
+3. If they're truly ineligible, post publicly in `#giveaways`: "🎉 The previous winner doesn't meet the eligibility criteria (must hold `Holder 🌌` at giveaway end). Rerolling now — sorry for the confusion!"
+4. Reroll using Carl-bot.
+
+**Next hour:**
+5. DM the original winner privately (this is one of the rare okay times) to explain politely.
+6. Update giveaway template to clearly list "you must have [role] at giveaway end" — and use Carl-bot's eligibility filter feature when setting up future giveaways.
+
+**Post-mortem:**
+7. Always pin the eligibility criteria as the FIRST line of any giveaway message.
+
+---
+
+### 33.15) Scenario: Server boost runs out and you lose features (custom URL, more emojis, audio quality)
+
+**What's happening:** A booster un-boosts. Server drops a level. Vanity URL may break, emoji slots shrink.
+
+**First 60 seconds:**
+1. Check `#audit-boosts` to confirm. See who unboosted.
+2. Server Settings → Server Boost Status → see current level.
+
+**Next 5 minutes:**
+3. If you dropped to Level 0 and lost vanity URL, that link will break. Anyone using it externally will hit a 404.
+4. Post in `#announcements`: "📢 Our vanity URL `discord.gg/whimsey` is temporarily unavailable. Use [new invite link] until we're boosted again. Anyone want to boost? 💗"
+
+**Next hour:**
+5. Politely thank past boosters in `#momentum-team-pulse`.
+6. If a key feature broke, ask Holders if anyone wants to boost (no pressure). A server with 30k NFT supply almost always has someone willing.
+
+**Post-mortem:**
+7. Always keep a backup invite link distributed alongside vanity URL.
+8. Track boost expiry dates in `#momentum-server-stats` so you have ~48h warning.
+
+---
+
+### 33.16) Scenario: A doxxing attempt — someone is posting another member's real name/address
+
+**What's happening:** Personally identifying information about a community member is being posted. This is a Discord ToS violation AND potentially illegal.
+
+**First 60 seconds:**
+1. **Delete the message immediately.**
+2. **Permanent ban** the doxxer with "Also delete messages from past 7 days." No warnings. No second chances.
+
+**Next 5 minutes:**
+3. DM (this is one of the rare appropriate times) the victim: "We just removed a post that included your information. We've banned the poster. We're sorry this happened. If you'd like, we can also leave you a fresh nickname or temporarily hide your account from the server while you recover."
+4. Report the doxxer's account to Discord ToS: discord.com/safety/360044103651-Reporting-Abusive-Behavior.
+
+**Next hour:**
+5. Search `#audit-messages` for any other posts from the doxxer — delete every one of them globally.
+6. Post a generic notice in `#announcements`: "We've removed a doxxing attempt today and banned the offender. WHIMSEY has zero tolerance for sharing personal info about anyone in or outside this server."
+
+**Post-mortem:**
+7. Add the victim's real name to Carl-bot's banned-words filter (if they consent) so it can never be posted again.
+8. Consider tightening DM filters server-wide.
+
+---
+
+### 33.17) Scenario: A wallet-verification flood — 200 people trying to verify in 5 minutes
+
+**What's happening:** You just dropped a major announcement and verifications are spiking. Collab.Land is rate-limiting.
+
+**First 60 seconds:**
+1. Don't change anything. Collab.Land handles its own queue.
+2. Post in `#holder-verify`: "🌌 Lots of verifications happening right now! If yours times out, just click again in 2 minutes — don't panic."
+
+**Next 5 minutes:**
+3. Watch `#audit-wallet-verifications` — the throughput should be ~20-30/min steady. If it's totally stalled, see Scenario 33.4.
+
+**Next hour:**
+4. After the wave dies, post stats in `#momentum-holder-snapshot` for celebration: "🎉 [N] new Holders verified today!"
+
+**Post-mortem:**
+5. For future big drops, pre-warm the team in `#staff-chat` so everyone is on standby for support questions.
+
+---
+
+### 33.18) Scenario: A mod is biased / abusing their power (banning legit members for personal reasons)
+
+**What's happening:** Pattern emerges in `#audit-mod-actions` of one mod issuing more bans than the rest combined, or banning members who post against that mod's opinion.
+
+**First 60 seconds:**
+1. Don't confront publicly. DM the mod: "Hey, can you hop in `#staff-chat` for a quick check-in? Reviewing today's mod actions together."
+
+**Next 5 minutes:**
+2. Pull last 7 days of `#audit-mod-actions` filtered to that mod. Tally by reason.
+3. Cross-reference with `#audit-messages` for the banned members — were the bans justified or pretextual?
+
+**Next hour:**
+4. If pattern confirms abuse: strip `Moderator ☁️` role. Don't ban them as a member if they were otherwise positive.
+5. Unban the affected members and DM them an apology + explanation.
+
+**Post-mortem:**
+6. Establish a "two-mod rule" in your team: any ban that isn't an obvious raid/scam needs a second mod's sign-off in `#staff-chat` first.
+7. Add Carl-bot rule: any single mod issuing > 3 bans in 24h auto-pings @Admin to review.
+
+---
+
+### 33.19) Scenario: A copyright takedown — someone posts art that the artist demands be removed
+
+**What's happening:** A real artist DMs the team saying their work was posted in `#fan-creations` without consent.
+
+**First 60 seconds:**
+1. Verify the request is legitimate (check the artist's social, not just an email claim).
+2. Delete the post immediately. Better to over-comply than risk a DMCA escalation.
+
+**Next 5 minutes:**
+3. DM the member who posted it (politely): "Hey, the original artist asked us to take down [post]. We've removed it. No penalty on you — just letting you know. In the future, please credit artists or only post your own work."
+4. Reply to the artist (in whatever channel they reached out): "Removed. Apologies, and thank you for letting us know."
+
+**Next hour:**
+5. Pin in `#fan-creations` and `#show-your-whimsey`: "📜 Only post art you made, OR art you have explicit permission to share, OR art with a clear credit + link to the artist."
+
+**Post-mortem:**
+6. If the same member has 3+ takedowns, formal warning. If 5+, remove `Verified 🩵`.
+
+---
+
+### 33.20) Scenario: Someone exposes a hidden staff or audit channel by posting a screenshot
+
+**What's happening:** A mod accidentally screenshotted a staff-only channel and shared it in `#general-chat`, OR a hacker (after compromising a mod) posted internal audit screenshots publicly.
+
+**First 60 seconds:**
+1. Delete the message.
+2. If a mod did it accidentally, no punishment — just educate.
+3. If posted by a compromised account, see Scenario 33.3.
+
+**Next 5 minutes:**
+4. Assess what was leaked. Was it a screenshot of an active investigation? A planned reveal? A member's complaint?
+5. If a member's name was in the screenshot, DM them an apology.
+
+**Next hour:**
+6. Lockdown protocol if leak was sensitive: rotate any compromised links/info immediately.
+7. Public response if needed: "We had an internal slip today and a staff screenshot ended up briefly visible. It's been removed and we're tightening our processes."
+
+**Post-mortem:**
+8. Standing rule for staff: never screenshot inside staff channels. If you need to share something, use the in-Discord "Reply" feature, not screenshots.
+
+---
+
+### 33.21) THE "WHEN IN DOUBT" DEFAULTS
+
+When something happens that ISN'T in this playbook:
+
+| Doubt | Default action |
+|---|---|
+| "Should I delete this message?" | Yes. You can always restore via `#audit-messages` if wrong. |
+| "Should I ban or timeout?" | **Timeout 24h first.** Ban only if obvious scammer / raider / doxxer. |
+| "Should I respond publicly or DM?" | Respond publicly. The only exceptions: doxxing victim, drained holder, accidental giveaway loser. |
+| "Should I lock down the channel?" | If you're unsure, yes. Locked is safer than open during chaos. |
+| "Should I post on Twitter?" | Only after the situation is contained. Twitter during chaos amplifies chaos. |
+| "Is this serious enough to wake Admin?" | If you're asking, the answer is yes. |
+| "The audit log shows something weird I don't understand" | Screenshot it, post in `#staff-chat`, ask. Never assume it's nothing. |
+
+---
+
+### 33.22) THE INCIDENT REPORT TEMPLATE
+
+After every incident (33.1 – 33.20), the responding mod files a quick report in `#staff-chat`:
+
+```
+📝 INCIDENT REPORT — [Date Time IST]
+
+Type: [scam link / raid / impersonator / etc — reference 33.X]
+Severity: [SEV-1 catastrophic / SEV-2 major / SEV-3 minor]
+Detected by: [Carl-bot AutoMod / member report / mod patrol / external]
+Detection time: [HH:MM IST]
+Containment time: [HH:MM IST]
+Members affected: [count, or "none"]
+Actions taken: [bullet list]
+Audit channel references: [#audit-X message links]
+Public communication: [if any, link to #announcements post]
+Lessons / changes needed: [bullet list]
+```
+
+This is the single most important habit. Three months from now, you'll be able to look back at 90 incident reports and see exactly which scams / raids / bot bugs are recurring — and harden against them.
+
