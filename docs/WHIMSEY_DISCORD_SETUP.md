@@ -169,6 +169,302 @@ If you ever feel lost mid-section, scroll back to this legend. 🩵
 
 ---
 
+## ✅ THE MEGA WORKING-PHASE CHECKLIST — TICK EVERY BOX 💗
+
+This is the granular, hand-held version of Phase B + Phase C. Every line is one micro-action. Tick it off as you go. If you have to stop mid-day, you'll know exactly where to resume tomorrow.
+
+> 💡 **Tip:** Print this section, OR copy it into a Notion/Apple Notes page so you can tick the boxes outside the doc itself.
+
+---
+
+### 🅱️ PHASE B — SERVER BUILD CHECKLIST (~8–10 hours total)
+
+#### ☑️ STEP 1 — Server-wide safety configuration (~15 min) — Section 3
+
+- [ ] 1.1 Open Discord → click your server name → **Server Settings**.
+- [ ] 1.2 Go to **Safety Setup** → set **Verification Level** to `High` (must have a verified phone number).
+- [ ] 1.3 Set **Explicit Media Content Filter** to `Scan messages from all members`.
+- [ ] 1.4 Set **Default Notification Settings** to `Only @mentions`.
+- [ ] 1.5 Go to **AutoMod** → enable `Block Commonly Flagged Words` (use Discord's preset list).
+- [ ] 1.6 In AutoMod → enable `Block Mention Spam` → set to `5 mentions per message`.
+- [ ] 1.7 In AutoMod → enable `Block Spam Content` (covers repeated/zalgo).
+- [ ] 1.8 In AutoMod → add a **Custom Keyword** rule: block words like `airdrop`, `claim`, `mint live`, `free WHIMSEY`, `support DM`, `seed phrase`, `private key`. Action: **Block + Timeout 1 hour**.
+- [ ] 1.9 Go to **Server Settings → Safety Setup → Require 2FA for moderator actions** → ON.
+- [ ] 1.10 Confirm YOUR account has 2FA enabled (Discord User Settings → My Account → Enable 2FA).
+- [ ] 1.11 Go to **Server Settings → Onboarding** → enable Onboarding → leave the actual onboarding question setup for Step 18.
+
+#### ☑️ STEP 2 — Create the 4 user roles (~10 min) — Sections 5–8
+
+Just create them with name + color. Do NOT touch any permissions yet.
+
+- [ ] 2.1 Server Settings → **Roles** → `Create Role` → name: `Admin 💗` → color: pink/rose → display separately ON.
+- [ ] 2.2 Create role: `Moderator ☁️` → color: light blue → display separately ON.
+- [ ] 2.3 Create role: `Holder 🌌` → color: deep purple/galaxy → display separately ON.
+- [ ] 2.4 Create role: `Verified 🩵` → color: cyan/baby blue → display separately ON.
+
+#### ☑️ STEP 3 — Drag roles into vertical order (~5 min) — Section 4
+
+- [ ] 3.1 In Server Settings → Roles, drag the roles so the top-down order is exactly: `Admin 💗` → `Moderator ☁️` → `Holder 🌌` → `Verified 🩵` → `@everyone`.
+- [ ] 3.2 Bots will be added later — leave gaps mentally between Mod and Holder for them.
+
+#### ☑️ STEP 4 — Configure `Admin 💗` (~2 min) — Section 5
+
+- [ ] 4.1 Click `Admin 💗` → Permissions tab → toggle **Administrator** ON.
+- [ ] 4.2 That's it. Save.
+
+#### ☑️ STEP 5 — Configure `Moderator ☁️` (~25 min) — Section 6
+
+- [ ] 5.1 Open `Moderator ☁️` → Permissions tab.
+- [ ] 5.2 Open Section 6 of this doc side-by-side.
+- [ ] 5.3 Toggle **every single permission** to match the ON/OFF column in Section 6. Take your time.
+- [ ] 5.4 Double-check: `Administrator` is **OFF**. (Mods are not admins.)
+- [ ] 5.5 Double-check: `Manage Server`, `Manage Roles`, `Manage Channels` are **OFF**.
+- [ ] 5.6 Double-check: `Kick Members`, `Ban Members`, `Timeout Members`, `Manage Messages`, `Manage Threads` are **ON**.
+- [ ] 5.7 Save.
+
+#### ☑️ STEP 6 — Configure `Holder 🌌` (~15 min) — Section 7
+
+- [ ] 6.1 Open `Holder 🌌` → Permissions tab.
+- [ ] 6.2 Toggle every permission per Section 7's table.
+- [ ] 6.3 Double-check: NO moderation perms (no kick/ban/manage anything).
+- [ ] 6.4 Double-check: `View Channels`, `Send Messages`, `Embed Links`, `Add Reactions`, `Use External Emojis`, `Use External Stickers`, `Connect`, `Speak`, `Use Voice Activity` are **ON**.
+- [ ] 6.5 Save.
+
+#### ☑️ STEP 7 — Configure `Verified 🩵` (~15 min) — Section 8
+
+- [ ] 7.1 Open `Verified 🩵` → Permissions tab.
+- [ ] 7.2 Toggle every permission per Section 8's table.
+- [ ] 7.3 Double-check: this role is even more restricted than Holder (no `Embed Links`, no `Attach Files` server-wide — those are channel-allowed only).
+- [ ] 7.4 Save.
+
+#### ☑️ STEP 8 — Lock down `@everyone` (~30 min) — Section 9 — **MOST IMPORTANT STEP**
+
+- [ ] 8.1 Open `@everyone` → Permissions tab.
+- [ ] 8.2 Open Section 9 side-by-side.
+- [ ] 8.3 Toggle **EVERY** permission to **OFF** except the tiny handful Section 9 says to leave ON (typically: `View Channels`, `Read Message History` — and even these get denied at category level for private categories).
+- [ ] 8.4 Double-check: `Send Messages`, `Embed Links`, `Attach Files`, `Add Reactions`, `Speak`, `Connect`, `Mention @everyone`, `Use External Emojis`, `Use Application Commands` are all **OFF** server-wide.
+- [ ] 8.5 Save. **This is the lockdown that guarantees nothing leaks.**
+
+#### ☑️ STEP 9 — Create the 4 new private categories + ~50 channels (~60 min) — Section 10 + 24/24A/24B/25
+
+- [ ] 9.1 Create category `🔒 | STAFF` (private). Add channels per section 24 (e.g. `#staff-chat`, `#mod-log`, `#admin-only`, etc.).
+- [ ] 9.2 Create category `📋 | AUDITS` (private). Add **all 20** audit channels per section 24A (`#audit-mod-actions`, `#audit-joins-leaves`, `#audit-message-edits`, etc.).
+- [ ] 9.3 Create category `📈 | MOMENTUM` (private). Add **all 8** momentum channels per section 24B (`#momentum-server-stats`, `#momentum-collection-feed`, `#momentum-daily-recap`, etc.).
+- [ ] 9.4 Create category `🎫 | TICKETS` (private). Add channels per section 25 (`#open-tickets`, `#ticket-archive`, etc.).
+- [ ] 9.5 Verify all 4 categories show a 🔒 lock icon next to their name (means private).
+- [ ] 9.6 Verify the 8 PUBLIC categories from your existing structure are still there: `💗 | VERIFY`, `🌊 | START HERE`, `❄️ | THE UNIVERSE`, `📌 | COMMUNITY`, `🌌 | HOLDERS ONLY`, `🌷 | COLLECTORS`, `🩵 | EVENTS`, `☁️ | SUPPORT`.
+
+#### ☑️ STEP 10 — Apply category-level permissions to ALL 12 categories (~90 min) — Sections 16–25
+
+Do this for each category in order. Open the section side-by-side and toggle every cell.
+
+- [ ] 10.1 `💗 | VERIFY` (section 16) — apply per-role Allow/Deny/Neutral table.
+- [ ] 10.2 `🌊 | START HERE` (section 17).
+- [ ] 10.3 `❄️ | THE UNIVERSE` (section 18).
+- [ ] 10.4 `📌 | COMMUNITY` (section 19).
+- [ ] 10.5 `🌌 | HOLDERS ONLY` (section 20).
+- [ ] 10.6 `🌷 | COLLECTORS` (section 21).
+- [ ] 10.7 `🩵 | EVENTS` (section 22).
+- [ ] 10.8 `☁️ | SUPPORT` (section 23).
+- [ ] 10.9 `🔒 | STAFF` (section 24).
+- [ ] 10.10 `📋 | AUDITS` (section 24A).
+- [ ] 10.11 `📈 | MOMENTUM` (section 24B).
+- [ ] 10.12 `🎫 | TICKETS` (section 25).
+- [ ] 10.13 **Sanity check:** open the server with NO roles (use a second Discord account or an incognito role-swap) — you should see only `#welcome` / `#access-info` / `#verify`. If you see anything else, a permission leaked. Find it and fix it.
+
+#### ☑️ STEP 11 — Per-channel overrides (~60 min) — Section 26
+
+Only apply overrides to the channels listed in section 26 — not every channel.
+
+- [ ] 11.1 Open section 26. It lists every channel that needs special rules beyond category defaults.
+- [ ] 11.2 For each listed channel: ⚙️ Edit Channel → Permissions → apply the override exactly as written.
+- [ ] 11.3 Pay extra attention to **AUDITS channels**: bots get `Send Messages` Allow ✅, mods get `Send Messages` **Deny ❌** (mods react only, never type — keeps the log clean).
+- [ ] 11.4 Pay extra attention to **MOMENTUM channels**: team CAN comment here (unlike audits).
+- [ ] 11.5 Tick off each channel in section 26 as you finish it.
+
+#### ☑️ STEP 12 — Invite + configure Auth bot (~15 min) — Section 11
+
+- [ ] 12.1 Go to the Auth bot's invite URL (in section 11).
+- [ ] 12.2 Grant ONLY the OAuth scopes section 11 lists. Untick everything else.
+- [ ] 12.3 In Server Settings → Roles, drag the Auth role into the position section 15 specifies.
+- [ ] 12.4 Open `#verify` → run the Auth setup command per section 11.
+- [ ] 12.5 Verify the Auth panel posts in `#verify`.
+
+#### ☑️ STEP 13 — Invite + configure Collab.Land (~20 min) — Section 12
+
+- [ ] 13.1 Invite Collab.Land via section 12's URL with only the listed perms.
+- [ ] 13.2 Drag Collab.Land role into position per section 15.
+- [ ] 13.3 In Collab.Land's dashboard (collab.land), connect your $CNDY contract address.
+- [ ] 13.4 Set the role it grants on successful holder verification = `Holder 🌌`.
+- [ ] 13.5 Bind the verification command to `#holder-verify` (or the channel section 12 lists).
+
+#### ☑️ STEP 14 — Invite + configure Ticket Tool (~30 min) — Section 13
+
+- [ ] 14.1 Invite Ticket Tool via section 13's URL with only the listed perms.
+- [ ] 14.2 Drag its role into position per section 15.
+- [ ] 14.3 Set the **ticket category** = `🎫 | TICKETS`.
+- [ ] 14.4 Set the **transcript channel** = `#ticket-archive`.
+- [ ] 14.5 Set **support role** = `Moderator ☁️` (so mods see opened tickets).
+- [ ] 14.6 Create the **ticket panel** with the buttons section 13 specifies (e.g. "Wallet help", "Scam report", "Bug report", "General").
+- [ ] 14.7 Add the saved replies from section 28.5 (I-need-wallet, Scam-confirmed, Closing-no-response).
+- [ ] 14.8 Post the ticket panel in `#open-tickets`.
+
+#### ☑️ STEP 15 — Invite + configure Carl-bot base (~30 min) — Section 14
+
+- [ ] 15.1 Invite Carl-bot via section 14's URL with the listed perms (it needs more than other bots).
+- [ ] 15.2 Drag the Carl-bot role into position per section 15.
+- [ ] 15.3 Open carl.gg dashboard → select your server.
+- [ ] 15.4 Configure base settings: prefix, embed color (use WHIMSEY brand color), default mute role.
+- [ ] 15.5 Configure logging channel = `#audit-mod-actions`.
+- [ ] 15.6 The deep configuration (30+ event-bindings, 9 schedules) happens in **Phase C** below — don't try to do it now.
+
+#### ☑️ STEP 16 — Confirm final bot role positioning (~5 min) — Section 15
+
+- [ ] 16.1 Open Server Settings → Roles.
+- [ ] 16.2 Verify the top-down order matches section 15 exactly: `Admin 💗` → `Moderator ☁️` → `Carl-bot` → `Auth` → `Collab.Land` → `Ticket Tool` → (NFT Tracker will go here at #6 in Phase C) → `Holder 🌌` → `Verified 🩵` → `@everyone`.
+- [ ] 16.3 If any role is out of place, drag it. Bot order matters — a bot can only assign roles below itself.
+
+#### ☑️ STEP 17 — Pre-launch test with a 2nd Discord account (~30 min) — Section 29
+
+- [ ] 17.1 Open a second Discord account (phone, browser, alt email — anything).
+- [ ] 17.2 Join your server with the second account.
+- [ ] 17.3 Confirm: you land in `#access-info` and see ONLY verify-related channels.
+- [ ] 17.4 Click verify in `#verify` → complete captcha → get `Verified 🩵` role automatically.
+- [ ] 17.5 Confirm: you can now see public categories but NOT staff/audits/momentum/tickets.
+- [ ] 17.6 Try to send a message in `#announcements` — it should be blocked (Verified can't post there).
+- [ ] 17.7 Connect a wallet via Collab.Land (use a wallet that holds $CNDY) — get `Holder 🌌` role.
+- [ ] 17.8 Confirm: `🌌 | HOLDERS ONLY` category now visible.
+- [ ] 17.9 Open a ticket via `#open-tickets` → confirm it spawns a private channel and pings mods.
+- [ ] 17.10 Walk through every issue you find and fix it now, not after launch.
+
+#### ☑️ STEP 18 — Polish tasks (~30 min) — Section 30
+
+- [ ] 18.1 Set server icon (high-res WHIMSEY logo).
+- [ ] 18.2 Set server banner (cool-cats-quality artwork).
+- [ ] 18.3 Set splash screen (the image people see when they get an invite link).
+- [ ] 18.4 Configure a vanity URL (`discord.gg/whimsey` if available).
+- [ ] 18.5 Set up the **Welcome Screen** (Server Settings → Welcome Screen) — describe each public channel in 1 sentence.
+- [ ] 18.6 Set up **Onboarding questions** (Server Settings → Onboarding) — opt-in tags like "I'm an artist", "I'm a trader", "I'm here for vibes".
+- [ ] 18.7 Pin a welcome message in `#welcome` written in your brand voice (doodles + soft + warm).
+- [ ] 18.8 Pin the holder-verify instructions in `#holder-verify`.
+- [ ] 18.9 Test invite link in incognito browser one more time.
+
+✅ **PHASE B COMPLETE.** Your server is alive, locked down, and ready for humans. But the autopilot brain isn't on yet — that's Phase C below. 🌷
+
+---
+
+### 🅲 PHASE C — AUTOPILOT CHECKLIST (~4–5 hours total)
+
+#### ☑️ STEP C-1 — Configure all Carl-bot event-bindings (~90 min) — Section 28
+
+Open section 28 side-by-side. Each event-binding gets one tick.
+
+- [ ] C-1.1 Welcome message rule (auto-DM new joins with the brand voice greeting).
+- [ ] C-1.2 Auto-role on join: assign `@everyone` access only — no auto-Verified.
+- [ ] C-1.3 Goodbye message rule → posts in `#audit-joins-leaves`.
+- [ ] C-1.4 Member-name change → log to `#audit-username-changes`.
+- [ ] C-1.5 Avatar change → log to `#audit-avatar-changes`.
+- [ ] C-1.6 Message edit → log to `#audit-message-edits`.
+- [ ] C-1.7 Message delete → log to `#audit-message-deletes`.
+- [ ] C-1.8 Bulk delete (purge) → log to `#audit-bulk-deletes` + ping `@Moderator`.
+- [ ] C-1.9 Reaction add/remove on flagged messages → log to `#audit-reactions`.
+- [ ] C-1.10 Channel create/edit/delete → log to `#audit-channel-changes` + ping `@Admin`.
+- [ ] C-1.11 Role create/edit/delete → log to `#audit-role-changes` + ping `@Admin`.
+- [ ] C-1.12 Permission overwrite changes → log to `#audit-permission-changes` + ping `@Admin`.
+- [ ] C-1.13 Member ban → log to `#audit-bans-kicks` + DM the banned user a generic notice.
+- [ ] C-1.14 Member kick → log to `#audit-bans-kicks`.
+- [ ] C-1.15 Member timeout → log to `#audit-timeouts`.
+- [ ] C-1.16 Voice channel join/leave → log to `#audit-voice-activity`.
+- [ ] C-1.17 Invite create/delete → log to `#audit-invite-tracking`.
+- [ ] C-1.18 Webhook create/edit/delete → log to `#audit-webhooks` + ping `@Admin`.
+- [ ] C-1.19 Bot add/remove → log to `#audit-bots` + ping `@Admin`.
+- [ ] C-1.20 Server boost change → log to `#audit-boosts`.
+- [ ] C-1.21 Emoji/sticker change → log to `#audit-emojis-stickers`.
+- [ ] C-1.22 AutoMod trigger → log to `#audit-automod` + escalate per Tier (section 34.8).
+- [ ] C-1.23 Spam-pattern detection → auto-timeout 1hr + log to `#audit-automod`.
+- [ ] C-1.24 Suspicious link detection → auto-delete + log + ping `@Moderator`.
+- [ ] C-1.25 New-account-under-7-days join → log to `#audit-suspicious-joins` + ping `@Moderator`.
+- [ ] C-1.26 Mass-mention attempt → auto-timeout 1hr + ping `@Moderator`.
+- [ ] C-1.27 Reaction-role panel in `#choose-roles` for self-assigned tags.
+- [ ] C-1.28 Sticky message in `#general` ("read #rules + #access-info").
+- [ ] C-1.29 Anti-raid mode trigger: 10+ joins in 60 sec → auto-lockdown + ping `@Admin`.
+- [ ] C-1.30 Bad-word filter custom list (in addition to AutoMod default).
+
+#### ☑️ STEP C-2 — Schedule the 9 Carl-bot momentum reports (~45 min) — Section 28.6 / 34.3
+
+- [ ] C-2.1 **Daily recap** at 9pm IST → posts to `#momentum-daily-recap`.
+- [ ] C-2.2 **Daily on-chain rollup** appended to daily recap (sales/listings/whales/mints/volume).
+- [ ] C-2.3 **Weekly digest** every Monday 10am IST → `#momentum-weekly-digest`.
+- [ ] C-2.4 **Monthly state-of-WHIMSEY report** 1st of every month → `#momentum-monthly`.
+- [ ] C-2.5 **Top contributors leaderboard** every Sunday → `#momentum-leaderboard`.
+- [ ] C-2.6 **New holders shoutout** every Friday → `#momentum-new-holders`.
+- [ ] C-2.7 **Voice activity rollup** every Sunday → `#momentum-voice-stats`.
+- [ ] C-2.8 **Server health snapshot** every Wednesday → `#momentum-server-stats`.
+- [ ] C-2.9 **Engagement heat map** end of month → `#momentum-engagement`.
+
+#### ☑️ STEP C-3 — Invite + configure NFT Tracker (~30 min) — Section 32 + 34.7
+
+- [ ] C-3.1 Invite NFTSalesBot (ETH/Polygon) OR Hashlist (Solana) — pick one.
+- [ ] C-3.2 OAuth: tick ONLY View Channels, Send Messages, Embed Links, Attach Files, Read Message History, Use External Emojis. Untick everything else.
+- [ ] C-3.3 Drag NFT Tracker role to position **#6** (under Ticket Tool, above `Holder 🌌`).
+- [ ] C-3.4 Strip every server-wide permission — channel-allow only.
+- [ ] C-3.5 In `#momentum-collection-feed` → ⚙️ → add NFT Tracker with View/Send/Embed/Attach/History/External Emojis Allow ✅.
+- [ ] C-3.6 In bot dashboard: paste contract address, set output channel = `#momentum-collection-feed`.
+- [ ] C-3.7 Tick events: ✅ Sales ✅ Listings ✅ De-listings ✅ Transfers ✅ Mints.
+- [ ] C-3.8 Set marketplaces: ✅ OpenSea ✅ Magic Eden ✅ Blur ✅ LooksRare ✅ X2Y2.
+- [ ] C-3.9 Currency display: ETH primary, INR secondary.
+- [ ] C-3.10 Configure auto-tag emoji prefixes: 🛒 / 🐋 / 🏷️ / ⏸️ / 🔄 / ✨ / 📉.
+- [ ] C-3.11 Test: do a tiny test transfer of $CNDY between two wallets — verify the embed shows up in `#momentum-collection-feed` within 60 seconds.
+
+#### ☑️ STEP C-4 — Set up the Tiered Alert System (~30 min) — Section 34.8
+
+- [ ] C-4.1 Tier 1 (silent log only) — confirm AutoMod hits, message edits, reaction adds, etc. log silently to audit channels with NO ping.
+- [ ] C-4.2 Tier 2 (ping `@Moderator` in `#staff-chat`) — configure: spam detection, suspicious links, mass mentions, new-account joins, ticket opened.
+- [ ] C-4.3 Tier 3 (ping `@Admin` in `#staff-chat`) — configure: channel/role/permission/webhook/bot changes, anti-raid trigger, whale wallet sells 10+ in 60 min, floor drops 30% in 60 min.
+- [ ] C-4.4 Tier 4 (ping `@everyone` in `#staff-chat`, NOT public) — configure: server outage, bot mass-failure, confirmed token compromise. **Test the trigger but don't actually fire it.**
+- [ ] C-4.5 Cross-bot rule 1: 20+ sale embeds in 10 min in `#momentum-collection-feed` → Carl-bot pings `@Moderator` ("floor may be moving fast").
+- [ ] C-4.6 Cross-bot rule 2: same wallet appears as buyer in 5+ embeds in 60 min → Carl-bot pings `@Moderator` ("🐋 whale alert").
+
+#### ☑️ STEP C-5 — Set up Heartbeat Monitoring (~15 min) — Section 34.9
+
+- [ ] C-5.1 Carl-bot scheduled job: every hour at :00, post `✅ Heartbeat` in `#audit-mod-actions`.
+- [ ] C-5.2 Configure `@Admin` notification: if no heartbeat for 90 min → DM Admin "Carl-bot may be offline."
+- [ ] C-5.3 NFT Tracker heartbeat: every 4 hours, check if any embed posted; if empty + on-chain activity exists → ping `@Admin`.
+
+#### ☑️ STEP C-6 — Cross-bot rules (covered above in C-4.5 / C-4.6) — Section 34.7.4
+
+- [ ] C-6.1 Verify the whale-alert rule fires on a test scenario.
+- [ ] C-6.2 Verify the floor-crash rule fires on a test scenario (use a sandbox if possible, or just inspect the rule logic).
+
+#### ☑️ STEP C-7 — Pre-flight verification (the 8-test smoke test) (~30 min) — Section 34.11
+
+- [ ] C-7.1 Test 1: Verify flow with second account works end-to-end.
+- [ ] C-7.2 Test 2: A test message in any audit channel from a mod is BLOCKED (mods deny send).
+- [ ] C-7.3 Test 3: Carl-bot heartbeat posts at the next :00.
+- [ ] C-7.4 Test 4: NFT Tracker posts within 60 sec of a test on-chain event.
+- [ ] C-7.5 Test 5: Daily recap fires at 9pm IST (you can manually trigger it once for testing).
+- [ ] C-7.6 Test 6: A Tier 3 trigger correctly pings `@Admin` in `#staff-chat`.
+- [ ] C-7.7 Test 7: Anti-raid lockdown triggers at 10+ joins/60sec (use 10 alt accounts OR inspect the rule).
+- [ ] C-7.8 Test 8: Open a ticket → it spawns + mods get pinged + saved replies are accessible.
+
+✅ **PHASE C COMPLETE.** Autopilot is live. The server now runs itself when you sleep. 💗❄️🌌🩵
+
+---
+
+### 🎯 LAUNCH READINESS — FINAL 5-POINT CHECK
+
+Before you publicly publish your invite link:
+
+- [ ] All Phase B boxes ticked ✅
+- [ ] All Phase C boxes ticked ✅
+- [ ] All 8 pre-flight smoke tests passed ✅
+- [ ] You ran a 24-hour soft launch with friends only and watched audit channels — zero leaks ✅
+- [ ] You have the Crisis Playbook (section 33) bookmarked on your phone ✅
+
+If all 5 are green: **publish that invite link. WHIMSEY is officially live.** 🌷💗❄️🌌🩵
+
+---
+
 ## TABLE OF CONTENTS
 
 1. The 18-step setup order (do these in this exact order)
