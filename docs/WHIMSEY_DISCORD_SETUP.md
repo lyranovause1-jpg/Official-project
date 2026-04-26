@@ -720,7 +720,7 @@ Dashboards and recurring stats — the heartbeat of WHIMSEY. All channels here a
 | `#momentum-monthly-recap` | Last day of month, 23:55 IST: month-over-month rollup | Carl-bot scheduled embed |
 | `#momentum-holder-snapshot` | Daily 00:05 IST: total Holder count, new today, lost today, % of 30,000 supply verified-on-Discord, top-10-wallet concentration | Mod runs Collab.Land `/list-holders` (Carl-bot reminds at 00:00) |
 | `#momentum-server-stats` | Live counts: total members, online now, Verified count, Holder count (auto-updated voice-channel-style or pinned embed) | Carl-bot custom command + manual refresh, or Statbot if you add it later |
-| `#momentum-collection-feed` | (Optional, see section 32) Real-time on-chain sales, listings, transfers, mints of $CNDY | NFT-tracker bot — separate add-on |
+| `#momentum-collection-feed` | Real-time on-chain sales, listings, transfers, mints of $CNDY (see section 32) | NFT Tracker bot (5th core bot) |
 | `#momentum-twitter-feed` | Your official @WHIMSEY tweets auto-mirrored here for team awareness | Webhook (IFTTT / Zapier / Make.com) |
 | `#momentum-team-pulse` | Weekly Monday 12:00 IST: top 3 message-count members + top 3 reaction-receivers, so the team can recognize them in `#announcements` | Carl-bot scheduled |
 
@@ -1774,16 +1774,18 @@ When you set up the IFTTT/Zapier/Make webhook that posts your @WHIMSEY tweets he
 |---|---|---|
 | Manage Webhooks | ❌ Deny | ✅ Allow *(only Admin manages webhooks for security)* |
 
-#### 26.25b) `#momentum-collection-feed` (optional NFT-tracker bot — see section 32)
+#### 26.25b) `#momentum-collection-feed` (NFT Tracker bot — see section 32)
 
-If you add a 5th bot for on-chain tracking, give that bot:
+The 5th core bot writes here. Give it explicit channel-level allow:
 
-| Permission | NFT-tracker bot |
+| Permission | NFT Tracker |
 |---|---|
 | View Channel | ✅ Allow |
 | Send Messages | ✅ Allow |
 | Embed Links | ✅ Allow |
 | Attach Files | ✅ Allow |
+| Read Message History | ✅ Allow |
+| Use External Emojis | ✅ Allow |
 
 ---
 
@@ -2289,88 +2291,169 @@ You're ready to launch WHIMSEY. 💗
 ---
 
 
-## 32) OPTIONAL: ADD A 5TH BOT FOR ON-CHAIN COLLECTION TRACKING
+## 32) THE 5TH CORE BOT — NFT TRACKER (ON-CHAIN COLLECTION FEED) 📡
 
-You said you want to keep the bot count low (4 confirmed: Auth, Carl-bot, Collab.Land, Ticket Tool). But because you specifically asked to track EVERYTHING in the collection in real time, here's what a 5th bot would unlock — and how to add it cleanly without bloat.
+**Status: CONFIRMED CORE BOT.** This is now part of the standard 5-bot stack. Without it, `#momentum-collection-feed` is empty and you're blind to everything happening on-chain. With it, every $CNDY sale, listing, transfer, and mint posts automatically in real time.
 
-### 32.1) Why you might want it
+### 32.1) What it does (and what it doesn't)
 
-The 4 confirmed bots cover the SERVER side perfectly. They do not, however, watch the BLOCKCHAIN. So:
+**It does:**
+- Watches the $CNDY contract address on the blockchain 24/7
+- Posts every sale, listing, de-listing, transfer, and mint as an embed in `#momentum-collection-feed`
+- Includes price, buyer/seller wallet (with Etherscan/Solscan link), marketplace, and current floor at time of event
+- Updates within seconds of the on-chain transaction confirming
 
-- A new $CNDY mint, sale, listing, transfer, or de-list happens → no Discord notification.
-- A whale picks up 50 in a single transaction → no Discord notification.
-- The floor price drops 20% in an hour → no Discord notification.
+**It doesn't:**
+- Read any Discord messages
+- DM any members
+- Touch wallets — it only READS the blockchain
+- Have any slash commands users can spam
+- Overlap with any other bot
 
-If you want `#momentum-collection-feed` to actually be live (instead of just a manual post-board), you need a bot that subscribes to your contract address and posts these events automatically.
+It is a single-purpose, write-only appliance. Lowest possible attack surface. Highest possible signal value.
 
-### 32.2) Three recommended candidates (pick one)
+### 32.2) Pick the right bot for your chain
 
-All three are free or freemium and work without any code from you.
-
-| Bot | Best for | Setup time |
+| If $CNDY is on… | Use | Site |
 |---|---|---|
-| **NFTSalesBot (botghost / Vulcan)** | Ethereum / Polygon NFT sales + listings + bids feed. Most popular. | ~10 min |
-| **Hashlist** | Solana NFT collections (if $CNDY is on Solana). Posts mints, sales, listings, floor moves. | ~10 min |
-| **OpenSea Sales Bot / Sweep Bot** | OpenSea-native, simple sales-only feed. | ~5 min |
+| **Ethereum / Polygon** | **NFTSalesBot** (the most popular, best uptime) | `nftsalesbot.com` |
+| **Solana** | **Hashlist** (Solana-native, best feature set) | `hashlist.com` |
+| **OpenSea exclusive** | **OpenSea Sales Bot / Sweep Bot** (simplest, sales-only) | search "OpenSea Sales Bot Discord" |
 
-> Pick based on **which chain $CNDY lives on**. The doc assumes Ethereum/Polygon by default; if you confirm Solana later, swap to Hashlist.
+> **You must confirm which chain $CNDY lives on before this step.** The doc assumes Ethereum/Polygon → NFTSalesBot by default. If Solana → swap every "NFTSalesBot" mention for "Hashlist" — the click-by-click flow below is identical.
 
-### 32.3) Setup (using NFTSalesBot as the example)
+### 32.3) Click-by-click setup (using NFTSalesBot as the example)
 
-1. Go to **nftsalesbot.com** (or the bot's official site).
-2. Click "Add to Discord" → select WHIMSEY server.
-3. On the OAuth page, grant ONLY: View Channels, Send Messages, Embed Links, Attach Files. Tick nothing else.
-4. After it joins, create a NEW role for it called **`NFT Tracker`** with **zero** server-wide permissions.
-5. Move `NFT Tracker` role in the role list ABOVE `Verified 🩵` but BELOW `Ticket Tool`. New stack:
-   - 0. `Admin 💗`
-   - 1. `Moderator ☁️`
-   - 2. `Carl-bot`
-   - 3. `Auth`
-   - 4. `Collab.Land`
-   - 5. `Ticket Tool`
-   - 6. `NFT Tracker` ← new
-   - 7. `Holder 🌌`
-   - 8. `Verified 🩵`
-   - 9. `@everyone`
-6. Open `#momentum-collection-feed` → Edit Channel → Permissions → Add `NFT Tracker` role:
+#### Step 1: Invite the bot
+
+1. Go to **nftsalesbot.com**.
+2. Click **"Add to Discord"** → log in with your Admin Discord account.
+3. Select **WHIMSEY** server from the dropdown.
+4. On the OAuth permission screen, grant ONLY these (uncheck everything else):
+   - ✅ View Channels
+   - ✅ Send Messages
+   - ✅ Embed Links
+   - ✅ Attach Files
+   - ✅ Read Message History
+   - ✅ Use External Emojis
+   - ❌ Manage Roles (NEVER)
+   - ❌ Manage Channels (NEVER)
+   - ❌ Manage Server (NEVER)
+   - ❌ Manage Webhooks (NEVER)
+   - ❌ Mention Everyone (NEVER)
+5. Click **Authorize** → complete the captcha.
+
+#### Step 2: Set up the bot's role
+
+1. Go to **Server Settings → Roles**.
+2. The bot creates its own auto-role called **`NFT Tracker`** (or similar — rename if needed).
+3. Set its color to a soft on-chain feel — e.g. `#9B59B6` (a calm purple to match the galaxy theme of `🌌 | HOLDERS ONLY`).
+4. Open the role's permissions tab and **uncheck EVERY server-wide permission**. The bot will get exactly what it needs at the channel level only — no global permissions whatsoever. This is critical for security.
+5. Move the `NFT Tracker` role in the role list to position **#6** (under Ticket Tool, above Holder 🌌). The full new role hierarchy:
+   ```
+   0. Admin 💗
+   1. Moderator ☁️
+   2. Carl-bot
+   3. Auth
+   4. Collab.Land
+   5. Ticket Tool
+   6. NFT Tracker  ← here
+   7. Holder 🌌
+   8. Verified 🩵
+   9. @everyone
+   ```
+
+#### Step 3: Bind it to `#momentum-collection-feed`
+
+1. Open `#momentum-collection-feed` → ⚙️ **Edit Channel → Permissions → Advanced Permissions**.
+2. Click **+** → search and select the `NFT Tracker` role.
+3. Set these per-channel overrides:
    - View Channel ✅ Allow
    - Send Messages ✅ Allow
    - Embed Links ✅ Allow
    - Attach Files ✅ Allow
    - Read Message History ✅ Allow
-7. In the bot's own dashboard (or via slash command in `#mod-commands`), point it at:
-   - **Contract address:** `0xYourContractAddress` (your $CNDY collection)
-   - **Channel:** `#momentum-collection-feed`
-   - **Events to watch:** Sales, Listings, De-listings, Transfers, Mints (tick all)
-   - **Min sale price filter:** none (you want everything for a 30,000 supply with this floor)
+   - Use External Emojis ✅ Allow
+   - All other rows → leave Neutral ➖
 
-### 32.4) What you'll see in `#momentum-collection-feed` after setup
+This is the ONLY channel the bot can write to. Anywhere else in the server, it has zero access.
 
-Every blockchain event posts as an embed:
+#### Step 4: Configure the watch on the bot's dashboard
+
+1. Most NFT tracker bots use a slash command in your server to configure them. Run this in `#mod-commands`:
+   ```
+   /track add
+   contract: 0xYourContractAddressHere
+   channel: #momentum-collection-feed
+   events: sales, listings, delistings, transfers, mints
+   min_price: none
+   marketplace: all
+   currency: ETH
+   currency_secondary: INR
+   ```
+2. If the bot has a web dashboard instead (NFTSalesBot does), log in there:
+   - Server: **WHIMSEY**
+   - Collection: **WHIMSEY ($CNDY)**
+   - Contract address: `0xYourContractAddressHere`
+   - Output channel: `#momentum-collection-feed`
+   - Events to track: ✅ Sales ✅ Listings ✅ De-listings ✅ Transfers ✅ Mints
+   - Minimum sale price filter: **none** (you want everything — a 30k supply will move a lot)
+   - Currency display: **ETH (primary), INR (secondary)** so Indian community sees familiar prices
+   - Embed style: **Rich embed with image** (always show the NFT artwork in the post)
+   - Marketplace coverage: ✅ OpenSea ✅ Magic Eden ✅ Blur ✅ LooksRare ✅ X2Y2 (tick every marketplace)
+
+#### Step 5: Test it before launch
+
+1. Have a friend (or yourself, if you have a second wallet) buy 1 $CNDY on the open marketplace.
+2. Within ~30 seconds of the transaction confirming on-chain, an embed should auto-post in `#momentum-collection-feed`.
+3. If it doesn't post in 60 seconds, check `#audit-bots` to confirm the bot is online. If offline, see Crisis Scenario 33.9.
+4. Once you see your first auto-posted sale embed → you're live. 💗
+
+### 32.4) What you'll see (sample embeds)
+
+Every event posts as a clean embed. Examples:
 
 > 🛒 **WHIMSEY #4218 SOLD**
-> Price: 0.32 ETH (~₹68,000)
-> Buyer: `0x9ab…3f1` ([wallet on Etherscan])
-> Seller: `0x7c2…9de`
-> Marketplace: OpenSea
+> Price: **0.32 ETH** (~₹68,000)
+> Buyer: [`0x9ab…3f1`](https://etherscan.io)
+> Seller: [`0x7c2…9de`](https://etherscan.io)
+> Marketplace: **OpenSea**
 > Floor at sale: 0.29 ETH
+> [View on OpenSea ↗]
 
-Combined with Carl-bot's daily holder snapshot in `#momentum-holder-snapshot`, you now have a true 360° view: every wallet move on-chain + every Discord membership change in one server.
+> 🏷️ **WHIMSEY #11042 LISTED**
+> Price: **0.45 ETH** (~₹95,000) — 55% above floor
+> Lister: [`0x4f8…12c`](https://etherscan.io)
+> Marketplace: **OpenSea**
 
-### 32.5) Why this doesn't bloat your stack
+> 🐋 **WHALE ACTIVITY: WHIMSEY #00721, #00722, #00723 transferred to same wallet**
+> Receiver: [`0xab1…994`](https://etherscan.io) (now owns 47 $CNDY)
+> Total floor value: ~13.6 ETH
 
-This bot:
-- Has zero overlap with Carl-bot, Collab.Land, Auth, or Ticket Tool.
-- Only writes to one channel.
-- Only reads from the blockchain (not from Discord).
-- Has no slash-commands users can spam.
-- Has no DM behaviour.
+> ✨ **NEW MINT: WHIMSEY #29,912**
+> Minter: [`0x12d…5af`](https://etherscan.io)
+> Mint price: 0.05 ETH
+> Total minted: 29,912 / 30,000
 
-It's a one-purpose appliance. So the "4 bots is the limit" instinct doesn't really apply here — this is a different category of tool (off-chain reader, not server-management).
+### 32.5) Combined with the rest of the stack — the 360° view
 
-### 32.6) If you decide NOT to add it
+This bot completes the picture. Now you can see in one server:
 
-That's totally fine. Then `#momentum-collection-feed` becomes a manual post-board where the team drops noteworthy mints/sales/whale moves (use a screenshot from OpenSea / Magic Eden + a one-line caption). Set a Carl-bot scheduled message: every Monday 12:00 IST, "📊 Team — drop this week's notable on-chain moves in this channel." That keeps the channel useful even without automation.
+- **What's happening on Discord:** Carl-bot's 20 audit channels
+- **What's happening with members:** `#audit-joins-leaves`, `#audit-role-changes`, `#audit-holder-changes`
+- **What's happening with the team:** `#audit-mod-actions`, `#audit-tickets`
+- **What's happening on the blockchain:** `#momentum-collection-feed` (this bot)
+- **What's happening in the macro:** `#momentum-daily-recap`, `#momentum-weekly-recap`, `#momentum-holder-snapshot`
+
+A holder sells → the bot posts the sale → Collab.Land sees the wallet is empty 4 hours later → posts the role-revoke in `#audit-holder-changes` → the daily snapshot reflects -1 holder → Carl-bot's daily recap shows the net change. **Every event has a paper trail.** That's true 360°.
+
+### 32.6) Future expansion (don't do this on day 1)
+
+Once the team is comfortable, you can:
+
+- **Make `#momentum-collection-feed` visible to Holders.** Right now it's staff-only. Opening it to `Holder 🌌` creates social proof — holders love seeing their collection trade live. Caveat: this can also amplify floor-anxiety if there's a bad sales week, so wait until you have steady momentum before doing this.
+- **Add per-event filters.** Some bots let you create a separate `#momentum-whale-feed` for sales > 1 ETH, or `#momentum-mint-feed` for the final 100 mints during a sellout. These can come later.
+- **Add a price-tracking sidekick.** Bots like `NFT Floor Price` post hourly floor updates. Useful but optional — the sales feed alone gives you 90% of the signal.
 
 ---
 
@@ -2912,7 +2995,7 @@ Set up the bots in this exact order. Each one depends on the previous being live
 2. **Auth** — the front door (verification only)
 3. **Collab.Land** — the wallet bouncer (holder verification only)
 4. **Ticket Tool** — the customer service desk (private support only)
-5. **(Optional) NFT-tracker bot** — the on-chain watcher (section 32)
+5. **NFT Tracker** — the on-chain watcher (section 32 + 34.7)
 
 ---
 
@@ -3276,7 +3359,109 @@ In Ticket Tool → Saved Replies → add:
 
 ---
 
-### 34.7) TIERED ALERT SYSTEM — WHEN BOTS PING HUMANS
+### 34.7) NFT TRACKER — ON-CHAIN COLLECTION FEED AUTOPILOT 📡
+
+The 5th core bot. Once configured, it runs entirely on its own — every $CNDY mint, sale, listing, transfer auto-posts to `#momentum-collection-feed` within seconds of the on-chain event.
+
+#### 34.7.1) Setup (full step-by-step is in section 32 — autopilot summary here)
+
+1. Invite via `nftsalesbot.com` (Ethereum/Polygon) or `hashlist.com` (Solana). Pick the one matching your chain.
+2. On the OAuth screen, grant ONLY: View Channels, Send Messages, Embed Links, Attach Files, Read Message History, Use External Emojis. **Uncheck everything else.**
+3. Move the auto-created `NFT Tracker` role to position **#6** in the role list (under Ticket Tool, above Holder 🌌).
+4. **Strip every server-wide permission** from the role. The bot only needs channel-level allow on `#momentum-collection-feed`.
+5. Open `#momentum-collection-feed` → ⚙️ Edit Channel → Permissions → add the `NFT Tracker` role with View / Send / Embed / Attach / Read History / External Emojis all ✅ Allow.
+
+#### 34.7.2) The watch configuration (paste this in the bot's dashboard)
+
+| Setting | Value |
+|---|---|
+| Server | WHIMSEY |
+| Collection name | WHIMSEY ($CNDY) |
+| Contract address | `0xYourContractAddressHere` (or Solana mint address) |
+| Output channel | `#momentum-collection-feed` |
+| Events to track | ✅ Sales, ✅ Listings, ✅ De-listings, ✅ Transfers, ✅ Mints |
+| Minimum sale price filter | None (you want all 30k supply movements) |
+| Currency primary | ETH (or SOL if Solana) |
+| Currency secondary | INR |
+| Embed style | Rich embed with NFT image |
+| Marketplaces | ✅ OpenSea ✅ Magic Eden ✅ Blur ✅ LooksRare ✅ X2Y2 (tick all) |
+| Re-check frequency | Real-time (event-driven, not polling) |
+
+#### 34.7.3) Auto-tagging rules (advanced — most bots support this)
+
+Set the bot to add a contextual emoji prefix based on the event:
+
+| Event type | Embed prefix |
+|---|---|
+| Standard sale (under 1 ETH) | 🛒 SOLD |
+| Whale sale (over 1 ETH) | 🐋 WHALE SALE |
+| Listing | 🏷️ LISTED |
+| De-listing | ⏸️ DELISTED |
+| Transfer (no price) | 🔄 TRANSFER |
+| Mint | ✨ NEW MINT |
+| Floor-changing sale (sold AT or BELOW current floor) | 📉 FLOOR HIT |
+
+This lets the team scan `#momentum-collection-feed` and instantly understand the vibe of the day — lots of 🐋 = healthy demand; lots of 📉 = floor pressure.
+
+#### 34.7.4) Cross-bot interaction with Carl-bot
+
+Carl-bot watches `#momentum-collection-feed` for unusual patterns. Add this Carl-bot AutoMod custom rule:
+
+- **Trigger:** if `#momentum-collection-feed` receives > 20 sale embeds in 10 minutes
+- **Action:** Carl-bot pings `@Moderator` in `#staff-chat` with: "🚨 Unusual on-chain activity — 20+ sales in 10 min. Floor may be moving fast. Check `#momentum-collection-feed`."
+
+This is your early-warning system for floor crashes, sweep events, or coordinated dumps.
+
+Add a second rule:
+
+- **Trigger:** if a single wallet appears as the BUYER in 5+ sale embeds in 60 minutes
+- **Action:** Carl-bot pings `@Moderator` with: "🐋 Whale alert — wallet `0x…` has bought 5+ in the past hour. Consider reaching out (DM via mod account, NEVER from official @WHIMSEY)."
+
+Whales love being noticed. This turns the bot's data into a relationship-building tool.
+
+#### 34.7.5) Daily on-chain rollup → `#momentum-daily-recap`
+
+Add a new line to Carl-bot's daily recap embed (section 34.3.6, Schedule 1):
+
+```
+📡 On-chain today:
+   🛒 Sales: {sales_count_24h}
+   🏷️ New listings: {listings_count_24h}
+   🐋 Whale sales (>1 ETH): {whale_count_24h}
+   ✨ New mints: {mints_count_24h}
+   💰 Total volume: {volume_24h_eth} ETH (~₹{volume_24h_inr})
+```
+
+If Carl-bot can't pull these numbers natively, the team runs `/track stats` on the NFT Tracker bot daily and pastes into the recap manually. Either way, the team sees Discord activity and on-chain activity side-by-side every night.
+
+#### 34.7.6) Tier-3 alerts the NFT Tracker triggers
+
+Add these to the Tier 3 alert list (section 34.8 below):
+
+- A single wallet sells > 10 $CNDY in 60 minutes (potential exit liquidity event) → ping `@Admin`
+- Floor drops > 30% in 60 minutes → ping `@Admin`
+- A wallet known to be a scammer (from your blocklist) buys/sells $CNDY → ping `@Admin`
+
+Most bots support per-event webhooks for these triggers. Configure in the bot's dashboard → Alerts.
+
+#### 34.7.7) Health check
+
+The hourly heartbeat in section 34.8 should also cover this bot:
+
+- Carl-bot scheduled job: every 4 hours, check if `#momentum-collection-feed` has received any embed in the past 4 hours.
+- If empty AND your collection has any trading volume in that window (you can sanity-check on OpenSea), ping `@Admin` with: "🚨 NFT Tracker may be offline — no embeds in 4h despite known on-chain activity. Check status."
+
+#### 34.7.8) What "good" looks like after 1 week of running
+
+By day 7, you should see:
+- ~20–200 embeds per day in `#momentum-collection-feed` (depends on collection activity)
+- Zero false positives (no spam)
+- Clear vibe-check at a glance — green sea of sales = healthy, red sea of de-listings = quiet
+- Mods spotting whales early and reaching out = real relationship-building from data
+
+---
+
+### 34.8) TIERED ALERT SYSTEM — WHEN BOTS PING HUMANS
 
 The whole point of autopilot is: **bots handle 99% of events silently. Bots only ping humans for things that actually need a human.**
 
@@ -3331,7 +3516,7 @@ This tier should fire MAYBE once a year. If it's firing more, lower its sensitiv
 
 ---
 
-### 34.8) AUDIT-CHANNEL HEARTBEAT MONITORING (so you know your eyes are open)
+### 34.9) AUDIT-CHANNEL HEARTBEAT MONITORING (so you know your eyes are open)
 
 The audit system is your nervous system. If it stops working silently, you're blind. Add this monitoring:
 
@@ -3343,7 +3528,7 @@ This means: even if Carl-bot dies, you find out within 90 minutes — automatica
 
 ---
 
-### 34.9) THE "WHEN HUMANS ARE GENUINELY NEEDED" CHECKLIST
+### 34.10) THE "WHEN HUMANS ARE GENUINELY NEEDED" CHECKLIST
 
 After all the above is configured, here are the ONLY things humans need to do regularly:
 
@@ -3365,7 +3550,7 @@ After all the above is configured, here are the ONLY things humans need to do re
 
 ---
 
-### 34.10) PRE-FLIGHT VERIFICATION — TEST THE AUTOPILOT BEFORE LAUNCH
+### 34.11) PRE-FLIGHT VERIFICATION — TEST THE AUTOPILOT BEFORE LAUNCH
 
 Before you publish your invite link to Twitter, do this 30-minute test with a second Discord account:
 
@@ -3407,11 +3592,11 @@ If ALL 8 pass — your autopilot is fully live. Launch with confidence. ❄️�
 
 ---
 
-### 34.11) THE GOLDEN RULE OF AUTOPILOT
+### 34.12) THE GOLDEN RULE OF AUTOPILOT
 
 **The bots are silent partners. They never sleep. They never forget. They never get angry. But they also never have judgment.**
 
-That's why every Tier 3 and Tier 4 ping in section 34.7 needs a human. The bots flag, the human decides. The bots execute, the human reviews. The bots report, the human acts on the insight.
+That's why every Tier 3 and Tier 4 ping in section 34.8 needs a human. The bots flag, the human decides. The bots execute, the human reviews. The bots report, the human acts on the insight.
 
 When this loop is healthy, the team can be away for 12 hours and the server is still safe, growing, and momentum-tracked. When you come back online, you read 1 daily recap, scan 1 audit channel for Tier 3+ events, and you're caught up in 5 minutes.
 
