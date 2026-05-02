@@ -4,7 +4,7 @@
 
 ---
 
-## HOW TO READ THIS DOCUMENT
+## 📖 READ — HOW TO READ THIS DOCUMENT
 
 Discord uses two different permission widgets depending on where you are:
 
@@ -36,9 +36,11 @@ Each permission is a **three-state toggle**:
 
 This document is long because it's complete. But you don't do everything at once. Here's exactly what to do, when, and how long it takes. Follow the phases in order — don't jump ahead. ❄️
 
-### 🅰️ PHASE A — READ ONLY (don't touch Discord yet) — ~1.5 hours
+### 🅰️ PHASE A — 📖 READ ONLY (don't touch Discord yet) — ~45 min sprint
 
-The goal of this phase is **understanding**. Sit back, read with a coffee. Don't open Discord. Just absorb how the server is going to work. If something is confusing, re-read it — but don't try to "do" it yet.
+> 📖 **READ MODE — Laptop closed on Discord. Coffee in hand. Zero clicking.**
+
+The goal of this phase is **understanding**. Sit back and absorb how everything fits together. **Do not open Discord. Do not touch any settings.** If something is confusing, re-read it — but don't try to "do" it yet. This phase is what stops you from making expensive mistakes in Phase B.
 
 | Section | What it is | Time |
 |---|---|---|
@@ -57,7 +59,9 @@ The goal of this phase is **understanding**. Sit back, read with a coffee. Don't
 
 ### 🅱️ PHASE B — BUILD THE SERVER STRUCTURE (this is the real "work") — ~8 to 10 hours
 
-**Recommendation:** Split this across **2 sittings of 4–5 hours each**, OR **3 sittings of ~3 hours**. Don't try to do it in one day — your eyes will glaze over and you'll make mistakes. Discord is unforgiving when you misclick a permission.
+> ✅ **ACTION MODE — Open Discord. Click things. Tick boxes. This is the build.**
+
+**2-Day Sprint:** Do Steps 1–10 on Day 1, Steps 11–18 on Day 2. Don't try to cram it all in one sitting — Discord is unforgiving when you misclick a permission. Tired eyes = wrong toggles.
 
 This is **Steps 1 through 18 in section 1** — the 18-step setup order. Tick each box as you go. Below is the time per step:
 
@@ -90,7 +94,9 @@ This is **Steps 1 through 18 in section 1** — the 18-step setup order. Tick ea
 
 ### 🅲 PHASE C — TURN ON THE 24/7 AUTOPILOT (the bots that babysit while you sleep) — ~4 to 5 hours
 
-This phase is what makes WHIMSEY feel "always alive" even when you and the team are offline. Spread across **2 sittings of ~2 hours**.
+> ✅ **ACTION MODE — You're configuring bots. Open each bot's dashboard. Click and set.**
+
+This is what makes WHIMSEY feel "always alive" even when you're offline. Do this **in the second half of Day 2** — after Phase B Steps 11–18 are done.
 
 | Step | What you're doing | Section to use | Time |
 |---|---|---|---|
@@ -108,9 +114,11 @@ This phase is what makes WHIMSEY feel "always alive" even when you and the team 
 
 ---
 
-### 🅳 PHASE D — KEEP THIS DOC AS A REFERENCE FOREVER (do NOT read end-to-end) — lifetime
+### 🅳 PHASE D — 📚 REFERENCE FOREVER (do NOT read end-to-end) — lifetime
 
-After launch, these sections are **lookup-only**. You don't read them — you search them when something specific comes up.
+> 📚 **REFERENCE MODE — Never read front-to-back. Search for the specific scenario you need.**
+
+After launch, these sections are **lookup-only**. You don't read them — you Ctrl+F / search them when something specific comes up.
 
 | Section | When to open it |
 |---|---|
@@ -128,48 +136,116 @@ After launch, these sections are **lookup-only**. You don't read them — you se
 
 | Phase | What it is | Total time |
 |---|---|---|
-| 🅰️ Phase A — READ | Understand how it all works | **~1.5 hours** |
-| 🅱️ Phase B — BUILD | The 18-step setup of the server itself | **~8–10 hours** (split over 2–3 sittings) |
-| 🅲 Phase C — AUTOPILOT | Configure the bot brain that runs 24/7 | **~4–5 hours** (split over 2 sittings) |
-| 🅳 Phase D — REFERENCE | Lookup-only forever | **0 hours upfront** (used over time) |
+| 🅰️ Phase A — 📖 READ | Understand how it all works | **~45 min** (sprint version) |
+| 🅱️ Phase B — ✅ DO | The 18-step setup of the server itself | **~8–9 hours** |
+| 🅲 Phase C — ✅ DO | Configure the bot brain that runs 24/7 | **~3.5–4 hours** |
+| 🅳 Phase D — 📚 REFERENCE | Lookup-only forever | **0 hours upfront** |
 | | | |
-| **GRAND TOTAL TO LAUNCH** | Phase A + B + C | **~14 to 17 hours** of focused work |
+| **GRAND TOTAL** | Phase A + B + C | **~12 hours of focused work** |
 
-**Realistic calendar plan for a busy team of 1–2 people:**
-- **Week 1, Day 1 (evening, 1.5 hrs):** Phase A — read with coffee.
-- **Week 1, Day 2 (evening, 4 hrs):** Phase B Steps 1–10.
-- **Week 1, Day 3 (evening, 4 hrs):** Phase B Steps 11–18.
-- **Week 1, Day 4 (evening, 2 hrs):** Phase C C-1 + C-2 (Carl-bot config).
-- **Week 1, Day 5 (evening, 2.5 hrs):** Phase C C-3 through C-7 (NFT Tracker + alerts + heartbeat + smoke test).
-- **Week 1, Day 6:** Soft launch with friends only. Watch the audit channels for 24 hours.
-- **Week 1, Day 7:** Public launch. 🌷💗❄️🌌🩵
+---
+
+### 🗓️ YOUR 2-DAY SPRINT PLAN (6 hours each day — start to launch-ready)
+
+> **You have 2 days × 6 hours = 12 hours. Below is the exact hour-by-hour plan. Follow it in order. Don't skip.**
+
+#### ☀️ DAY 1 — "Build the Foundation" — 6 hours
+
+| Time block | What you're doing | Mode | Est. time |
+|---|---|---|---|
+| 0:00 – 0:45 | **Phase A — Critical reading** *(just sections 2, 4, skim 28 intro — skip the rest for now, come back to reference sections later)* | 📖 READ | 45 min |
+| 0:45 – 1:00 | ☕ Short break | — | 15 min |
+| 1:00 – 1:15 | Step 1: Server-wide safety + AutoMod + 2FA | ✅ DO | 15 min |
+| 1:15 – 1:25 | Step 2: Create 4 roles (names + colors only) | ✅ DO | 10 min |
+| 1:25 – 1:30 | Step 3: Drag roles into order | ✅ DO | 5 min |
+| 1:30 – 1:32 | Step 4: Admin 💗 (just turn on Administrator) | ✅ DO | 2 min |
+| 1:32 – 1:57 | Step 5: Moderator ☁️ permissions (the long one — Section 6) | ✅ DO | 25 min |
+| 1:57 – 2:27 | Steps 6 + 7: Holder 🌌 + Verified 🩵 permissions | ✅ DO | 30 min |
+| 2:27 – 2:57 | Step 8: Lock down @everyone — **this is the most important step in the entire doc** | ✅ DO | 30 min |
+| 2:57 – 3:07 | ☕ Break — well done, the server is now safe | — | 10 min |
+| 3:07 – 4:07 | Step 9: Create all 4 private categories + ~50 channels | ✅ DO | 60 min |
+| 4:07 – 5:37 | Step 10: Apply permissions to all 12 categories (use Sections 16–25 side-by-side) | ✅ DO | 90 min |
+| 5:37 – 6:00 | Sanity check: open server with a 2nd account — can you see only #welcome? | ✅ DO | 23 min |
+
+**End of Day 1:** Your server is structured and locked. Roles exist. Channels exist. @everyone sees nothing it shouldn't. 💗
+
+---
+
+#### 🌙 DAY 2 — "Bots + Autopilot" — 6 hours
+
+| Time block | What you're doing | Mode | Est. time |
+|---|---|---|---|
+| 0:00 – 1:00 | Step 11: Per-channel overrides (only special channels in Section 26) | ✅ DO | 60 min |
+| 1:00 – 1:15 | Step 12: Invite + configure Auth bot | ✅ DO | 15 min |
+| 1:15 – 1:35 | Step 13: Invite + configure Collab.Land | ✅ DO | 20 min |
+| 1:35 – 2:05 | Step 14: Invite + configure Ticket Tool + saved replies | ✅ DO | 30 min |
+| 2:05 – 2:35 | Step 15: Invite + configure Carl-bot base settings | ✅ DO | 30 min |
+| 2:35 – 2:40 | Step 16: Confirm final bot role order | ✅ DO | 5 min |
+| 2:40 – 3:10 | Step 17: Pre-launch test with 2nd Discord account (Section 29) | ✅ DO | 30 min |
+| 3:10 – 3:40 | Step 18: Polish (icon, banner, welcome message, vanity URL) | ✅ DO | 30 min |
+| 3:40 – 3:50 | ☕ Break — Phase B is DONE | — | 10 min |
+| 3:50 – 5:20 | Step C-1: All 30 Carl-bot event bindings (Section 28) | ✅ DO | 90 min |
+| 5:20 – 6:00 | Step C-2: Schedule all 9 Carl-bot momentum reports | ✅ DO | 40 min |
+
+**End of Day 2:** Server is live + locked + autopilot is logging everything. 🌌
+
+---
+
+#### 🌙 DAY 2 OVERFLOW (after Day 2 — ~2.5 hours, do this before public launch)
+
+> If you still have energy after Day 2's 6 hours, do these next. If not, do them the morning of launch.
+
+| What you're doing | Mode | Est. time |
+|---|---|---|
+| Step C-3: Invite + configure NFT Tracker (use placeholder contract for now) | ✅ DO | 30 min |
+| Step C-4: Set up Tiered Alert System (Section 34.8) | ✅ DO | 30 min |
+| Step C-5: Heartbeat monitoring | ✅ DO | 15 min |
+| Step C-6: Cross-bot whale/dump alert rules | ✅ DO | 10 min |
+| Step C-7: 8-test pre-flight smoke test | ✅ DO | 30 min |
+| Soft launch: share link with 20 close friends, watch audit channels for leaks | ✅ DO | passive |
+
+**On mint day:** Update NFT Tracker contract address (5 min). Open public invite. Watch the autopilot run. 🌷💗❄️🌌🩵
 
 ---
 
 ### 🚦 HOW TO TELL WHICH MODE A SECTION IS FOR — VISUAL LEGEND
 
-When you flip to any section in the doc, look at its number to know its mode:
+> **Rule:** Every section in this doc is exactly one of three modes. Before you open a section, check this table. Do not start reading a ✅ DO section without Discord open. Do not start clicking in a 📖 READ section.
 
-- **Sections 1, 3** = ✅ **DO** (action steps with checkboxes — open Discord and tick them off)
-- **Sections 2, 4** = 📖 **READ** (overview — sit back and absorb)
-- **Sections 5–9** = ✅ **DO** (toggle role permissions in Server Settings → Roles)
-- **Section 10** = ✅ **DO** (create categories + channels)
-- **Sections 11–15** = ✅ **DO** (invite + configure each bot)
-- **Sections 16–25** = ✅ **DO** (apply category-level permission tables)
-- **Section 26** = ✅ **DO** (per-channel overrides — only the listed channels)
-- **Section 27** = ✅ **DO** (paste exact verification panel content)
-- **Section 28** = ✅ **DO** (configure Carl-bot rules — autopilot brain)
-- **Sections 29, 30** = ✅ **DO** (test + polish before launch)
-- **Section 31** = 📚 **REFERENCE** (look up only — never read end-to-end)
-- **Section 32** = ✅ **DO** (invite + configure NFT Tracker, the 5th bot)
-- **Section 33** = 📚 **REFERENCE** (only when something goes wrong)
-- **Section 34** = ✅ **DO** for 34.1–34.7 (autopilot config), then 📚 **REFERENCE** for 34.8–34.12 (alert system definitions you re-read whenever you tune sensitivity)
+| Icon | Mode | What it means | What you should have open |
+|---|---|---|---|
+| 📖 | **READ** | Absorb, understand, do not click anything | This doc only — Discord closed |
+| ✅ | **DO** | Action steps — click, toggle, configure, tick boxes | Discord open (or a bot dashboard open) |
+| 📚 | **REFERENCE** | Look up when something specific happens — never read front-to-back | Open only when you need it |
 
-If you ever feel lost mid-section, scroll back to this legend. 🩵
+**Every section mapped:**
+
+| Section | Mode | What it is |
+|---|---|---|
+| Top intro + "How To Read" | 📖 READ | The legend itself — you're reading it now |
+| **Section 1** | ✅ DO | The 18-step build checklist — your tick-off list |
+| **Section 2** | 📖 READ | Member journey story — what a visitor actually sees |
+| **Section 3** | ✅ DO | Server-wide safety settings (AutoMod, 2FA, verification) |
+| **Section 4** | 📖 READ | Role hierarchy — understand the spine of the system |
+| **Sections 5–9** | ✅ DO | Configure each role's permissions (toggle in Discord → Roles) |
+| **Section 10** | ✅ DO | Create the 4 private categories + all 50ish channels |
+| **Sections 11–15** | ✅ DO | Invite + configure each of the 4 bots |
+| **Section 16–25** | ✅ DO | Apply permission tables to all 12 categories |
+| **Section 26** | ✅ DO | Per-channel overrides (only the listed channels) |
+| **Section 27** | ✅ DO | Paste the exact verification panel text |
+| **Section 28** | ✅ DO | Configure Carl-bot autopilot (all 30 bindings + 9 schedules) |
+| **Sections 29, 30** | ✅ DO | Pre-launch test + polish (icon, banner, welcome) |
+| **Section 31** | 📚 REFERENCE | Permission glossary — Ctrl+F when you forget what a perm name means |
+| **Section 32** | ✅ DO | Invite + configure NFT Tracker (5th bot) |
+| **Section 33** | 📚 REFERENCE | Crisis playbook — open ONLY when something goes wrong |
+| **Section 34.1–34.7** | ✅ DO | Autopilot config (alerts, heartbeat, cross-bot rules) |
+| **Section 34.8–34.12** | 📚 REFERENCE | Alert thresholds + "Humans Needed" checklist — tune over time |
+
+If you ever feel lost mid-section, scroll back to this table. 🩵
 
 ---
 
-## 🌷 IMPORTANT — PRE-MINT TIMING (read this first!) 💗
+## 📖 READ — PRE-MINT TIMING (read this first!) 🌷💗
 
 **The WHIMSEY collection mint is in ~15 days. The collection is NOT live on-chain yet.**
 
@@ -196,22 +272,24 @@ The **NFT Tracker bot (Step C-3)** can be **invited and configured now**, but it
 
 → **Pick Option 1.** You don't want to be debugging bot setup at 3am on mint day. Set it up now with placeholders, swap the contract on mint day. ❄️
 
-### 📅 The new realistic 15-day calendar
+### 📅 Your 2-day pre-mint build calendar
 
-Here's how the work fits cleanly into the next 15 days:
+You have **2 days × 6 hours = 12 hours** to get from zero to fully-automated Discord server. Here's how it fits:
 
-| Day | What you do | Hours |
-|---|---|---|
-| **Days 1–2** | Phase A (read everything) + Phase B Steps 1–8 (safety, roles, lockdown) | ~5 hrs |
-| **Days 3–5** | Phase B Steps 9–11 (categories, channels, all 12 permission tables, per-channel overrides) | ~4 hrs |
-| **Days 6–7** | Phase B Steps 12–18 (4 bots invite + configure, polish, pre-launch test) | ~3 hrs |
-| **Days 8–10** | Phase C Steps C-1, C-2 (all Carl-bot bindings + 9 scheduled reports) | ~2.5 hrs |
-| **Days 11–12** | Phase C Steps C-3 (NFT Tracker with placeholder contract), C-4, C-5, C-6 (alerts + heartbeat) | ~2 hrs |
-| **Day 13** | Phase C Step C-7 (8-test pre-flight smoke test) | ~30 min |
-| **Day 14** | Soft launch — open server to ~20 close friends + community alphas. Watch audit channels for 24 hrs. Fix anything that surfaces. | passive |
-| **Day 15 (MINT DAY)** | Update NFT Tracker contract address (5 min). Open invite link to public. Watch the autopilot run. 🌷💗❄️🌌🩵 | ~5 min + vibes |
+| Day | What you do | Mode | Hours |
+|---|---|---|---|
+| **Day 1 — morning/afternoon** | Phase A: Critical reading (sections 2, 4, skim 28 intro) | 📖 READ | 45 min |
+| **Day 1 — continued** | Phase B Steps 1–8: Server safety, all 4 roles, @everyone lockdown | ✅ DO | ~2 hrs |
+| **Day 1 — continued** | Phase B Step 9: Create all 4 private categories + ~50 channels | ✅ DO | ~1 hr |
+| **Day 1 — continued** | Phase B Step 10: All 12 category permission tables | ✅ DO | ~1.5 hrs |
+| **Day 1 — end** | Sanity check with 2nd account | ✅ DO | 20 min |
+| **Day 2 — morning** | Phase B Steps 11–18: Per-channel overrides, 4 bots, test, polish | ✅ DO | ~3 hrs |
+| **Day 2 — afternoon** | Phase C C-1 + C-2: All Carl-bot bindings + 9 schedules | ✅ DO | ~2.5 hrs |
+| **Day 2 — evening** | Phase C C-3 through C-7: NFT Tracker + alerts + smoke test | ✅ DO | ~1 hr |
+| **After Day 2** | Soft launch with 20 friends. Watch audit channels. Fix any leaks. | ✅ DO | passive |
+| **Mint day** | Update NFT Tracker contract address (5 min). Open public invite. 🌷💗❄️🌌🩵 | ✅ DO | ~5 min + vibes |
 
-**You have plenty of time.** Don't rush. Don't skip steps. The autopilot is what makes this server feel "always alive" on mint day even when you've been awake for 36 hours straight.
+**Don't rush.** Don't skip steps. The permission tables in Step 10 are the most tedious part — put on a playlist and go methodically. One wrong toggle = a channel that leaks to everyone.
 
 ---
 
@@ -511,7 +589,7 @@ If all 5 are green: **publish that invite link. WHIMSEY is officially live.** �
 
 ---
 
-## TABLE OF CONTENTS
+## 📖 READ — TABLE OF CONTENTS
 
 1. The 18-step setup order (do these in this exact order)
 2. The member journey — the experience your permissions must produce
@@ -547,7 +625,7 @@ If all 5 are green: **publish that invite link. WHIMSEY is officially live.** �
 
 ---
 
-## 1) THE 18-STEP SETUP ORDER
+## ✅ DO — 1) THE 18-STEP SETUP ORDER
 
 Tick each step as you finish it. Do NOT do them out of order.
 
@@ -572,7 +650,7 @@ Tick each step as you finish it. Do NOT do them out of order.
 
 ---
 
-## 2) THE MEMBER JOURNEY (WHAT YOUR PERMISSIONS MUST PRODUCE)
+## 📖 READ — 2) THE MEMBER JOURNEY (WHAT YOUR PERMISSIONS MUST PRODUCE)
 
 This is the experience your server has to enforce. Every permission decision below exists to make this story work.
 
@@ -618,7 +696,7 @@ The clarification on `#support` vs `#open-tickets` you asked for:
 
 ---
 
-## 3) SERVER-WIDE SAFETY CONFIGURATION
+## ✅ DO — 3) SERVER-WIDE SAFETY CONFIGURATION
 
 Do this BEFORE touching roles. Open **Server Settings → Safety Setup**.
 
@@ -666,7 +744,7 @@ Make sure these are set:
 
 ---
 
-## 4) ROLE HIERARCHY — THE EXACT VERTICAL ORDER
+## 📖 READ — 4) ROLE HIERARCHY — THE EXACT VERTICAL ORDER
 
 After Step 2 you'll have only the user roles. After all 4 bots are invited, your hierarchy must look exactly like this (top = highest power):
 
@@ -694,7 +772,7 @@ To re-order: **Server Settings → Roles → drag with the handle on the left.**
 
 ---
 
-## 5) ROLE 1 — `Admin 💗`
+## ✅ DO — 5) ROLE 1 — `Admin 💗`
 
 **Color:** Pink (use Discord's default pink, or hex `#FF66B2` for a custom one).
 **Display role members separately from online members:** ✅ ON
@@ -711,7 +789,7 @@ To re-order: **Server Settings → Roles → drag with the handle on the left.**
 
 ---
 
-## 6) ROLE 2 — `Moderator ☁️`
+## ✅ DO — 6) ROLE 2 — `Moderator ☁️`
 
 **Color:** Light blue / cloud (hex `#A8D8FF` or Discord's default light blue).
 **Display role members separately from online members:** ✅ ON
@@ -815,7 +893,7 @@ Below is **every single permission Discord shows in the role editor**, in the ex
 
 ---
 
-## 7) ROLE 3 — `Holder 🌌`
+## ✅ DO — 7) ROLE 3 — `Holder 🌌`
 
 **Color:** Galaxy purple (hex `#5B2A86`).
 **Display role members separately from online members:** ❌ OFF
@@ -917,7 +995,7 @@ This role's power comes from **what it can SEE** (channel-level Allows in sectio
 
 ---
 
-## 8) ROLE 4 — `Verified 🩵`
+## ✅ DO — 8) ROLE 4 — `Verified 🩵`
 
 **Color:** Sky blue (hex `#7EC8E3`).
 **Display role members separately from online members:** ❌ OFF
@@ -1019,7 +1097,7 @@ The toggles below are **identical** to Holder. The Holder vs Verified split is e
 
 ---
 
-## 9) `@everyone` — THE SERVER-WIDE LOCKDOWN
+## ✅ DO — 9) `@everyone` — THE SERVER-WIDE LOCKDOWN
 
 This is the most important table in the entire document. Every fresh joiner has only `@everyone`. We deny everything by default and re-grant access in specific places via roles + category overrides.
 
@@ -1120,7 +1198,7 @@ Open **Server Settings → Roles → @everyone → Permissions tab**.
 
 ---
 
-## 10) NEW PRIVATE CATEGORIES YOU MUST CREATE
+## ✅ DO — 10) NEW PRIVATE CATEGORIES YOU MUST CREATE
 
 You currently have 8 categories. Add these **4 NEW** categories for staff chat, granular event auditing, real-time momentum tracking, and ticket support. Position them at the **bottom of your category list** — regular members can't see them anyway, so it keeps the sidebar tidy for the team.
 
@@ -1215,7 +1293,7 @@ All four new categories' permissions are configured in sections 24, 24A, 24B, an
 
 ---
 
-## 11) BOT 1 — `Auth` (verification gateway)
+## ✅ DO — 11) BOT 1 — `Auth` (verification gateway)
 
 **Invite order:** 1st (invite this BEFORE the others).
 
@@ -1249,7 +1327,7 @@ Drag `Auth` to position **#4** (above `Verified 🩵`, below `Carl-bot`).
 
 ---
 
-## 12) BOT 2 — `Collab.Land` (NFT wallet verification)
+## ✅ DO — 12) BOT 2 — `Collab.Land` (NFT wallet verification)
 
 **Invite order:** 2nd.
 
@@ -1283,7 +1361,7 @@ Drag `Collab.Land` to position **#5** (above `Holder 🌌`, below `Auth`).
 
 ---
 
-## 13) BOT 3 — `Ticket Tool`
+## ✅ DO — 13) BOT 3 — `Ticket Tool`
 
 **Invite order:** 3rd.
 
@@ -1322,7 +1400,7 @@ Drag `Ticket Tool` to position **#6** (below `Collab.Land`, above `Holder 🌌`)
 
 ---
 
-## 14) BOT 4 — `Carl-bot`
+## ✅ DO — 14) BOT 4 — `Carl-bot`
 
 **Invite order:** 4th (invite LAST, after the others are working).
 
@@ -1359,7 +1437,7 @@ See section 28 — full Carl-bot operations playbook.
 
 ---
 
-## 15) BOT ROLE POSITIONING — FINAL RECAP
+## ✅ DO — 15) BOT ROLE POSITIONING — FINAL RECAP
 
 After all 4 bots are invited and dragged, your role list (top → bottom) MUST look like:
 
@@ -1397,7 +1475,7 @@ For every category below, do this:
 
 ---
 
-## 16) CATEGORY 1 — `💗 | VERIFY`
+## ✅ DO — 16) CATEGORY 1 — `💗 | VERIFY`
 
 **Visibility goal:** Visible ONLY to `@everyone` (unverified joiners). Disappears the moment a member gets `Verified 🩵`.
 
@@ -1453,7 +1531,7 @@ All other categories of permissions (Voice, Stage, Events) — leave Neutral ➖
 
 ---
 
-## 17) CATEGORY 2 — `🌊 | START HERE`
+## ✅ DO — 17) CATEGORY 2 — `🌊 | START HERE`
 
 **Visibility goal:** Hidden from `@everyone`. Visible (read-only by default) to `Verified 🩵` and `Holder 🌌`. Mods/Admin can post.
 
@@ -1504,7 +1582,7 @@ Voice, Stage, Events — Neutral ➖ for everyone.
 
 ---
 
-## 18) CATEGORY 3 — `❄️ | THE UNIVERSE`
+## ✅ DO — 18) CATEGORY 3 — `❄️ | THE UNIVERSE`
 
 **Visibility goal:** Same as `🌊 | START HERE` — read-only for the community, write for staff. This is your "lore + collection info" library.
 
@@ -1514,7 +1592,7 @@ Use the **EXACT SAME table as section 17**. Apply identically.
 
 ---
 
-## 19) CATEGORY 4 — `📌 | COMMUNITY`
+## ✅ DO — 19) CATEGORY 4 — `📌 | COMMUNITY`
 
 **Visibility goal:** Hidden from `@everyone`. Verified + Holder can chat freely. `#whimsey-of-the-day` is overridden to staff-write-only at the channel level (section 26).
 
@@ -1565,7 +1643,7 @@ Voice, Stage, Events — Neutral ➖ for everyone.
 
 ---
 
-## 20) CATEGORY 5 — `🌌 | HOLDERS ONLY`
+## ✅ DO — 20) CATEGORY 5 — `🌌 | HOLDERS ONLY`
 
 **Visibility goal:** This is the trickiest one. `@everyone` and `Verified 🩵` should NOT see this category by default — but `Verified 🩵` MUST be able to see ONE channel inside (`#holder-verify`) so they can claim Holder status. We achieve this by setting Verified to Deny ❌ on `View Channels` here at the category level, and then explicitly Allowing ✅ `View Channel` for Verified at the `#holder-verify` channel level (section 26).
 
@@ -1616,7 +1694,7 @@ Voice, Stage, Events — Neutral ➖.
 
 ---
 
-## 21) CATEGORY 6 — `🌷 | COLLECTORS`
+## ✅ DO — 21) CATEGORY 6 — `🌷 | COLLECTORS`
 
 **Visibility goal:** Hidden from `@everyone`. Open chat for Verified + Holder. `#trading-post` and `#market-talk` get a slowmode override at the channel level (section 26).
 
@@ -1624,7 +1702,7 @@ Use the **SAME table as section 19** (`📌 | COMMUNITY`). The behavior is ident
 
 ---
 
-## 22) CATEGORY 7 — `🩵 | EVENTS`
+## ✅ DO — 22) CATEGORY 7 — `🩵 | EVENTS`
 
 **Visibility goal:** Hidden from `@everyone`. Verified + Holder can VIEW + REACT but NOT send messages (because giveaways and polls work via reactions/buttons, not chat).
 
@@ -1675,7 +1753,7 @@ Voice, Stage, Events — Neutral ➖.
 
 ---
 
-## 23) CATEGORY 8 — `☁️ | SUPPORT`
+## ✅ DO — 23) CATEGORY 8 — `☁️ | SUPPORT`
 
 **Visibility goal:** Hidden from `@everyone`. Verified + Holder can read everything, can chat in `#support`, can react in `#faqs` and `#scam-alerts` (read-only), and can click the Ticket Tool button in `#open-tickets`.
 
@@ -1730,7 +1808,7 @@ Voice, Stage, Events — Neutral ➖.
 
 ---
 
-## 24) CATEGORY 9 — `🔒 | STAFF` (NEW PRIVATE)
+## ✅ DO — 24) CATEGORY 9 — `🔒 | STAFF` (NEW PRIVATE)
 
 **Visibility goal:** Visible to ONLY `Admin 💗`, `Moderator ☁️`, and `Carl-bot`. Hidden from everyone else. This category is now lean — only chat-style channels live here. All event logging lives in `📋 | AUDITS` (section 24A).
 
@@ -1771,7 +1849,7 @@ All other rows — Neutral ➖.
 
 ---
 
-## 24A) CATEGORY 10 — `📋 | AUDITS` (NEW PRIVATE — granular event log)
+## ✅ DO — 24A) CATEGORY 10 — `📋 | AUDITS` (NEW PRIVATE — granular event log)
 
 **Visibility goal:** Visible to ONLY `Admin 💗`, `Moderator ☁️`, `Carl-bot`, `Collab.Land`, and `Ticket Tool`. Hidden from everyone else. **Critical:** even though humans can VIEW these channels, they must NOT be able to send messages here. Only bots write. This protects the audit trail from being tampered with (or accidentally polluted).
 
@@ -1827,7 +1905,7 @@ All other rows — Neutral ➖.
 
 ---
 
-## 24B) CATEGORY 11 — `📈 | MOMENTUM` (NEW PRIVATE — server + collection pulse)
+## ✅ DO — 24B) CATEGORY 11 — `📈 | MOMENTUM` (NEW PRIVATE — server + collection pulse)
 
 **Visibility goal:** Same as AUDITS — visible to team + log-writing bots. Humans CAN post manual annotations here (unlike AUDITS), because Momentum is a dashboard you discuss, not a forensic trail.
 
@@ -1869,7 +1947,7 @@ All other rows — Neutral ➖.
 
 ---
 
-## 25) CATEGORY 12 — `🎫 | TICKETS` (NEW PRIVATE)
+## ✅ DO — 25) CATEGORY 12 — `🎫 | TICKETS` (NEW PRIVATE)
 
 **Visibility goal:** Visible to ONLY `Admin 💗`, `Moderator ☁️`, and `Ticket Tool`. Each opened ticket-channel inside this category will have ADDITIONAL per-channel overwrites added by Ticket Tool to also allow the user who opened the ticket — that's automatic, you don't configure it.
 
@@ -1917,7 +1995,7 @@ The exact permission labels at single-channel level are slightly shorter than at
 
 ---
 
-## 26) PER-CHANNEL OVERRIDES
+## ✅ DO — 26) PER-CHANNEL OVERRIDES
 
 ### 26.1) `#access-info` (in `💗 | VERIFY`)
 
@@ -2268,7 +2346,7 @@ The 5th core bot writes here. Give it explicit channel-level allow:
 
 ---
 
-## 27) VERIFICATION FLOW — EXACT BOT PANEL CONTENT
+## ✅ DO — 27) VERIFICATION FLOW — EXACT BOT PANEL CONTENT
 
 ### `#access-info` pinned message (you post this manually as Admin)
 
@@ -2315,7 +2393,7 @@ Configure Ticket Tool to post:
 
 ---
 
-## 28) THE CARL-BOT OPERATIONS PLAYBOOK
+## ✅ DO — 28) THE CARL-BOT OPERATIONS PLAYBOOK
 
 This is the full configuration for Carl-bot — the brain of your server. It does the work of 4 mods at the same time, 24/7. Configure everything below in the Carl-bot dashboard at **carl.gg → Dashboard → [WHIMSEY server]**.
 
@@ -2572,7 +2650,7 @@ Saves the team typing the same answers 50 times a day.
 
 ---
 
-## 29) PRE-LAUNCH TEST CHECKLIST
+## ✅ DO — 29) PRE-LAUNCH TEST CHECKLIST
 
 Use a SECOND Discord account (not yours, not a mod's) and walk through this. Tick every box. Anything that fails — fix before launching.
 
@@ -2645,7 +2723,7 @@ Use a SECOND Discord account (not yours, not a mod's) and walk through this. Tic
 
 ---
 
-## 30) POLISH TASKS FOR A 30,000-SUPPLY LAUNCH
+## ✅ DO — 30) POLISH TASKS FOR A 30,000-SUPPLY LAUNCH
 
 These separate Doodles/Cool Cats/Pudgy-tier servers from generic NFT servers. Do as many as you can before public launch.
 
@@ -2679,7 +2757,7 @@ These separate Doodles/Cool Cats/Pudgy-tier servers from generic NFT servers. Do
 
 ---
 
-## 31) PERMISSION GLOSSARY (PLAIN ENGLISH)
+## 📚 REFERENCE — 31) PERMISSION GLOSSARY (PLAIN ENGLISH)
 
 Quick lookup for every permission used above, exactly as Discord names it.
 
@@ -2761,7 +2839,7 @@ Quick lookup for every permission used above, exactly as Discord names it.
 
 ---
 
-## ONE-PARAGRAPH SUMMARY
+## 📖 READ — ONE-PARAGRAPH SUMMARY
 
 Lock everything down for `@everyone`. The only category they can see is `💗 | VERIFY`. Once they verify with the Auth bot, they get `Verified 🩵` and the rest of the public server appears. If they prove they own a $CNDY NFT via Collab.Land in `#holder-verify`, they get `Holder 🌌` and the exclusive `#holder-chat` + `#holder-announcements` appear. The team has `Moderator ☁️` (everything except Administrator). You have `Admin 💗` (Administrator). The 4 bots — Auth (verify), Collab.Land (wallet check), Ticket Tool (private support), Carl-bot (24/7 mod automation + logs) — sit between Mod and Holder in the hierarchy. Two new private categories `🔒 | STAFF` and `🎫 | TICKETS` exist for the team's eyes only. `#support` is open public help; `#open-tickets` is the door to private 1-on-1 help. Before launching, run section 29's checklist with a second account.
 
@@ -2770,7 +2848,7 @@ You're ready to launch WHIMSEY. 💗
 ---
 
 
-## 32) THE 5TH CORE BOT — NFT TRACKER (ON-CHAIN COLLECTION FEED) 📡
+## ✅ DO — 32) THE 5TH CORE BOT — NFT TRACKER (ON-CHAIN COLLECTION FEED) 📡
 
 **Status: CONFIRMED CORE BOT.** This is now part of the standard 5-bot stack. Without it, `#momentum-collection-feed` is empty and you're blind to everything happening on-chain. With it, every $CNDY sale, listing, transfer, and mint posts automatically in real time.
 
@@ -2936,7 +3014,7 @@ Once the team is comfortable, you can:
 
 ---
 
-## 33) THE WHIMSEY CRISIS PLAYBOOK — EVERY DISASTER, EVERY FIX
+## 📚 REFERENCE — 33) THE WHIMSEY CRISIS PLAYBOOK — EVERY DISASTER, EVERY FIX
 
 This is the single most important section for the team. Pin this section's summary in `#staff-chat` and `#staff-announcements`. When something goes wrong, panic kills servers. A playbook saves them.
 
@@ -3444,7 +3522,7 @@ This is the single most important habit. Three months from now, you'll be able t
 
 ---
 
-## 34) BOT AUTOPILOT — THE 24/7 AUTONOMOUS OPERATIONS SETUP 💗❄️
+## ✅ DO (34.1–34.7) / 📚 REFERENCE (34.8–34.12) — 34) BOT AUTOPILOT — THE 24/7 AUTONOMOUS OPERATIONS SETUP 💗❄️
 
 **The promise of this section:** when you and the team are asleep, working, eating, traveling, or just unavailable — the server keeps running smoothly, dangerous things get blocked automatically, the daily/weekly/monthly momentum reports post on time, and you only get pinged when a HUMAN is genuinely needed. Everything else is handled by the bots.
 
