@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { Switch, Route, Link } from "wouter";
 import docRaw from "@docs/WHIMSEY_DISCORD_SETUP.md?raw";
+import AiChat from "./AiChat";
 
 type Mode = "read" | "do" | "reference" | "mixed" | null;
 type Heading = { id: string; text: string; clean: string; level: number; mode: Mode };
@@ -20,7 +22,6 @@ function detectMode(raw: string): Mode {
   return null;
 }
 
-// Strip the "📖 READ — " / "✅ DO — " / "📚 REFERENCE — " prefix from display text
 function cleanTitle(raw: string): string {
   return raw
     .replace(/^(📖\s*READ|✅\s*DO[^—–]*|📚\s*REFERENCE)\s*[—–]\s*/i, "")
@@ -104,13 +105,13 @@ function H3({ children }: { children: React.ReactNode }) {
   );
 }
 
-/* ── Main App ────────────────────────────────────────────────────────── */
+/* ── Docs page ───────────────────────────────────────────────────────── */
 
-export default function App() {
-  const [search, setSearch]       = useState("");
+function DocsPage() {
+  const [search, setSearch]           = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeId, setActiveId]   = useState("");
-  const contentRef                = useRef<HTMLDivElement>(null);
+  const [activeId, setActiveId]       = useState("");
+  const contentRef                    = useRef<HTMLDivElement>(null);
 
   const headings = extractHeadings(docRaw);
   const filtered = search
@@ -223,6 +224,14 @@ export default function App() {
           onChange={(e) => { setSearch(e.target.value); setSidebarOpen(true); }}
           className="hidden sm:block w-44 text-xs bg-muted border border-border rounded-lg px-3 py-1.5 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/30"
         />
+
+        {/* AI Chat button */}
+        <Link href="/ai">
+          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-pink-500 to-violet-500 text-white text-xs font-semibold shadow-sm hover:shadow-md hover:scale-105 active:scale-95 transition-all shrink-0">
+            <span>💗</span>
+            <span className="hidden sm:inline">Ask AI</span>
+          </button>
+        </Link>
       </header>
 
       <div className="flex flex-1 overflow-hidden relative">
@@ -247,6 +256,17 @@ export default function App() {
               onChange={(e) => setSearch(e.target.value)}
               className="w-full text-xs bg-muted border border-border rounded-lg px-3 py-1.5 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/30"
             />
+          </div>
+
+          {/* AI promo box in sidebar */}
+          <div className="mx-2 mt-2 mb-1 rounded-xl bg-gradient-to-br from-pink-50 to-violet-50 border border-pink-100 p-3">
+            <p className="text-[11px] font-semibold text-pink-700 mb-1">💗 WHIMSEY AI</p>
+            <p className="text-[10px] text-gray-500 mb-2 leading-relaxed">Stuck on a step? Ask your personal Discord setup expert.</p>
+            <Link href="/ai">
+              <button className="w-full text-[11px] bg-gradient-to-r from-pink-500 to-violet-500 text-white rounded-lg py-1.5 font-semibold hover:opacity-90 transition-opacity">
+                Open AI Chat →
+              </button>
+            </Link>
           </div>
 
           <nav className="flex-1 overflow-y-auto p-2">
@@ -287,5 +307,16 @@ export default function App() {
         </main>
       </div>
     </div>
+  );
+}
+
+/* ── Root with routing ───────────────────────────────────────────────── */
+
+export default function App() {
+  return (
+    <Switch>
+      <Route path="/ai" component={AiChat} />
+      <Route component={DocsPage} />
+    </Switch>
   );
 }
