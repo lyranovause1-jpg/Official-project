@@ -24,7 +24,7 @@ export function ChecklistPhase({ phase, checkedItems, onToggleItem, phaseStats, 
               {phase.emoji}
             </div>
             <div>
-              <h2 className="font-serif-brand text-2xl text-foreground sm:text-3xl">{phase.title}</h2>
+              <h2 className="text-2xl font-extrabold text-foreground sm:text-3xl">{phase.title}</h2>
               <p className="text-sm font-medium text-muted-foreground mt-1">{phase.subtitle}</p>
             </div>
           </div>

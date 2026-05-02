@@ -56,7 +56,7 @@ export default function Home() {
             </div>
             
             <div className="space-y-2">
-              <h1 className="font-serif-brand text-4xl text-foreground sm:text-6xl tracking-tight">
+              <h1 className="text-4xl font-extrabold text-foreground sm:text-6xl tracking-tight">
                 {PROJECT_META.name} Setup
               </h1>
               <p className="text-lg font-medium text-muted-foreground max-w-xl mx-auto">
@@ -65,7 +65,7 @@ export default function Home() {
             </div>
 
             <div className="inline-flex flex-col items-center justify-center rounded-2xl bg-primary/10 px-6 py-4 shadow-inner ring-1 ring-primary/20">
-              <div className="text-3xl font-black text-primary font-serif-brand">T-MINUS {PROJECT_META.daysUntilMint} DAYS</div>
+              <div className="text-3xl font-black text-primary">T-MINUS {PROJECT_META.daysUntilMint} DAYS</div>
               <div className="text-sm font-bold uppercase tracking-widest text-primary/80">UNTIL MINT</div>
             </div>
           </motion.div>
@@ -146,7 +146,7 @@ export default function Home() {
             <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-white shadow-xl">
               <Sparkles className="h-12 w-12 text-primary" />
             </div>
-            <h2 className="font-serif-brand text-4xl text-foreground mb-4">You are ready.</h2>
+            <h2 className="text-4xl font-extrabold text-foreground mb-4">You are ready.</h2>
             <p className="text-lg font-medium text-muted-foreground">
               All tasks complete. The server is locked down, bots are armed, and momentum is tracking. Time to launch {PROJECT_META.name}.
             </p>
