@@ -30,7 +30,6 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 
 - `artifacts/api-server` — Express API server (port 8080).
 - `artifacts/mockup-sandbox` — Vite component preview server for design exploration (path `/__mockup`).
-- `artifacts/whimsey-checklist` — Interactive WHIMSEY Discord setup checklist (path `/`, port 18396). Single-page React + Vite app; persists progress in `localStorage` under key `whimsey-checklist-v1`. Source data: `src/data/checklist.ts` (3 phases, ~25 steps, 184 items, all linked to sections of `docs/WHIMSEY_DISCORD_SETUP.md`).
 
 ## WHIMSEY Project Context
 
