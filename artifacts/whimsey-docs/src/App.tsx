@@ -3,7 +3,44 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import docRaw from "@docs/WHIMSEY_DISCORD_SETUP.md?raw";
 
-type Heading = { id: string; text: string; level: number };
+type Mode = "read" | "do" | "reference" | "mixed" | null;
+type Heading = { id: string; text: string; clean: string; level: number; mode: Mode };
+
+/* ── Mode detection ──────────────────────────────────────────────────── */
+
+function detectMode(raw: string): Mode {
+  const t = raw.toLowerCase();
+  const hasRead = t.includes("📖") || t.startsWith("read —") || t.includes(" read —");
+  const hasDo   = t.includes("✅") || t.startsWith("do —")   || t.includes(" do —") || t.includes("do (");
+  const hasRef  = t.includes("📚") || t.startsWith("reference") || t.includes(" reference");
+  if (hasDo && hasRef) return "mixed";
+  if (hasRead) return "read";
+  if (hasDo)   return "do";
+  if (hasRef)  return "reference";
+  return null;
+}
+
+// Strip the "📖 READ — " / "✅ DO — " / "📚 REFERENCE — " prefix from display text
+function cleanTitle(raw: string): string {
+  return raw
+    .replace(/^(📖\s*READ|✅\s*DO[^—–]*|📚\s*REFERENCE)\s*[—–]\s*/i, "")
+    .replace(/^(✅\s*DO[^/]*\/\s*📚\s*REFERENCE[^—–]*)\s*[—–]\s*/i, "")
+    .trim();
+}
+
+/* ── Badge config ────────────────────────────────────────────────────── */
+
+const BADGE: Record<
+  NonNullable<Mode>,
+  { label: string; badge: string; border: string; sidebar: string; dot: string }
+> = {
+  read:      { label: "📖 READ",      badge: "bg-sky-100 text-sky-700 border border-sky-200",       border: "border-l-4 border-sky-300",    sidebar: "text-sky-700",    dot: "bg-sky-400" },
+  do:        { label: "✅ DO",         badge: "bg-emerald-100 text-emerald-700 border border-emerald-200", border: "border-l-4 border-emerald-400", sidebar: "text-emerald-700", dot: "bg-emerald-500" },
+  reference: { label: "📚 REFERENCE", badge: "bg-purple-100 text-purple-700 border border-purple-200", border: "border-l-4 border-purple-300",  sidebar: "text-purple-700", dot: "bg-purple-400" },
+  mixed:     { label: "✅ DO / 📚 REF", badge: "bg-amber-100 text-amber-700 border border-amber-200",  border: "border-l-4 border-amber-300",   sidebar: "text-amber-700",  dot: "bg-amber-400" },
+};
+
+/* ── Helpers ─────────────────────────────────────────────────────────── */
 
 function slugify(text: string) {
   return text
@@ -14,98 +51,108 @@ function slugify(text: string) {
 }
 
 function extractHeadings(markdown: string): Heading[] {
-  const lines = markdown.split("\n");
   const headings: Heading[] = [];
-  for (const line of lines) {
+  for (const line of markdown.split("\n")) {
     const match = line.match(/^(#{1,3})\s+(.+)/);
     if (match) {
       const level = match[1].length;
-      const text = match[2].replace(/[*_`]/g, "").trim();
-      headings.push({ id: slugify(text), text, level });
+      const raw   = match[2].replace(/[*_`]/g, "").trim();
+      const mode  = detectMode(raw);
+      const clean = mode ? cleanTitle(raw) : raw;
+      headings.push({ id: slugify(raw), text: raw, clean, level, mode });
     }
   }
   return headings;
 }
 
+/* ── Section badge component ─────────────────────────────────────────── */
+
+function ModeBadge({ mode }: { mode: NonNullable<Mode> }) {
+  const cfg = BADGE[mode];
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide mr-2 shrink-0 ${cfg.badge}`}>
+      {cfg.label}
+    </span>
+  );
+}
+
+/* ── Heading wrappers ────────────────────────────────────────────────── */
+
+function H2({ raw, children }: { raw: string; children: React.ReactNode }) {
+  const mode  = detectMode(raw);
+  const clean = mode ? cleanTitle(raw) : raw;
+  const id    = slugify(raw);
+  const cfg   = mode ? BADGE[mode] : null;
+
+  return (
+    <div className={`mt-10 mb-1 rounded-r-xl ${cfg ? cfg.border + " pl-4 pr-3 py-3 bg-white" : ""}`}>
+      <h2 id={id} className="text-xl font-bold text-foreground scroll-mt-20 flex flex-wrap items-center gap-1">
+        {mode && <ModeBadge mode={mode} />}
+        <span>{clean || children}</span>
+      </h2>
+    </div>
+  );
+}
+
+function H3({ children }: { children: React.ReactNode }) {
+  const raw = String(children);
+  const id  = slugify(raw);
+  return (
+    <h3 id={id} className="text-base font-semibold mt-6 mb-1.5 text-foreground scroll-mt-20">
+      {children}
+    </h3>
+  );
+}
+
+/* ── Main App ────────────────────────────────────────────────────────── */
+
 export default function App() {
-  const [search, setSearch] = useState("");
+  const [search, setSearch]       = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeId, setActiveId] = useState("");
-  const contentRef = useRef<HTMLDivElement>(null);
+  const [activeId, setActiveId]   = useState("");
+  const contentRef                = useRef<HTMLDivElement>(null);
 
   const headings = extractHeadings(docRaw);
   const filtered = search
-    ? headings.filter((h) =>
-        h.text.toLowerCase().includes(search.toLowerCase())
-      )
+    ? headings.filter((h) => h.clean.toLowerCase().includes(search.toLowerCase()))
     : headings;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setActiveId(entry.target.id);
-            break;
-          }
+          if (entry.isIntersecting) { setActiveId(entry.target.id); break; }
         }
       },
       { rootMargin: "-10% 0px -80% 0px" }
     );
-
-    const headingEls = contentRef.current?.querySelectorAll(
-      "h1, h2, h3"
-    );
-    headingEls?.forEach((el) => observer.observe(el));
+    contentRef.current?.querySelectorAll("h1, h2, h3").forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, []);
 
   function scrollTo(id: string) {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
     setSidebarOpen(false);
   }
 
   const components: React.ComponentProps<typeof ReactMarkdown>["components"] = {
     h1: ({ children }) => {
-      const text = String(children);
-      const id = slugify(text);
+      const raw = String(children);
+      const id  = slugify(raw);
       return (
         <h1 id={id} className="text-2xl font-bold mt-10 mb-3 text-foreground border-b border-border pb-2 scroll-mt-20">
           {children}
         </h1>
       );
     },
-    h2: ({ children }) => {
-      const text = String(children);
-      const id = slugify(text);
-      return (
-        <h2 id={id} className="text-xl font-semibold mt-8 mb-2 text-foreground scroll-mt-20">
-          {children}
-        </h2>
-      );
-    },
-    h3: ({ children }) => {
-      const text = String(children);
-      const id = slugify(text);
-      return (
-        <h3 id={id} className="text-base font-semibold mt-6 mb-1.5 text-foreground scroll-mt-20">
-          {children}
-        </h3>
-      );
-    },
-    p: ({ children }) => (
-      <p className="text-sm leading-relaxed text-foreground/90 mb-3">{children}</p>
-    ),
-    ul: ({ children }) => (
-      <ul className="list-disc list-outside pl-5 mb-3 space-y-1 text-sm text-foreground/90">{children}</ul>
-    ),
-    ol: ({ children }) => (
-      <ol className="list-decimal list-outside pl-5 mb-3 space-y-1 text-sm text-foreground/90">{children}</ol>
-    ),
+    h2: ({ children }) => <H2 raw={String(children)}>{children}</H2>,
+    h3: ({ children }) => <H3>{children}</H3>,
+
+    p:  ({ children }) => <p  className="text-sm leading-relaxed text-foreground/90 mb-3">{children}</p>,
+    ul: ({ children }) => <ul className="list-disc list-outside pl-5 mb-3 space-y-1 text-sm text-foreground/90">{children}</ul>,
+    ol: ({ children }) => <ol className="list-decimal list-outside pl-5 mb-3 space-y-1 text-sm text-foreground/90">{children}</ol>,
     li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+
     code: ({ children, className }) => {
       const isBlock = className?.includes("language-");
       if (isBlock) {
@@ -115,39 +162,26 @@ export default function App() {
           </pre>
         );
       }
-      return (
-        <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono text-primary">
-          {children}
-        </code>
-      );
+      return <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono text-primary">{children}</code>;
     },
+
     blockquote: ({ children }) => (
-      <blockquote className="border-l-4 border-primary/40 pl-4 italic text-muted-foreground text-sm my-3">
+      <blockquote className="border-l-4 border-primary/40 pl-4 italic text-muted-foreground text-sm my-3 bg-muted/40 py-2 pr-3 rounded-r-lg">
         {children}
       </blockquote>
     ),
-    table: ({ children }) => (
+
+    table:  ({ children }) => (
       <div className="overflow-x-auto mb-4">
-        <table className="w-full text-sm border-collapse border border-border rounded-lg overflow-hidden">
-          {children}
-        </table>
+        <table className="w-full text-sm border-collapse border border-border rounded-lg overflow-hidden">{children}</table>
       </div>
     ),
-    th: ({ children }) => (
-      <th className="bg-muted px-3 py-2 text-left font-semibold text-foreground border border-border text-xs">
-        {children}
-      </th>
-    ),
-    td: ({ children }) => (
-      <td className="px-3 py-2 border border-border text-foreground/90 text-xs">
-        {children}
-      </td>
-    ),
-    hr: () => <hr className="border-border my-6" />,
-    strong: ({ children }) => (
-      <strong className="font-semibold text-foreground">{children}</strong>
-    ),
-    a: ({ children, href }) => (
+    th: ({ children }) => <th className="bg-muted px-3 py-2 text-left font-semibold text-foreground border border-border text-xs">{children}</th>,
+    td: ({ children }) => <td className="px-3 py-2 border border-border text-foreground/90 text-xs">{children}</td>,
+
+    hr:     () => <hr className="border-border my-6" />,
+    strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
+    a:      ({ children, href }) => (
       <a href={href} className="text-primary underline underline-offset-2 hover:opacity-80" target="_blank" rel="noopener noreferrer">
         {children}
       </a>
@@ -156,8 +190,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
-      {/* Top bar */}
-      <header className="sticky top-0 z-50 bg-card/80 backdrop-blur border-b border-border px-4 py-3 flex items-center gap-3">
+
+      {/* ── Top bar ── */}
+      <header className="sticky top-0 z-50 bg-card/90 backdrop-blur border-b border-border px-4 py-3 flex items-center gap-3">
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
           className="p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
@@ -167,30 +202,35 @@ export default function App() {
             <path d="M3 12h18M3 6h18M3 18h18" strokeLinecap="round" />
           </svg>
         </button>
-        <div className="flex items-center gap-2 flex-1 min-w-0">
-          <span className="text-sm font-semibold text-foreground truncate">
-            💗 WHIMSEY Discord Setup Guide
-          </span>
+        <span className="text-sm font-semibold text-foreground truncate flex-1 min-w-0">
+          💗 WHIMSEY Discord Setup Guide
+        </span>
+
+        {/* Legend pills */}
+        <div className="hidden lg:flex items-center gap-1.5">
+          {(["read", "do", "reference"] as const).map((m) => (
+            <span key={m} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${BADGE[m].badge}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${BADGE[m].dot}`} />
+              {BADGE[m].label}
+            </span>
+          ))}
         </div>
+
         <input
           type="search"
           placeholder="Search sections…"
           value={search}
           onChange={(e) => { setSearch(e.target.value); setSidebarOpen(true); }}
-          className="hidden sm:block w-48 text-xs bg-muted border border-border rounded-lg px-3 py-1.5 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/30"
+          className="hidden sm:block w-44 text-xs bg-muted border border-border rounded-lg px-3 py-1.5 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/30"
         />
       </header>
 
       <div className="flex flex-1 overflow-hidden relative">
-        {/* Sidebar overlay on mobile */}
         {sidebarOpen && (
-          <div
-            className="fixed inset-0 bg-black/30 z-30 sm:hidden"
-            onClick={() => setSidebarOpen(false)}
-          />
+          <div className="fixed inset-0 bg-black/30 z-30 sm:hidden" onClick={() => setSidebarOpen(false)} />
         )}
 
-        {/* Sidebar */}
+        {/* ── Sidebar ── */}
         <aside
           className={`
             fixed sm:sticky top-[53px] h-[calc(100vh-53px)] z-40
@@ -208,27 +248,35 @@ export default function App() {
               className="w-full text-xs bg-muted border border-border rounded-lg px-3 py-1.5 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/30"
             />
           </div>
+
           <nav className="flex-1 overflow-y-auto p-2">
             <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold px-2 py-2">
               {search ? `${filtered.length} results` : "Contents"}
             </p>
-            {filtered.map((h, i) => (
-              <button
-                key={i}
-                onClick={() => scrollTo(h.id)}
-                className={`
-                  w-full text-left px-2 py-1 rounded-lg text-xs transition-colors block
-                  ${h.level === 1 ? "font-semibold pl-2" : h.level === 2 ? "pl-4 text-foreground/80" : "pl-6 text-muted-foreground"}
-                  ${activeId === h.id ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted"}
-                `}
-              >
-                {h.text}
-              </button>
-            ))}
+            {filtered.map((h, i) => {
+              const isActive = activeId === h.id;
+              const modeCfg  = h.mode ? BADGE[h.mode] : null;
+              return (
+                <button
+                  key={i}
+                  onClick={() => scrollTo(h.id)}
+                  className={`
+                    w-full text-left px-2 py-1 rounded-lg text-xs transition-colors flex items-start gap-1.5
+                    ${h.level === 1 ? "font-semibold" : h.level === 2 ? "pl-3" : "pl-5 opacity-80"}
+                    ${isActive ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted text-foreground/80"}
+                  `}
+                >
+                  {h.level === 2 && modeCfg && (
+                    <span className={`mt-0.5 w-2 h-2 rounded-full shrink-0 ${modeCfg.dot}`} />
+                  )}
+                  <span className="leading-snug">{h.clean}</span>
+                </button>
+              );
+            })}
           </nav>
         </aside>
 
-        {/* Main content */}
+        {/* ── Main content ── */}
         <main
           ref={contentRef}
           className="flex-1 overflow-y-auto px-4 py-6 sm:px-8 lg:px-12 max-w-4xl mx-auto w-full"
