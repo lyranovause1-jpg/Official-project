@@ -5,6 +5,7 @@ import { Switch, Route, Link } from "wouter";
 import docRaw from "@docs/WHIMSEY_DISCORD_SETUP.md?raw";
 import AiChat from "./AiChat";
 import DiscordDashboard from "./DiscordDashboard";
+import HomeJourney from "./HomeJourney";
 
 type Mode = "read" | "do" | "reference" | "mixed" | null;
 type Heading = { id: string; text: string; clean: string; level: number; mode: Mode };
@@ -326,7 +327,8 @@ export default function App() {
     <Switch>
       <Route path="/ai" component={AiChat} />
       <Route path="/discord" component={DiscordDashboard} />
-      <Route component={DocsPage} />
+      <Route path="/guide" component={DocsPage} />
+      <Route component={HomeJourney} />
     </Switch>
   );
 }

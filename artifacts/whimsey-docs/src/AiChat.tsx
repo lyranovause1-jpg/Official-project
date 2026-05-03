@@ -143,6 +143,17 @@ export default function AiChat() {
   const [streaming, setStreaming]   = useState(false);
   const [toolLabel, setToolLabel]   = useState<string | null>(null);
   const [showClear, setShowClear]   = useState(false);
+
+  const [autoQ] = useState<string | null>(() => {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get("q");
+    if (q?.trim()) {
+      window.history.replaceState({}, "", window.location.pathname);
+      return q.trim();
+    }
+    return null;
+  });
+
   const [savedAt, setSavedAt]       = useState<number | null>(() => {
     const raw = localStorage.getItem(STORAGE_KEY);
     return raw ? Date.now() : null;
@@ -183,6 +194,16 @@ export default function AiChat() {
     setShowClear(false);
     setTimeout(() => inputRef.current?.focus(), 100);
   }, []);
+
+  // Fire the pre-filled question from the journey page link
+  const autoQFired = useRef(false);
+  useEffect(() => {
+    if (autoQ && !autoQFired.current) {
+      autoQFired.current = true;
+      const t = setTimeout(() => send(autoQ), 300);
+      return () => clearTimeout(t);
+    }
+  }, [autoQ]);
 
   async function send(text: string) {
     if (!text.trim() || streaming) return;
