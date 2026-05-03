@@ -26,12 +26,8 @@ const ENTITIES: Entity[] = [
     autonomous: [
       { text: "Read messages in any channel — public or private" },
       { text: "Monitor conversations, tone, spam, momentum, and FUD" },
-      { text: "Post to #staff-chat and all private/internal channels freely" },
-      { text: "Post to #📣 announcements — no gate, logs to #staff-chat after", public: true },
-      { text: "Post to #💬 general-chat — no gate, logs to #staff-chat after", public: true },
-      { text: "Post to #🌌 holders-only — no gate, logs to #staff-chat after", public: true },
-      { text: "Post to #🎉 giveaways — no gate, logs to #staff-chat after", public: true },
-      { text: "Post to any channel the community sees — acts immediately", public: true },
+      { text: "Post updates, alerts, and summaries to #staff-chat" },
+      { text: "Post to any private or internal channel" },
       { text: "Kick a member — acts immediately, reports to #staff-chat after" },
       { text: "Ban a member — acts immediately, reports to #staff-chat after" },
       { text: "Timeout a member — acts immediately, reports to #staff-chat after" },
@@ -45,11 +41,22 @@ const ENTITIES: Entity[] = [
       { text: "Set member nicknames" },
       { text: "Generate invite links" },
       { text: "Check the full ban list" },
-      { text: "Read audit log, server status, member list, bot status" },
+      { text: "Update channel slowmode or topic" },
+      { text: "Raise or lower server verification level" },
+      { text: "Check live server status, member count, bot list" },
+      { text: "Read audit log" },
       { text: "Diagnose bot issues (Collab.Land, Auth, Carl-bot)" },
-      { text: "Respond in support tickets directly" },
+      { text: "Read support tickets and respond in them directly" },
+      { text: "Trigger Carl-bot commands in #mod-commands" },
+      { text: "Draft public post text (shows confirmation gate before sending)" },
     ],
-    needsOk: [],
+    needsOk: [
+      { text: "Post to #📣 announcements", public: true },
+      { text: "Post to #💬 general-chat", public: true },
+      { text: "Post to #🌌 holders-only", public: true },
+      { text: "Post to #🎉 giveaways", public: true },
+      { text: "Post to any channel the community can see — this is the only gate, ever", public: true },
+    ],
   },
   {
     name: "Carl-bot",
@@ -272,7 +279,7 @@ export default function PermissionsPage() {
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Who does what — and who sees it.</h1>
           <p className="text-sm text-gray-500 leading-relaxed max-w-xl">
-            Every action taken by WHIMSEY AI and the bots is listed here — what runs automatically and what the community can actually see. WHIMSEY AI has no gates: it acts on everything, then logs to #staff-chat.
+            Every action taken by WHIMSEY AI and the bots is listed here — what runs automatically, what needs your confirmation, and what the community can actually see.
           </p>
         </div>
 
@@ -319,7 +326,7 @@ export default function PermissionsPage() {
           <p className="text-sm font-bold text-gray-800">The one-line summary per bot</p>
           <div className="space-y-2 text-xs text-gray-600 leading-relaxed">
             <p>
-              <span className="font-semibold text-gray-800">WHIMSEY AI</span> — fully autonomous. No gates. It acts on everything immediately, then logs what it did to #staff-chat. You read. You don't approve. It is the operating brain of your server.
+              <span className="font-semibold text-gray-800">WHIMSEY AI</span> — one gate only: posting to public channels. Everything else it does freely and silently. It is your full-time eyes on the server.
             </p>
             <p>
               <span className="font-semibold text-gray-800">Carl-bot</span> — runs your entire server on autopilot once configured. You set it up once, it works forever.
