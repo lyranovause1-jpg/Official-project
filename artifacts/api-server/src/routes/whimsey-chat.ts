@@ -1,4 +1,6 @@
 import { Router } from "express";
+import fs from "fs";
+import path from "path";
 import { openai } from "@workspace/integrations-openai-ai-server";
 import { isAutopilotActive, autopilotState, styleState, contentState, ContentBlock } from "./whimsey-discord";
 import { logChange, saveState } from "../lib/persistence";
@@ -1993,6 +1995,7 @@ You are not just the Discord server operator. You have full authority over every
 - **Role management:** create_role, assign_role (give a role to a member), remove_role (take a role from a member)
 - **Member moderation:** kick_member, ban_member, unban_member, timeout_member (temporarily silence)
 - **App content:** update_page_header, add_page_block, edit_page_block, remove_page_block, update_nav_label, update_quick_questions, update_style
+- **Guide doc:** update_doc_section (append new sections or replace existing ones in WHIMSEY_DISCORD_SETUP.md — do this proactively whenever Lyra makes a decision that belongs permanently in the guide)
 
 **📈 | MOMENTUM CHANNELS — Your Full Responsibility:**
 You have complete read and write authority over all 8 momentum channels. These are YOUR domain:
@@ -2012,11 +2015,11 @@ You can READ all 17 audit channels but you never POST to them (they are tamper-f
 
 **Everything is tracked:** Every mutation you make — every message sent, every channel created, every role assigned, every member kicked — is automatically logged to the WHIMSEY change log so Lyra always knows exactly what you did and when.
 
-**The WHIMSEY App (this tool — guides, AI, dashboard, permissions, tickets, drills):**
-- You know the full guide documentation (WHIMSEY_DISCORD_SETUP.md) — you can suggest edits, flag errors, and advise on any section
-- You know every page of the app — the home, guide, AI chat, Discord dashboard, permissions page, ticket assistant, scenario simulator
+**The WHIMSEY App (this tool — guides, AI, dashboard, permissions, tickets, simulator, updates, style settings):**
+- You have full READ AND WRITE access to the guide documentation (WHIMSEY_DISCORD_SETUP.md). Use update_doc_section to append new sections or replace existing ones — do this proactively whenever Lyra makes a decision that belongs in the guide permanently. The guide is a living document and you are its editor.
+- You know every page of the app — home, guide, AI chat, Discord dashboard, permissions reference, ticket assistant, scenario simulator, updates feed, style settings
 - If Lyra asks to change something in any of these — you know exactly what it is, where it lives, and what it should say
-- You can describe the exact change needed for any part of the app
+- For guide doc changes: use update_doc_section directly. For app page content: use the page block and header tools. You never need to ask someone else to make these changes.
 
 **Your own knowledge and instructions:**
 - You have full awareness of your own system prompt and operating rules
@@ -2558,6 +2561,23 @@ const DISCORD_TOOLS: any[] = [
       },
     },
   },
+  {
+    type: "function",
+    function: {
+      name: "update_doc_section",
+      description: "Add or replace a section in the WHIMSEY_DISCORD_SETUP.md guide document. Use 'append' to add a new section at the end of the doc, or 'replace_section' to find an existing section heading and replace that section's content. Use this to keep the guide current as Lyra makes decisions — new rules, changed permissions, post-mint updates, anything that belongs permanently in the guide.",
+      parameters: {
+        type: "object",
+        required: ["action", "content"],
+        properties: {
+          action:         { type: "string", description: "'append' to add content at the end of the doc, 'replace_section' to find and replace an existing section" },
+          content:        { type: "string", description: "Full markdown content to add or replace. For append: include the heading (e.g. '## My New Section'). For replace_section: include the heading and all new body content." },
+          sectionHeading: { type: "string", description: "For replace_section only: the exact heading text as it appears in the doc (e.g. '## 📖 THE 4 PHASES'). Must match exactly." },
+          summary:        { type: "string", description: "Short human-readable description of what changed, shown in the change log (e.g. 'Added Phase D post-mint notes')" },
+        },
+      },
+    },
+  },
 ];
 
 // ── Tool execution ─────────────────────────────────────────────────────────
@@ -3074,6 +3094,36 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
         return JSON.stringify({ ok: true, questionCount: contentState.quickQuestions.length, questions: contentState.quickQuestions });
       }
 
+      case "update_doc_section": {
+        const DOC_PATH = path.join(process.cwd(), "../../docs/WHIMSEY_DISCORD_SETUP.md");
+        const action = (args.action || "append").toString().trim();
+        const content = (args.content || "").toString().trim();
+        if (!content) return JSON.stringify({ ok: false, error: "content is required" });
+        let currentDoc = fs.readFileSync(DOC_PATH, "utf-8");
+        if (action === "append") {
+          const updated = currentDoc.trimEnd() + "\n\n---\n\n" + content + "\n";
+          fs.writeFileSync(DOC_PATH, updated, "utf-8");
+          logChange("update_doc_section", args.summary || "Appended section to guide doc", content.slice(0, 120)).catch(() => {});
+          return JSON.stringify({ ok: true, action, charsAdded: content.length, newDocLength: updated.length });
+        }
+        if (action === "replace_section") {
+          const heading = (args.sectionHeading || "").toString().trim();
+          if (!heading) return JSON.stringify({ ok: false, error: "sectionHeading is required for replace_section" });
+          const idx = currentDoc.indexOf(heading);
+          if (idx === -1) return JSON.stringify({ ok: false, error: "Section heading not found in doc. Check exact spelling and emoji characters." });
+          const levelMatch = heading.match(/^(#{1,6})\s/);
+          const level = levelMatch ? levelMatch[1].length : 2;
+          const afterHeading = currentDoc.slice(idx + heading.length);
+          const nextMatch = afterHeading.match(new RegExp("\\n#{1," + level + "}\\s", "m"));
+          const endIdx = nextMatch && nextMatch.index !== undefined ? idx + heading.length + nextMatch.index : currentDoc.length;
+          const updated = currentDoc.slice(0, idx) + content.trimEnd() + "\n" + currentDoc.slice(endIdx);
+          fs.writeFileSync(DOC_PATH, updated, "utf-8");
+          logChange("update_doc_section", args.summary || "Replaced section in guide doc", content.slice(0, 120)).catch(() => {});
+          return JSON.stringify({ ok: true, action, sectionHeading: heading, newDocLength: updated.length });
+        }
+        return JSON.stringify({ ok: false, error: "action must be 'append' or 'replace_section'" });
+      }
+
       default:
         return JSON.stringify({ error: `Unknown tool: ${name}` });
     }
@@ -3118,6 +3168,7 @@ const TOOL_LABELS: Record<string, string> = {
   remove_page_block:      "🗑️ Removing section…",
   update_nav_label:       "🔗 Updating nav menu…",
   update_quick_questions: "❓ Updating quick questions…",
+  update_doc_section:     "📝 Updating the guide document…",
 };
 
 // ── POST /api/whimsey/chat ────────────────────────────────────────────────

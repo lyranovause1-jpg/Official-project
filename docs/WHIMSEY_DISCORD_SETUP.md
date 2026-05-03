@@ -4159,3 +4159,332 @@ When this loop is healthy, the team can be away for 12 hours and the server is s
 
 That is what "the bots manage the server on our behalf" actually looks like in practice. 💗❄️🌌🩵
 
+
+---
+
+## 📚 SECTION 35 — REFERENCE: THE WHIMSEY APP — ALL PAGES & FEATURES
+
+> 📚 **REFERENCE MODE — This section documents the custom WHIMSEY web app that was built for you. You do not need to build it — it already exists and is running.**
+
+The WHIMSEY app is a private web tool built specifically for Lyra Nova to manage, monitor, and operate the WHIMSEY ($CNDY) Discord server and community. It is not a public-facing site. It runs as a private URL accessible only by Lyra. Everything described in this section is live and functional.
+
+---
+
+### 35.1) HOME PAGE (`/`)
+
+The home page is the control centre. It contains:
+
+**WHIMSEY AI Quick Chat** — A floating AI assistant widget at the top of the page. Type any question and WHIMSEY AI responds using its full knowledge of the server, the guide, and live Discord data. It can also execute tools directly from this input.
+
+**Quick Question Shortcuts** — 4–8 one-tap question cards that let Lyra immediately ask the most common things ("What's happening in the server?", "Walk me through Phase B", etc.). These are editable by WHIMSEY AI using `update_quick_questions`.
+
+**Live Discord Activity Feed** — A real-time feed showing the last 10 WHIMSEY AI actions on Discord (messages sent, roles created, members kicked, channels updated, etc.). Updates every 8 seconds. Each entry has:
+- Color-coded action badge (blue = read, green = message sent, pink = moderation, purple = role action, amber = channel action)
+- A pulsing green "Live" dot in the header indicating the feed is active
+- Relative timestamps ("2 min ago", "just now")
+- A short description and detail line for each action
+
+**Page Blocks** — WHIMSEY AI can add custom info cards, reminders, warnings, and notes to the home page using `add_page_block`. These persist between sessions.
+
+---
+
+### 35.2) GUIDE PAGE (`/guide`)
+
+The full WHIMSEY Discord Setup Guide — this document — rendered as a beautiful interactive reference. Features:
+
+- **Sticky navigation sidebar** with all sections and subsections listed, searchable, with color-coded mode badges (📖 READ, ✅ DO, 📚 REFERENCE) so Lyra always knows which sections require action
+- **In-page search** — filter sections by keyword from the top bar
+- **Active section highlighting** — the sidebar auto-highlights the section currently visible on screen as you scroll
+- **Quick access buttons** — top bar has one-tap links to Live Server dashboard and WHIMSEY AI chat
+- **Responsive** — works on mobile and desktop
+- **WHIMSEY AI sidebar promo box** — quick link to open the AI chat when stuck on a step
+
+The guide is a markdown file. WHIMSEY AI can edit it directly using `update_doc_section` (see Section 37).
+
+---
+
+### 35.3) AI CHAT PAGE (`/ai`)
+
+The full WHIMSEY AI chat interface. This is where Lyra has in-depth conversations with WHIMSEY AI. Features:
+
+- **Full streaming chat** — responses stream word by word, no waiting for the full response
+- **Tool call status indicators** — when WHIMSEY AI is running a Discord tool (checking bots, sending a message, reading audit logs, etc.) a status pill appears in real time showing what it's doing: "🔍 Checking your live server…", "🤖 Checking bot status…", etc.
+- **Greeting** — personalised header "Hey, Lyra Nova! 💗" with WHIMSEY AI's name shown
+- **Full message history** — the entire conversation is preserved for the session
+- **Markdown rendering** — WHIMSEY AI's responses render with full markdown: headings, tables, bullet lists, bold/italic, code blocks, etc.
+- **All 33+ Discord tools accessible** — every tool described in Section 36 is available from this chat interface
+
+---
+
+### 35.4) LIVE SERVER DASHBOARD (`/discord`)
+
+A real-time live view of the WHIMSEY Discord server. Pulls live data from the Discord API. Features:
+
+- **Server summary card** — member count, online count, server boost tier, verification level
+- **Bot status panel** — shows which of the 5 required bots (Auth, Collab.Land, Ticket Tool, Carl-bot, NFT Tracker) are present and which are missing
+- **Channel list** — all channels grouped by category, with slowmode settings and topics
+- **Role list** — all roles sorted by hierarchy with colors and positions
+- **Invite list** — all active invite links with usage counts
+- **Audit log** — recent server events (kicks, bans, role changes, channel changes)
+- **Manual refresh** — one-tap refresh to pull fresh data at any time
+- **Auto-refresh** — data can be re-fetched on demand from any panel
+
+---
+
+### 35.5) PERMISSIONS REFERENCE PAGE (`/permissions`)
+
+A visual reference for all permission settings in the WHIMSEY server architecture. Covers:
+
+- **Role hierarchy** — the 4 main roles (Admin 💗, Moderator ☁️, Holder 🌌, Verified 🩵) plus all bot roles, in correct vertical order
+- **Role-level permission tables** — exact ON/OFF toggles for every permission for each role
+- **Category-level permission tables** — all 12 categories with Allow ✅ / Deny ❌ / Neutral ➖ for each role
+- **Per-channel override tables** — every channel that has special overrides listed separately
+- **Bot permission summaries** — minimum required permissions for Auth, Collab.Land, Ticket Tool, and Carl-bot
+- **Mode legend** — colour-coded explanation of the three-state permission system
+
+This page is a visual companion to Sections 5–27 of this guide. Use it when setting permissions in Discord to avoid having to re-read the prose sections.
+
+---
+
+### 35.6) TICKET ASSISTANT PAGE (`/tickets`)
+
+An AI-powered support tool for handling ticket responses. Features:
+
+- **Ticket drafter** — paste a member's ticket message, WHIMSEY AI generates a full support reply in Lyra's voice
+- **Ticket templates** — common ticket types pre-loaded (Holder verification, Wallet connection, General question, Report a user, etc.)
+- **Send to Discord** — drafted replies can be posted directly to the correct ticket channel via WHIMSEY AI's `send_discord_message` tool
+- **Style-aware** — uses Lyra's saved ticket style guide (set in Style Settings) to match her tone
+
+---
+
+### 35.7) SCENARIO SIMULATOR PAGE (`/simulator`)
+
+An interactive drill tool for practicing emergency scenarios before they happen. Features:
+
+- **22 emergency scenarios** — all scenarios from Section 33 of this guide (raids, scams, compromised admin, FUD wave, etc.) are available as drills
+- **Good scenarios** — positive scenarios (sold out, viral moment, giveaway, whale activity) are also included
+- **Step-by-step walkthroughs** — each scenario walks through exactly what BOTS do, what WHIMSEY AI does, and what Lyra does
+- **Practice mode** — Lyra can simulate "what would I do if X happened right now" without touching real Discord
+
+---
+
+### 35.8) UPDATES FEED PAGE (`/updates`)
+
+A private feed of everything WHIMSEY AI has done. Covers all logged actions across all tools. Features:
+
+- **Full changelog** — every Discord action WHIMSEY AI has taken, timestamped and described
+- **Tool badges** — colour-coded by action type (🔍 server checks, ✉️ messages sent, 🎭 role actions, 🚪 moderation, etc.)
+- **Detail lines** — each entry shows what the action was and any relevant detail (channel name, role name, reason, message preview)
+- **Scrollable history** — the full history is preserved
+
+---
+
+### 35.9) STYLE SETTINGS PAGE (`/style`)
+
+Where Lyra configures how WHIMSEY AI writes when drafting messages on her behalf. Features:
+
+- **Public channel style guide** — controls how WHIMSEY AI drafts announcements, general chat messages, holder-only messages, and giveaway posts. Can specify tone, emoji rules, length, opening/closing conventions
+- **Ticket channel style guide** — controls how WHIMSEY AI drafts support ticket replies. Can specify formality, step formatting, length, and sign-off style
+- **Live preview** — WHIMSEY AI shows an example of how a message would look under the current style
+- **WHIMSEY AI editable** — Lyra can tell WHIMSEY AI in chat "make my public posts shorter" or "use fewer emojis in tickets" and WHIMSEY AI updates the style using `update_style` immediately
+
+---
+
+### 35.10) APP CONTENT EDITING — WHAT WHIMSEY AI CONTROLS
+
+WHIMSEY AI has full editorial authority over the app's content. It can:
+
+| Tool | What it does |
+|---|---|
+| `update_page_header` | Change the title, subtitle, or greeting on any page |
+| `add_page_block` | Add an info card, warning, tip, or action card to any page |
+| `edit_page_block` | Edit any block previously added |
+| `remove_page_block` | Remove a block from a page |
+| `update_nav_label` | Rename any item in the navigation menu |
+| `update_quick_questions` | Replace the quick-question shortcuts on the home page |
+| `update_style` | Update Lyra's writing style guides for public posts and ticket replies |
+| `update_doc_section` | Add or replace sections in this guide document |
+
+All of these changes are instant, persistent, and logged to the updates feed.
+
+---
+
+## 📚 SECTION 36 — REFERENCE: WHIMSEY AI TOOL SUITE — COMPLETE TOOL REFERENCE
+
+> 📚 **REFERENCE MODE — This section lists every tool WHIMSEY AI can use. You never need to call these yourself — WHIMSEY AI uses them on your behalf when you ask (or on its own initiative for autonomous actions).**
+
+WHIMSEY AI has 33 live Discord tools and 8 app content tools. Total: 41 tools.
+
+---
+
+### 36.1) READ TOOLS (no changes — safe to run any time)
+
+| Tool | What it reads | When used |
+|---|---|---|
+| `get_server_status` | Full server snapshot: member count, online count, boost tier, all channels and roles, bot list | Any time Lyra asks "how's the server?", during mint checks, during autopilot |
+| `get_bots` | Which of the 5 required bots are present and which are missing | Pre-mint checks, Phase C verification, any bot issue |
+| `get_audit_log` | Recent server events: kicks, bans, role changes, channel changes, integration changes | Raid detection, investigating incidents, regular monitoring |
+| `get_channels` | All channels with IDs, categories, slowmode settings, and topics | Before channel operations, any "what channels exist?" question |
+| `get_roles` | All roles with IDs, colors, positions, and settings | Before role operations, checking role hierarchy |
+| `get_invites` | All active invite links with usage counts | Tracking join sources, suspicious invite activity |
+| `get_members` | Member list with usernames, nicknames, roles, and join dates | Finding a user ID before moderation, checking who's in the server |
+| `get_channel_messages` | Recent messages from any channel (up to 100) | Monitoring tone, spotting spam, reading tickets, reading audit channels |
+| `get_bans` | Full ban list with usernames and reasons | Reviewing moderation history, checking if a user is already banned |
+
+---
+
+### 36.2) MESSAGING TOOLS
+
+| Tool | What it does | Key parameters |
+|---|---|---|
+| `send_discord_message` | Post a message to any channel by name | `channelName`, `content` |
+| `edit_message` | Edit a message the bot previously sent | `channelId`, `messageId`, `content` |
+| `delete_message` | Delete any message from any channel | `channelId`, `messageId`, `reason` |
+| `pin_message` | Pin a message to the top of a channel | `channelId`, `messageId` |
+
+**Public channel gate:** `send_discord_message` to any community-visible channel always triggers the ⚠️ confirmation gate before posting. Internal/private channels post immediately.
+
+---
+
+### 36.3) CHANNEL MANAGEMENT TOOLS
+
+| Tool | What it does | Key parameters |
+|---|---|---|
+| `create_channel` | Create a new text channel, optionally inside a named category | `name`, `topic`, `categoryName`, `slowmode` |
+| `delete_channel` | Delete a channel by name or ID | `channelName` or `channelId` |
+| `update_channel` | Rename a channel, change its topic, or adjust slowmode | `channelId`, `name`, `topic`, `slowmode` |
+| `set_channel_permissions` | Set Allow/Deny/Neutral for any role or member on a channel | `channelId`, `targetId`, `targetType`, `allow[]`, `deny[]` |
+| `create_invite` | Generate a Discord invite link with optional expiry and max uses | `channelId`, `maxAgeDays`, `maxUses` |
+
+**`set_channel_permissions` supports these permission names:**
+`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ADD_REACTIONS`, `EMBED_LINKS`, `ATTACH_FILES`, `MANAGE_MESSAGES`, `USE_APPLICATION_COMMANDS`, `CONNECT`, `SPEAK`, `SEND_MESSAGES_IN_THREADS`
+
+---
+
+### 36.4) ROLE MANAGEMENT TOOLS
+
+| Tool | What it does | Key parameters |
+|---|---|---|
+| `create_role` | Create a new role with name, color, and display settings | `name`, `color` (hex), `hoist`, `mentionable` |
+| `update_role` | Rename a role, change its color, or toggle display settings | `roleId`, `name`, `color`, `hoist`, `mentionable` |
+| `delete_role` | Permanently delete a role | `roleId` |
+| `assign_role` | Give a role to a specific member | `userId`, `roleId`, `reason` |
+| `remove_role` | Take a role away from a specific member | `userId`, `roleId`, `reason` |
+
+---
+
+### 36.5) MEMBER MODERATION TOOLS
+
+| Tool | What it does | Key parameters |
+|---|---|---|
+| `kick_member` | Remove a member from the server (they can rejoin) | `userId`, `reason` |
+| `ban_member` | Permanently ban a member (they cannot rejoin) | `userId`, `reason`, `deleteMessageDays` |
+| `unban_member` | Lift a ban and allow a user back in | `userId`, `reason` |
+| `timeout_member` | Temporarily silence a member for N minutes | `userId`, `durationMinutes`, `reason` |
+| `set_nickname` | Set or clear a member's server nickname | `userId`, `nickname` |
+
+**All moderation tools act immediately and log to the updates feed. No confirmation gate for moderation.**
+
+---
+
+### 36.6) APP CONTENT TOOLS
+
+| Tool | What it does | Key parameters |
+|---|---|---|
+| `update_page_header` | Change title/subtitle/greeting on any page | `page`, `title`, `subtitle`, `greeting` |
+| `add_page_block` | Add a content card to any page | `page`, `icon`, `title`, `body`, `type`, `actionLabel`, `actionPath` |
+| `edit_page_block` | Edit an existing content card | `page`, `blockId`, plus any fields to change |
+| `remove_page_block` | Remove a content card | `page`, `blockId` |
+| `update_nav_label` | Rename a navigation menu item | `path`, `label` |
+| `update_quick_questions` | Replace the home page quick questions | `questions[]` |
+| `update_style` | Update Lyra's message drafting style guides | `publicChannel`, `ticketChannel`, `summary` |
+| `update_doc_section` | Add or replace sections in WHIMSEY_DISCORD_SETUP.md | `action`, `content`, `sectionHeading`, `summary` |
+
+**Valid page slugs:** `home`, `discord`, `style`, `ai`, `tickets`, `permissions`, `updates`, `simulator`
+
+**Block types:** `info` (default), `warning`, `tip`, `action`, `highlight`
+
+---
+
+### 36.7) TOOL CHANGELOG — EVERYTHING IS LOGGED
+
+Every tool call that makes a change is automatically logged to the WHIMSEY change log. The log is visible on the Updates feed (`/updates`) and in the Live Discord Activity Feed on the home page. Each log entry captures:
+
+- The tool name
+- A human-readable description of what was done
+- A detail line (channel name, message preview, role name, reason, etc.)
+- A timestamp
+
+This means Lyra always has a complete, auditable record of everything WHIMSEY AI did — every message sent, every role assigned, every member kicked, every doc edit. Nothing is silent.
+
+---
+
+## 📚 SECTION 37 — REFERENCE: WHIMSEY AI CAN EDIT THIS DOCUMENT
+
+> 📚 **REFERENCE MODE — This section explains how WHIMSEY AI can directly update the guide you are reading right now.**
+
+---
+
+### 37.1) THE UPDATE_DOC_SECTION TOOL
+
+WHIMSEY AI has a tool called `update_doc_section` that allows it to directly edit this file — `WHIMSEY_DISCORD_SETUP.md` — the guide you are reading right now.
+
+This means: when Lyra makes a decision that belongs in the guide (a new rule, a changed permission, a Phase D note, a post-mint update), WHIMSEY AI can write it in immediately. The guide stays current automatically.
+
+---
+
+### 37.2) THE TWO MODES
+
+**Mode 1: `append`**
+Adds a completely new section at the end of the document. Use this for:
+- New phases (Phase D, Phase E, etc.)
+- Post-mint decisions and updates
+- New bot configurations
+- Meeting notes or decisions that should live permanently in the guide
+
+**Mode 2: `replace_section`**
+Finds an existing section by its exact heading and replaces it with new content. Use this for:
+- Correcting outdated permission settings
+- Updating role names or colors after a decision change
+- Revising a bot setup section after configuring it differently
+- Keeping phase documentation current as the server evolves
+
+---
+
+### 37.3) HOW TO TRIGGER A DOC UPDATE
+
+Lyra can trigger a doc update just by saying it in conversation:
+
+> "Add a note that we decided to give Moderators access to #holder-chat."
+> → WHIMSEY AI appends a new section documenting this decision.
+
+> "Update the Carl-bot setup section with the new AutoMod rules we configured."
+> → WHIMSEY AI uses replace_section to rewrite that section.
+
+> "Write up what we decided today and add it to the guide."
+> → WHIMSEY AI drafts and appends a full summary of the session's decisions.
+
+WHIMSEY AI can also add doc updates proactively — whenever a significant decision is made in chat, it can offer to write it into the guide without being asked.
+
+---
+
+### 37.4) WHAT GETS LOGGED
+
+Every `update_doc_section` call is logged to the WHIMSEY change log, exactly like any other tool call. The log entry captures:
+- What changed (append vs replace, section heading)
+- A summary of what was written
+- A preview of the first 120 characters of content added
+- Timestamp
+
+The guide is always in version history via the project's automatic checkpoints, so no edit is ever lost or unrecoverable.
+
+---
+
+### 37.5) THE GUIDE AS A LIVING DOCUMENT
+
+This guide was written as a complete static reference at the start. But as the server goes live, bots get configured, decisions get made, and the community evolves — the guide should evolve with it.
+
+WHIMSEY AI's `update_doc_section` tool makes this possible without Lyra ever needing to touch a text editor. She just tells WHIMSEY AI what happened, and the guide stays current.
+
+The goal: by the time WHIMSEY is a year old, this document should read like the real operating manual of a running company — not just a setup guide for something that hasn't started yet.
+
