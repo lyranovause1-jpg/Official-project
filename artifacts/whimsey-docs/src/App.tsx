@@ -12,7 +12,6 @@ import TicketAssistant from "./TicketAssistant";
 import AutopilotBanner from "./AutopilotBanner";
 import PrivateFeed from "./PrivateFeed";
 import StyleSettings from "./StyleSettings";
-import AuthGate from "./AuthGate";
 
 type Mode = "read" | "do" | "reference" | "mixed" | null;
 type Heading = { id: string; text: string; clean: string; level: number; mode: Mode };
@@ -334,11 +333,7 @@ export default function App() {
     <>
       <AutopilotBanner />
       <Switch>
-        <Route path="/ai">
-          <AuthGate>
-            {() => <AiChat />}
-          </AuthGate>
-        </Route>
+        <Route path="/ai" component={AiChat} />
         <Route path="/discord" component={DiscordDashboard} />
         <Route path="/guide" component={DocsPage} />
         <Route path="/simulator" component={ScenarioSimulator} />

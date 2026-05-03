@@ -89,7 +89,7 @@ function ToolBanner({ label }: { label: string }) {
   );
 }
 
-function MessageBubble({ msg, userInitial }: { msg: Message; userInitial: string }) {
+function MessageBubble({ msg }: { msg: Message }) {
   const isUser = msg.role === "user";
   return (
     <div className={`flex gap-3 ${isUser ? "flex-row-reverse" : "flex-row"} items-end mb-4`}>
@@ -98,7 +98,7 @@ function MessageBubble({ msg, userInitial }: { msg: Message; userInitial: string
           ? "bg-pink-500 text-white"
           : "bg-gradient-to-br from-violet-500 to-pink-500 text-white"
       }`}>
-        {isUser ? userInitial : "W"}
+        {isUser ? "L" : "W"}
       </div>
       <div className={`max-w-[78%] rounded-2xl px-4 py-3 shadow-sm text-sm leading-relaxed ${
         isUser
@@ -138,20 +138,7 @@ function ClearModal({ onConfirm, onCancel }: { onConfirm: () => void; onCancel: 
   );
 }
 
-function loadCurrentSession(): { name: string; role: string } | null {
-  try {
-    const raw = sessionStorage.getItem("whimsey_session");
-    if (!raw) return null;
-    return JSON.parse(raw);
-  } catch { return null; }
-}
-
 export default function AiChat() {
-  const session = loadCurrentSession();
-  const userName  = session?.name  ?? "Lyra";
-  const userRole  = session?.role  ?? "owner";
-  const userInitial = userName[0].toUpperCase();
-
   const [messages, setMessages]   = useState<Message[]>(() => loadHistory());
   const [input, setInput]         = useState("");
   const [streaming, setStreaming] = useState(false);
@@ -320,21 +307,6 @@ export default function AiChat() {
           {savedLabel && (
             <span className="text-[10px] font-medium text-emerald-500">{savedLabel}</span>
           )}
-          <div className={`flex items-center gap-1.5 px-2 py-1 rounded-lg border ${
-            userRole === "manager"
-              ? "bg-violet-50 border-violet-100"
-              : "bg-pink-50 border-pink-100"
-          }`}>
-            <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white ${
-              userRole === "manager" ? "bg-violet-500" : "bg-pink-500"
-            }`}>{userInitial}</span>
-            <span className={`text-[11px] font-semibold ${userRole === "manager" ? "text-violet-700" : "text-pink-700"}`}>
-              {userName}
-            </span>
-            <span className={`text-[9px] font-medium uppercase tracking-wide ${userRole === "manager" ? "text-violet-400" : "text-pink-400"}`}>
-              {userRole === "manager" ? "manager" : "owner"}
-            </span>
-          </div>
           <div className="flex items-center gap-1.5 px-2 py-1 bg-emerald-50 rounded-lg border border-emerald-100">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             <span className="text-[11px] text-emerald-700 font-medium">Live</span>
@@ -376,7 +348,7 @@ export default function AiChat() {
           <div className="flex flex-col justify-center h-full max-w-lg mx-auto pb-8">
             <div className="mb-6">
               <p className="text-xs font-semibold text-pink-500 uppercase tracking-widest mb-2">WHIMSEY AI</p>
-              <h1 className="text-xl font-bold text-gray-900 mb-2">Hey, {userName}! {userRole === "manager" ? "✨" : "🌷"}</h1>
+              <h1 className="text-xl font-bold text-gray-900 mb-2">Hey, Lyra Nova! 🌷</h1>
               <p className="text-sm text-gray-500 leading-relaxed">
                 I know your entire WHIMSEY server — every role, every bot, every channel. I can also read and act on your server in real time. Just ask.
               </p>
@@ -396,7 +368,7 @@ export default function AiChat() {
         ) : (
           <div className="max-w-2xl mx-auto">
             {messages.map(msg => (
-              <MessageBubble key={msg.id} msg={msg} userInitial={userInitial} />
+              <MessageBubble key={msg.id} msg={msg} />
             ))}
             {toolLabel && <ToolBanner label={toolLabel} />}
             {lastIsTyping && (
