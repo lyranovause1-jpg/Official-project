@@ -14,7 +14,7 @@ const STEPS = [
   {
     id: "server",
     emoji: "🌱",
-    title: "Your server exists",
+    title: "Create your server",
     simple: "You already made the Discord server. That's done.",
     done: () => true,
     current: () => false,
@@ -23,16 +23,16 @@ const STEPS = [
     id: "bots",
     emoji: "🤖",
     title: "Invite your helper bots",
-    simple: "Bots do the hard work automatically — verifying wallets, managing roles, handling support. You don't have to do any of that yourself.",
+    simple: "Bots do the hard work — verifying wallets, managing roles, handling support. You don't lift a finger.",
     done: (s: ServerStatus) => s.loaded && s.missingBots.filter(b => b !== "WHIMSEY AI").length === 0,
     current: (s: ServerStatus) => s.loaded && s.missingBots.filter(b => b !== "WHIMSEY AI").length > 0,
     action: "Which bots do I still need to invite?",
   },
   {
     id: "roles",
-    emoji: "🎭",
+    emoji: "🏷️",
     title: "Create your roles",
-    simple: "Roles are like labels that give people different access. Admin (you), Moderator (your team), Holder (NFT owners), Verified (wallet linked). That's all there is to it.",
+    simple: "Roles are labels that control who can see what. Admin, Moderator, Holder, Verified — four in total.",
     done: (s: ServerStatus) => s.loaded && s.roleCount >= 6,
     current: (s: ServerStatus) => s.loaded && s.roleCount < 6 && s.missingBots.filter(b => b !== "WHIMSEY AI").length === 0,
     action: "Create my Admin, Moderator, Holder, and Verified roles for me",
@@ -40,8 +40,8 @@ const STEPS = [
   {
     id: "permissions",
     emoji: "🔒",
-    title: "Set up channel access",
-    simple: "Decide who can see what. Holders see special channels. Verified members see community channels. Unverified people only see the welcome area.",
+    title: "Set channel access",
+    simple: "Decide who sees what. Holders get the exclusive channels. Everyone else sees the welcome area.",
     done: () => false,
     current: (s: ServerStatus) => s.loaded && s.roleCount >= 6,
     action: "Walk me through setting channel permissions step by step",
@@ -66,23 +66,14 @@ const STEPS = [
   },
 ];
 
-function ProgressBar({ current, total }: { current: number; total: number }) {
-  const pct = Math.round((current / total) * 100);
-  return (
-    <div className="w-full">
-      <div className="flex justify-between text-xs text-gray-400 mb-1.5">
-        <span>Your progress</span>
-        <span>{pct}%</span>
-      </div>
-      <div className="w-full h-2 bg-pink-100 rounded-full overflow-hidden">
-        <div
-          className="h-full bg-gradient-to-r from-pink-400 to-violet-500 rounded-full transition-all duration-700"
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-    </div>
-  );
-}
+const QUICK_QUESTIONS = [
+  "What is a Discord bot and why do I need one?",
+  "What's the difference between a role and a channel?",
+  "What does 'permission' mean in Discord?",
+  "What should I do today?",
+  "Am I doing this right?",
+  "How long will all of this take?",
+];
 
 export default function HomeJourney() {
   const [status, setStatus] = useState<ServerStatus>({
@@ -97,7 +88,7 @@ export default function HomeJourney() {
       fetch("/api/discord/status").then(r => r.json()).catch(() => ({})),
     ]).then(([bots, roles, srv]) => {
       setStatus({
-        botsPresent: bots.bots?.map((b: any) => b.name) || [],
+        botsPresent: bots.bots?.map((b: { name: string }) => b.name) || [],
         missingBots: bots.missingBots || [],
         roleCount: roles.count || 0,
         channelCount: srv.channels?.length || 0,
@@ -108,188 +99,216 @@ export default function HomeJourney() {
   }, []);
 
   const doneCount = STEPS.filter(s => s.done(status)).length;
+  const pct = Math.round((doneCount / STEPS.length) * 100);
   const currentStep = STEPS.find(s => s.current(status));
   const currentIdx = currentStep ? STEPS.indexOf(currentStep) : doneCount;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 via-white to-violet-50">
+    <div className="min-h-screen bg-[#fafafa]">
 
-      {/* Header */}
-      <header className="sticky top-0 z-10 bg-white/80 backdrop-blur border-b border-pink-100 px-4 py-3 flex items-center gap-3">
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-violet-500 flex items-center justify-center text-base shadow">
-          💗
+      {/* ── Nav ── */}
+      <header className="sticky top-0 z-20 bg-white border-b border-gray-100 px-5 py-3 flex items-center gap-3">
+        <div className="flex items-center gap-2.5 flex-1">
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-pink-500 to-violet-600 flex items-center justify-center shadow-sm">
+            <span className="text-white text-xs font-bold">W</span>
+          </div>
+          <span className="text-sm font-semibold text-gray-900 tracking-tight">WHIMSEY</span>
         </div>
-        <span className="text-sm font-bold text-gray-900 flex-1">WHIMSEY</span>
-        <Link href="/ai">
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-pink-500 to-violet-500 text-white text-xs font-semibold shadow-sm">
-            💗 Ask AI anything
-          </button>
-        </Link>
-        <Link href="/discord">
-          <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-indigo-50 text-indigo-600 text-xs font-semibold border border-indigo-100">
-            🌌 Server
-          </button>
-        </Link>
+        <nav className="flex items-center gap-2">
+          <Link href="/discord">
+            <button className="px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+              Server
+            </button>
+          </Link>
+          <Link href="/guide">
+            <button className="px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+              Full Guide
+            </button>
+          </Link>
+          <Link href="/ai">
+            <button className="px-3 py-1.5 text-xs font-semibold bg-pink-500 hover:bg-pink-600 text-white rounded-lg transition-colors shadow-sm">
+              Ask AI 💗
+            </button>
+          </Link>
+        </nav>
       </header>
 
-      <main className="max-w-lg mx-auto px-4 py-8 space-y-6">
+      <main className="max-w-xl mx-auto px-5 py-10 space-y-8">
 
-        {/* Warm greeting */}
-        <div className="text-center py-4">
+        {/* ── Greeting ── */}
+        <div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Hey Lyra 🌷</h1>
-          <p className="text-gray-500 text-sm leading-relaxed max-w-sm mx-auto">
+          <p className="text-gray-500 text-sm leading-relaxed">
             Setting up Discord for the first time is genuinely hard. You're not confused because you're doing it wrong — you're confused because it's a lot. That's completely normal.
           </p>
           <p className="text-pink-600 text-sm font-medium mt-2">
-            Let's do this one step at a time. Just focus on what's in front of you.
+            One step at a time. Just focus on what's in front of you.
           </p>
         </div>
 
-        {/* Progress */}
-        <div className="bg-white rounded-2xl border border-pink-100 shadow-sm p-4">
-          <ProgressBar current={doneCount} total={STEPS.length} />
-          <p className="text-xs text-gray-400 text-center mt-2">
-            {doneCount} of {STEPS.length} steps done · You're getting there 💗
-          </p>
-        </div>
-
-        {/* Current focus */}
-        {currentStep && (
-          <div className="bg-gradient-to-br from-pink-500 to-violet-600 rounded-2xl p-5 text-white shadow-lg">
-            <p className="text-xs font-semibold uppercase tracking-widest text-pink-200 mb-1">Focus on this next</p>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-2xl">{currentStep.emoji}</span>
-              <h2 className="text-lg font-bold">{currentStep.title}</h2>
+        {/* ── Progress ── */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
+          <div className="flex items-end justify-between mb-3">
+            <div>
+              <p className="text-xs text-gray-400 font-medium uppercase tracking-wide mb-0.5">Your progress</p>
+              <p className="text-2xl font-bold text-gray-900">{doneCount} <span className="text-gray-300 font-light">/ {STEPS.length}</span></p>
+              <p className="text-xs text-gray-500">steps complete</p>
             </div>
-            <p className="text-sm text-pink-100 leading-relaxed mb-4">{currentStep.simple}</p>
-            {currentStep.action && (
-              <Link href={`/ai?q=${encodeURIComponent(currentStep.action)}`}>
-                <button className="w-full py-2.5 bg-white text-pink-600 rounded-xl text-sm font-bold hover:bg-pink-50 transition-colors shadow">
-                  💗 Get help with this →
-                </button>
-              </Link>
-            )}
+            <span className="text-3xl font-bold text-pink-500">{pct}%</span>
+          </div>
+          <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-pink-500 to-violet-500 rounded-full transition-all duration-700"
+              style={{ width: `${pct}%` }}
+            />
+          </div>
+          <p className="text-[11px] text-gray-400 mt-2">
+            {status.memberCount > 0 && `${status.memberCount} members · `}
+            {status.channelCount > 0 && `${status.channelCount} channels · `}
+            You're getting there 💗
+          </p>
+        </div>
+
+        {/* ── Focus card ── */}
+        {currentStep && (
+          <div className="bg-white rounded-2xl border border-pink-200 shadow-sm overflow-hidden">
+            <div className="bg-gradient-to-r from-pink-500 to-violet-600 px-5 py-2">
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-pink-100">Focus on this next</p>
+            </div>
+            <div className="p-5">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-xl bg-pink-50 border border-pink-100 flex items-center justify-center text-xl">
+                  {currentStep.emoji}
+                </div>
+                <h2 className="text-base font-bold text-gray-900">{currentStep.title}</h2>
+              </div>
+              <p className="text-sm text-gray-600 leading-relaxed mb-4">{currentStep.simple}</p>
+              {currentStep.action && (
+                <Link href={`/ai?q=${encodeURIComponent(currentStep.action)}`}>
+                  <button className="w-full py-2.5 bg-pink-500 hover:bg-pink-600 text-white rounded-xl text-sm font-semibold transition-colors shadow-sm">
+                    Get help with this →
+                  </button>
+                </Link>
+              )}
+            </div>
           </div>
         )}
 
-        {/* All steps */}
-        <div className="space-y-2">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest px-1">Your full journey</p>
-          {STEPS.map((step, i) => {
-            const isDone = step.done(status);
-            const isCurrent = step.current(status);
-            const isWaiting = !isDone && !isCurrent && i > currentIdx;
+        {/* ── Journey steps ── */}
+        <div>
+          <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-3">Your full journey</p>
+          <div className="space-y-2">
+            {STEPS.map((step, i) => {
+              const isDone = step.done(status);
+              const isCurrent = step.current(status);
+              const isUpcoming = !isDone && !isCurrent && i > currentIdx;
 
-            return (
-              <div
-                key={step.id}
-                className={`rounded-2xl border p-4 transition-all ${
-                  isCurrent
-                    ? "border-pink-300 bg-pink-50 shadow-sm"
-                    : isDone
-                    ? "border-emerald-100 bg-emerald-50/50"
-                    : "border-gray-100 bg-white opacity-60"
-                }`}
-              >
-                <div className="flex items-start gap-3">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm shrink-0 ${
-                    isDone ? "bg-emerald-100 text-emerald-600" : isCurrent ? "bg-pink-100 text-pink-600" : "bg-gray-100 text-gray-400"
+              return (
+                <div
+                  key={step.id}
+                  className={`flex items-start gap-4 rounded-xl p-4 border transition-all ${
+                    isDone
+                      ? "bg-white border-gray-100"
+                      : isCurrent
+                      ? "bg-pink-50 border-pink-200"
+                      : "bg-white border-gray-100 opacity-50"
+                  }`}
+                >
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 ${
+                    isDone
+                      ? "bg-emerald-500 text-white"
+                      : isCurrent
+                      ? "bg-pink-500 text-white"
+                      : "bg-gray-200 text-gray-400"
                   }`}>
-                    {isDone ? "✓" : isCurrent ? step.emoji : step.emoji}
+                    {isDone ? "✓" : i + 1}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <p className={`text-sm font-semibold ${isDone ? "text-emerald-700" : isCurrent ? "text-pink-700" : "text-gray-500"}`}>
+                      <p className={`text-sm font-semibold ${isDone ? "text-gray-700" : isCurrent ? "text-gray-900" : "text-gray-500"}`}>
                         {step.title}
                       </p>
-                      {isDone && <span className="text-[10px] font-bold text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded-full">Done ✓</span>}
-                      {isCurrent && <span className="text-[10px] font-bold text-pink-600 bg-pink-100 px-1.5 py-0.5 rounded-full">Now</span>}
-                      {isWaiting && <span className="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full">Coming up</span>}
+                      {isDone && <span className="text-[10px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100 px-1.5 py-0.5 rounded-md">Done</span>}
+                      {isCurrent && <span className="text-[10px] font-semibold text-pink-600 bg-pink-100 px-1.5 py-0.5 rounded-md">Now</span>}
+                      {isUpcoming && <span className="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-md">Up next</span>}
                     </div>
-                    <p className={`text-xs leading-relaxed ${isDone ? "text-emerald-600" : isCurrent ? "text-pink-600/80" : "text-gray-400"}`}>
+                    <p className={`text-xs leading-relaxed ${isDone ? "text-gray-400" : isCurrent ? "text-gray-600" : "text-gray-400"}`}>
                       {step.simple}
                     </p>
                     {isCurrent && step.action && (
                       <Link href={`/ai?q=${encodeURIComponent(step.action)}`}>
-                        <button className="mt-2 text-xs font-semibold text-pink-600 hover:text-pink-700 underline underline-offset-2">
-                          Ask AI to help with this →
+                        <button className="mt-2 text-xs font-semibold text-pink-600 hover:text-pink-700 transition-colors">
+                          Ask AI to help →
                         </button>
                       </Link>
                     )}
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
 
-        {/* Feeling stuck card */}
-        <div className="bg-white rounded-2xl border border-pink-100 shadow-sm p-5 text-center">
-          <p className="text-2xl mb-2">🌷</p>
-          <p className="text-sm font-semibold text-gray-900 mb-1">Confused about something?</p>
-          <p className="text-xs text-gray-500 mb-4 leading-relaxed">
-            You don't need to figure it out alone. The AI knows your entire server and can explain anything in simple words, or just do it for you.
+        {/* ── Common questions ── */}
+        <div>
+          <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-3">Common questions</p>
+          <div className="grid grid-cols-1 gap-2">
+            {QUICK_QUESTIONS.map(q => (
+              <Link key={q} href={`/ai?q=${encodeURIComponent(q)}`}>
+                <button className="w-full text-left text-sm text-gray-700 bg-white border border-gray-200 hover:border-pink-300 hover:bg-pink-50 rounded-xl px-4 py-3 transition-colors shadow-sm">
+                  {q}
+                </button>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Stuck card ── */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 text-center shadow-sm">
+          <p className="text-xl mb-2">🌷</p>
+          <p className="text-sm font-semibold text-gray-900 mb-1">Confused? Stuck? Just ask.</p>
+          <p className="text-xs text-gray-500 mb-4 leading-relaxed max-w-xs mx-auto">
+            The AI knows your entire server and can explain anything in plain words — or just do it for you.
           </p>
           <Link href="/ai">
-            <button className="w-full py-3 bg-gradient-to-r from-pink-500 to-violet-500 text-white rounded-xl text-sm font-bold shadow hover:opacity-90 transition-opacity">
-              💗 Talk to WHIMSEY AI
+            <button className="w-full py-2.5 bg-pink-500 hover:bg-pink-600 text-white rounded-xl text-sm font-semibold transition-colors shadow-sm">
+              Talk to WHIMSEY AI 💗
             </button>
           </Link>
-          <p className="text-[11px] text-gray-400 mt-2">Ask anything. There are no dumb questions here.</p>
+          <p className="text-[11px] text-gray-400 mt-2">No dumb questions here.</p>
         </div>
 
-        {/* Quick questions */}
-        <div className="space-y-2">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest px-1">Common questions</p>
-          {[
-            "What is a Discord bot and why do I need one?",
-            "What's the difference between a role and a channel?",
-            "What does 'permission' mean in Discord?",
-            "What should I do today?",
-            "Am I doing this right?",
-            "How long will all of this take?",
-          ].map(q => (
-            <Link key={q} href={`/ai?q=${encodeURIComponent(q)}`}>
-              <button className="w-full text-left text-xs bg-white border border-pink-100 hover:border-pink-300 hover:bg-pink-50 rounded-xl px-4 py-3 text-gray-700 transition-colors shadow-sm">
-                {q}
-              </button>
-            </Link>
-          ))}
-        </div>
-
-        {/* Full guide link */}
-        <div className="text-center pb-8">
+        {/* ── Footer guide link ── */}
+        <div className="text-center pb-4">
           <button
             onClick={() => setShowGuide(true)}
             className="text-xs text-gray-400 hover:text-gray-600 underline underline-offset-2 transition-colors"
           >
-            View the full technical guide →
+            View the full 4,000-line technical guide →
           </button>
-          <p className="text-[10px] text-gray-300 mt-1">Only if you want to go deep. Not required.</p>
+          <p className="text-[10px] text-gray-300 mt-1">Only if you need to look something specific up.</p>
         </div>
 
       </main>
 
-      {/* Full guide modal/overlay */}
+      {/* ── Guide modal ── */}
       {showGuide && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-end sm:items-center justify-center px-0 sm:px-4">
-          <div className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-6 shadow-2xl">
-            <div className="text-center mb-4">
-              <p className="text-2xl mb-2">📖</p>
-              <h2 className="text-base font-bold text-gray-900">The Full Technical Guide</h2>
-              <p className="text-sm text-gray-500 mt-1 leading-relaxed">
-                This is the 4,000+ line reference document. It's detailed and complete — but it's a lot. Only open it if you need to look something specific up.
-              </p>
-            </div>
+          <div className="bg-white w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl p-6 shadow-2xl border border-gray-100">
+            <p className="text-2xl text-center mb-3">📖</p>
+            <h2 className="text-base font-bold text-gray-900 text-center mb-1">The Full Technical Guide</h2>
+            <p className="text-sm text-gray-500 text-center mt-1 mb-5 leading-relaxed">
+              4,000+ lines of detail. Complete — but a lot. Only open it if you need to look something specific up.
+            </p>
             <div className="space-y-2">
               <Link href="/guide">
-                <button className="w-full py-3 bg-gradient-to-r from-pink-500 to-violet-500 text-white rounded-xl text-sm font-bold shadow">
+                <button className="w-full py-2.5 bg-pink-500 hover:bg-pink-600 text-white rounded-xl text-sm font-semibold transition-colors">
                   Open the full guide →
                 </button>
               </Link>
               <button
                 onClick={() => setShowGuide(false)}
-                className="w-full py-3 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"
+                className="w-full py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"
               >
                 Stay here (recommended)
               </button>
