@@ -1,4 +1,5 @@
 import { Link } from "wouter";
+import DynamicBlocks, { useContent } from "./DynamicBlocks";
 
 interface ActionItem {
   text: string;
@@ -214,6 +215,7 @@ function EntityCard({ entity }: { entity: Entity }) {
 }
 
 export default function PermissionsPage() {
+  const content = useContent(); void content;
   return (
     <div className="min-h-screen bg-[#fafafa]">
 
@@ -324,6 +326,7 @@ export default function PermissionsPage() {
           </div>
         </div>
 
+        <DynamicBlocks page="permissions" className="mt-4" />
       </main>
     </div>
   );

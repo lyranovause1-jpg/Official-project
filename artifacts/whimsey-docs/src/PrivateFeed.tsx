@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "wouter";
+import DynamicBlocks, { useContent } from "./DynamicBlocks";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 const REFRESH_INTERVAL = 30;
@@ -91,6 +92,7 @@ function isCeoMessage(msg: FeedMessage): boolean {
 }
 
 export default function PrivateFeed() {
+  const content = useContent(); void content;
   const [data, setData]               = useState<FeedData | null>(null);
   const [loading, setLoading]         = useState(true);
   const [error, setError]             = useState<string | null>(null);
@@ -434,6 +436,7 @@ export default function PrivateFeed() {
             )}
           </div>
         )}
+        <DynamicBlocks page="updates" className="max-w-4xl mx-auto px-4 mt-4 mb-4" />
       </main>
     </div>
   );

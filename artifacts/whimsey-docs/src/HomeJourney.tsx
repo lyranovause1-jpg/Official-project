@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
+import DynamicBlocks, { useContent } from "./DynamicBlocks";
 
 interface ServerStatus {
   botsPresent: string[];
@@ -76,10 +77,16 @@ const QUICK_QUESTIONS = [
 ];
 
 export default function HomeJourney() {
+  const content = useContent();
   const [status, setStatus] = useState<ServerStatus>({
     botsPresent: [], missingBots: [], roleCount: 0, channelCount: 0, memberCount: 0, loaded: false,
   });
   const [showGuide, setShowGuide] = useState(false);
+
+  const greeting      = content?.pageHeaders?.home?.greeting  ?? "Hey Lyra 🌷";
+  const subtitle      = content?.pageHeaders?.home?.subtitle  ?? "Setting up Discord for the first time is genuinely hard. You're not confused because you're doing it wrong — you're confused because it's a lot. That's completely normal. One step at a time.";
+  const navLabels     = content?.navLabels ?? {};
+  const quickQuestions = content?.quickQuestions ?? QUICK_QUESTIONS;
 
   useEffect(() => {
     Promise.all([
@@ -117,27 +124,27 @@ export default function HomeJourney() {
         <nav className="flex items-center gap-2">
           <Link href="/discord">
             <button className="px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-              Server
+              {navLabels["/discord"] ?? "Server"}
             </button>
           </Link>
           <Link href="/simulator">
             <button className="px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-              Drills
+              {navLabels["/simulator"] ?? "Drills"}
             </button>
           </Link>
           <Link href="/permissions">
             <button className="px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-              Permissions
+              {navLabels["/permissions"] ?? "Permissions"}
             </button>
           </Link>
           <Link href="/tickets">
             <button className="px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-              Tickets
+              {navLabels["/tickets"] ?? "Tickets"}
             </button>
           </Link>
           <Link href="/style">
             <button className="px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-              Style
+              {navLabels["/style"] ?? "Style"}
             </button>
           </Link>
           <Link href="/updates">
@@ -146,7 +153,7 @@ export default function HomeJourney() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-amber-500"></span>
               </span>
-              Updates
+              {navLabels["/updates"] ?? "Updates"}
             </button>
           </Link>
           <Link href="/ai">
@@ -162,10 +169,8 @@ export default function HomeJourney() {
         {/* ── Greeting ── */}
         <div className="border-b border-gray-200 pb-8">
           <p className="text-xs font-semibold text-pink-500 uppercase tracking-widest mb-2">Your WHIMSEY Setup</p>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Hey Lyra 🌷</h1>
-          <p className="text-gray-500 text-sm leading-relaxed">
-            Setting up Discord for the first time is genuinely hard. You're not confused because you're doing it wrong — you're confused because it's a lot. That's completely normal. One step at a time.
-          </p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">{greeting}</h1>
+          <p className="text-gray-500 text-sm leading-relaxed">{subtitle}</p>
         </div>
 
         {/* ── Progress ── */}
@@ -281,7 +286,7 @@ export default function HomeJourney() {
         <div>
           <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-3">Common questions</p>
           <div className="grid grid-cols-1 gap-2">
-            {QUICK_QUESTIONS.map(q => (
+            {quickQuestions.map(q => (
               <Link key={q} href={`/ai?q=${encodeURIComponent(q)}`}>
                 <button className="w-full text-left text-sm text-gray-700 bg-white border border-gray-200 hover:border-pink-300 hover:bg-pink-50 rounded-xl px-4 py-3 transition-colors shadow-sm">
                   {q}
@@ -290,6 +295,9 @@ export default function HomeJourney() {
             ))}
           </div>
         </div>
+
+        {/* ── AI-added dynamic blocks ── */}
+        <DynamicBlocks page="home" />
 
         {/* ── Stuck card ── */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6 text-center shadow-sm">

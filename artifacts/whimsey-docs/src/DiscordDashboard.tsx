@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "wouter";
+import DynamicBlocks, { useContent } from "./DynamicBlocks";
 
 interface ServerInfo {
   name: string; id: string; memberCount: number; onlineCount: number;
@@ -69,6 +70,7 @@ function Section({ title, children, action }: { title: string; children: React.R
 }
 
 export default function DiscordDashboard() {
+  const content = useContent();
   const [tab, setTab]           = useState<Tab>("overview");
   const [loading, setLoading]   = useState(false);
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
@@ -545,6 +547,7 @@ export default function DiscordDashboard() {
           </Section>
         )}
 
+        <DynamicBlocks page="discord" className="mt-4" />
       </main>
     </div>
   );

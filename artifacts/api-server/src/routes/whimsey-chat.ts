@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { openai } from "@workspace/integrations-openai-ai-server";
-import { isAutopilotActive, autopilotState, styleState } from "./whimsey-discord";
+import { isAutopilotActive, autopilotState, styleState, contentState, ContentBlock } from "./whimsey-discord";
 
 const router = Router();
 
@@ -20,6 +20,32 @@ When autopilot ends at ${timeStr}, the standard public channel confirmation gate
 
 ---`);
   }
+
+  // ── Content state summary ──
+  const blockSummary = Object.entries(contentState.pageBlocks)
+    .filter(([, blocks]) => blocks.length > 0)
+    .map(([page, blocks]) => `  ${page}: ${blocks.map((b: any) => `"${b.title}" (id: ${b.id})`).join(", ")}`)
+    .join("\n");
+
+  const contentSection = `## CURRENT APP CONTENT STATE
+
+You have full editorial control over the WHIMSEY app. You can change page headers, add/edit/remove content blocks on any page, rename nav items, and update the home page quick questions.
+
+Current page headers (use update_page_header to change):
+${Object.entries(contentState.pageHeaders).map(([p, h]) => `  ${p}: ${JSON.stringify(h)}`).join("\n")}
+
+Current dynamic blocks (use edit_page_block or remove_page_block by blockId):
+${blockSummary || "  (none yet — use add_page_block to add some)"}
+
+Nav label overrides (use update_nav_label to change what nav buttons say):
+${Object.keys(contentState.navLabels).length > 0 ? JSON.stringify(contentState.navLabels) : "  (none yet — defaults still showing)"}
+
+Quick questions on home page (use update_quick_questions to replace):
+${contentState.quickQuestions.map((q: string) => `  - ${q}`).join("\n")}
+
+Pages available: home, discord, style, ai, tickets, permissions, updates, simulator
+---`;
+  parts.push(contentSection);
 
   // ── Text style guide (injected before base prompt) ──
   const styleSection = `## LYRA'S TEXT STYLE — ALWAYS FOLLOW THIS WHEN DRAFTING MESSAGES
@@ -2142,6 +2168,108 @@ const DISCORD_TOOLS: any[] = [
   {
     type: "function",
     function: {
+      name: "update_page_header",
+      description: "Change the title, subtitle, or greeting text on any page of the WHIMSEY app. Use this when Lyra asks you to rename a page, update the welcome message, change a page description, or personalize any page header. Pages: home, discord, style, ai, tickets, permissions, updates, simulator.",
+      parameters: {
+        type: "object",
+        required: ["page"],
+        properties: {
+          page: { type: "string", description: "Page slug: home, discord, style, ai, tickets, permissions, updates, simulator" },
+          title:    { type: "string", description: "New page title (shown in the header bar)" },
+          subtitle: { type: "string", description: "New subtitle/description shown under the title" },
+          greeting: { type: "string", description: "New greeting text (home page only, e.g. 'Hey Lyra 🌷')" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "add_page_block",
+      description: "Add a new content box/card to any page of the WHIMSEY app. This is how you add information panels, tips, warnings, announcements, or action cards to any page. The block appears on that page immediately. Use this when Lyra asks you to add something to a page, create a reminder, post a note, or add a new section anywhere in the app.",
+      parameters: {
+        type: "object",
+        required: ["page", "title", "body"],
+        properties: {
+          page:        { type: "string", description: "Page to add the block to: home, discord, style, ai, tickets, permissions, updates, simulator" },
+          icon:        { type: "string", description: "Emoji icon for the block (e.g. '🚀', '⚠️', '💡')" },
+          title:       { type: "string", description: "Block heading/title" },
+          body:        { type: "string", description: "Block body text — can be multi-line. Support for newlines." },
+          type:        { type: "string", description: "Block type: info (default), warning, tip, action, highlight" },
+          actionLabel: { type: "string", description: "Optional button label (e.g. 'Go to Style Settings')" },
+          actionPath:  { type: "string", description: "Optional button link path (e.g. '/style', '/ai', '/discord')" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "edit_page_block",
+      description: "Edit an existing content block/card on a page. Use this to update the title, body, icon, or type of any block you previously added. You must provide the blockId (returned when you added it) and the page it's on.",
+      parameters: {
+        type: "object",
+        required: ["page", "blockId"],
+        properties: {
+          page:        { type: "string", description: "Page the block is on" },
+          blockId:     { type: "string", description: "ID of the block to edit" },
+          icon:        { type: "string", description: "New emoji icon" },
+          title:       { type: "string", description: "New title" },
+          body:        { type: "string", description: "New body text" },
+          type:        { type: "string", description: "New type: info, warning, tip, action, highlight" },
+          actionLabel: { type: "string", description: "New button label" },
+          actionPath:  { type: "string", description: "New button link" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "remove_page_block",
+      description: "Remove a content block/card from a page. Use this when Lyra asks you to remove or delete something you added to a page.",
+      parameters: {
+        type: "object",
+        required: ["page", "blockId"],
+        properties: {
+          page:    { type: "string", description: "Page the block is on" },
+          blockId: { type: "string", description: "ID of the block to remove" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "update_nav_label",
+      description: "Rename a navigation menu item in the WHIMSEY app. Use when Lyra asks you to rename a nav link, change what a menu item says, or customize the navigation.",
+      parameters: {
+        type: "object",
+        required: ["path", "label"],
+        properties: {
+          path:  { type: "string", description: "Route path of the nav item (e.g. '/discord', '/style', '/tickets', '/simulator', '/permissions', '/updates', '/ai')" },
+          label: { type: "string", description: "New display label for this nav item" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "update_quick_questions",
+      description: "Replace the quick-question shortcuts shown on the home page. Use when Lyra asks you to update the suggested questions, change what shows up on the home page quick links, add new questions, or remove old ones.",
+      parameters: {
+        type: "object",
+        required: ["questions"],
+        properties: {
+          questions: { type: "array", items: { type: "string" }, description: "New list of 4-8 quick question strings to show on the home page" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
       name: "update_style",
       description: "Update Lyra's saved text style guide for WHIMSEY AI message drafting. Use this when Lyra asks you to change how you write for public channels or ticket replies — for example 'be more casual', 'use fewer emojis', 'write shorter ticket replies', or 'update my style to X'. You can update publicChannel style, ticketChannel style, or both at once. The new style takes effect immediately on all future drafts.",
       parameters: {
@@ -2366,6 +2494,71 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
         });
       }
 
+      case "update_page_header": {
+        const page = (args.page || "").toString().toLowerCase().trim();
+        if (!contentState.pageHeaders[page]) contentState.pageHeaders[page] = {};
+        if (args.title)    contentState.pageHeaders[page].title    = args.title;
+        if (args.subtitle) contentState.pageHeaders[page].subtitle = args.subtitle;
+        if (args.greeting) contentState.pageHeaders[page].greeting = args.greeting;
+        return JSON.stringify({ ok: true, page, updated: contentState.pageHeaders[page] });
+      }
+
+      case "add_page_block": {
+        const page = (args.page || "home").toString().toLowerCase().trim();
+        if (!contentState.pageBlocks[page]) contentState.pageBlocks[page] = [];
+        const id = `block_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+        const block: ContentBlock = {
+          id,
+          icon:        args.icon        || "💡",
+          title:       args.title       || "Note",
+          body:        args.body        || "",
+          type:        (["info","warning","tip","action","highlight"].includes(args.type) ? args.type : "info") as ContentBlock["type"],
+          actionLabel: args.actionLabel || undefined,
+          actionPath:  args.actionPath  || undefined,
+          createdAt:   new Date().toISOString(),
+        };
+        contentState.pageBlocks[page].push(block);
+        return JSON.stringify({ ok: true, blockId: id, page, block });
+      }
+
+      case "edit_page_block": {
+        const page = (args.page || "").toString().toLowerCase().trim();
+        const blocks = contentState.pageBlocks[page] || [];
+        const idx = blocks.findIndex((b: ContentBlock) => b.id === args.blockId);
+        if (idx === -1) return JSON.stringify({ ok: false, error: `Block ${args.blockId} not found on page ${page}` });
+        if (args.icon)        blocks[idx].icon        = args.icon;
+        if (args.title)       blocks[idx].title       = args.title;
+        if (args.body)        blocks[idx].body        = args.body;
+        if (args.type)        blocks[idx].type        = args.type;
+        if (args.actionLabel) blocks[idx].actionLabel = args.actionLabel;
+        if (args.actionPath)  blocks[idx].actionPath  = args.actionPath;
+        return JSON.stringify({ ok: true, blockId: args.blockId, updated: blocks[idx] });
+      }
+
+      case "remove_page_block": {
+        const page = (args.page || "").toString().toLowerCase().trim();
+        const before = (contentState.pageBlocks[page] || []).length;
+        contentState.pageBlocks[page] = (contentState.pageBlocks[page] || []).filter((b: ContentBlock) => b.id !== args.blockId);
+        const removed = before > contentState.pageBlocks[page].length;
+        return JSON.stringify({ ok: removed, blockId: args.blockId, page, remaining: contentState.pageBlocks[page].length });
+      }
+
+      case "update_nav_label": {
+        const path = (args.path || "").toString().trim();
+        const label = (args.label || "").toString().trim();
+        if (!path || !label) return JSON.stringify({ ok: false, error: "path and label are required" });
+        contentState.navLabels[path] = label;
+        return JSON.stringify({ ok: true, path, label, allNavLabels: contentState.navLabels });
+      }
+
+      case "update_quick_questions": {
+        if (!Array.isArray(args.questions) || args.questions.length === 0) {
+          return JSON.stringify({ ok: false, error: "questions must be a non-empty array" });
+        }
+        contentState.quickQuestions = args.questions.map((q: any) => String(q));
+        return JSON.stringify({ ok: true, questionCount: contentState.quickQuestions.length, questions: contentState.quickQuestions });
+      }
+
       default:
         return JSON.stringify({ error: `Unknown tool: ${name}` });
     }
@@ -2387,7 +2580,13 @@ const TOOL_LABELS: Record<string, string> = {
   kick_member: "🚪 Kicking member…",
   ban_member: "🔨 Banning member…",
   get_channel_messages: "👁️ Reading channel messages…",
-  update_style: "✍️ Updating your text style guide…",
+  update_style:         "✍️ Updating your text style guide…",
+  update_page_header:   "🏷️ Updating page header…",
+  add_page_block:       "➕ Adding new section to the app…",
+  edit_page_block:      "✏️ Editing section…",
+  remove_page_block:    "🗑️ Removing section…",
+  update_nav_label:     "🔗 Updating nav menu…",
+  update_quick_questions: "❓ Updating quick questions…",
 };
 
 // ── POST /api/whimsey/chat ────────────────────────────────────────────────

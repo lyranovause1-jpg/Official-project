@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "wouter";
+import DynamicBlocks, { useContent } from "./DynamicBlocks";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -29,6 +30,7 @@ const EXAMPLES = {
 type StyleKey = "publicChannel" | "ticketChannel";
 
 export default function StyleSettings() {
+  const content = useContent();
   const [style, setStyle]         = useState<StyleState>({ publicChannel: "", ticketChannel: "" });
   const [saving, setSaving]       = useState<StyleKey | null>(null);
   const [saved, setSaved]         = useState<StyleKey | null>(null);
@@ -380,6 +382,8 @@ export default function StyleSettings() {
             ))}
           </div>
         </div>
+
+        <DynamicBlocks page="style" />
       </main>
     </div>
   );

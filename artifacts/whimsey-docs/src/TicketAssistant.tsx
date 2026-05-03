@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "wouter";
+import DynamicBlocks, { useContent } from "./DynamicBlocks";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -76,6 +77,7 @@ function CopyButton({ text }: { text: string }) {
 }
 
 export default function TicketAssistant() {
+  const content = useContent(); void content;
   const [step, setStep] = useState<Step>("pick");
   const [category, setCategory] = useState<(typeof CATEGORIES)[0] | null>(null);
   const [memberName, setMemberName] = useState("");
@@ -345,6 +347,7 @@ Member's message: "${description.trim()}"`;
           </div>
         )}
 
+        <DynamicBlocks page="tickets" className="mt-2" />
       </main>
     </div>
   );

@@ -1,5 +1,6 @@
 import { useLocation } from "wouter";
 import { Link } from "wouter";
+import DynamicBlocks, { useContent } from "./DynamicBlocks";
 
 interface Scenario {
   id: string;
@@ -141,6 +142,7 @@ const SCENARIOS: Scenario[] = [
 ];
 
 export default function ScenarioSimulator() {
+  const content = useContent(); void content;
   const [, navigate] = useLocation();
 
   function runDrill(scenario: Scenario) {
@@ -246,6 +248,7 @@ export default function ScenarioSimulator() {
           </div>
         </div>
 
+        <DynamicBlocks page="simulator" className="mt-4" />
       </main>
     </div>
   );

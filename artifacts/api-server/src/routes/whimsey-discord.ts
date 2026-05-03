@@ -5,6 +5,82 @@ const router = Router();
 export const GUILD_ID = "1495034928801382411";
 export const DISCORD_BASE = "https://discord.com/api/v10";
 
+// ── Dynamic Content Engine ────────────────────────────────────────────────
+export interface ContentBlock {
+  id: string;
+  icon: string;
+  title: string;
+  body: string;
+  type: "info" | "warning" | "tip" | "action" | "highlight";
+  actionLabel?: string;
+  actionPath?: string;
+  createdAt: string;
+}
+
+export const contentState = {
+  pageHeaders: {
+    home:        { greeting: "Hey Lyra 🌷", subtitle: "Setting up Discord for the first time is genuinely hard. You're not confused because you're doing it wrong — you're confused because it's a lot. That's completely normal. One step at a time." },
+    discord:     { title: "🌌 Live Server Dashboard", subtitle: "Everything happening in your Discord right now." },
+    style:       { title: "✍️ Text Style Settings", subtitle: "Define how WHIMSEY AI drafts messages — saved as permanent defaults" },
+    ai:          { title: "💗 WHIMSEY AI", subtitle: "Ask me anything about your server." },
+    tickets:     { title: "🎫 Ticket Assistant", subtitle: "Handle support tickets with WHIMSEY AI." },
+    permissions: { title: "🔒 Channel Permissions", subtitle: "Control who can see and do what." },
+    updates:     { title: "📡 Private Updates", subtitle: "What happened while you were away." },
+    simulator:   { title: "🧪 Scenario Drills", subtitle: "Practice handling tricky situations." },
+  } as Record<string, Record<string, string>>,
+
+  pageBlocks: {
+    home:        [] as ContentBlock[],
+    discord:     [] as ContentBlock[],
+    style:       [] as ContentBlock[],
+    ai:          [] as ContentBlock[],
+    tickets:     [] as ContentBlock[],
+    permissions: [] as ContentBlock[],
+    updates:     [] as ContentBlock[],
+    simulator:   [] as ContentBlock[],
+  } as Record<string, ContentBlock[]>,
+
+  navLabels: {} as Record<string, string>,
+
+  quickQuestions: [
+    "What is a Discord bot and why do I need one?",
+    "What's the difference between a role and a channel?",
+    "What does 'permission' mean in Discord?",
+    "What should I do today?",
+    "Am I doing this right?",
+    "How long will all of this take?",
+  ] as string[],
+};
+
+// GET /content — returns full contentState
+router.get("/content", (_req, res) => {
+  res.json({ ok: true, content: contentState });
+});
+
+// POST /content — bulk-update contentState (used by AI tools)
+router.post("/content", (req: any, res: any) => {
+  const { pageHeaders, pageBlocks, navLabels, quickQuestions } = req.body as {
+    pageHeaders?: Record<string, Record<string, string>>;
+    pageBlocks?: Record<string, ContentBlock[]>;
+    navLabels?: Record<string, string>;
+    quickQuestions?: string[];
+  };
+  if (pageHeaders) {
+    for (const [page, headers] of Object.entries(pageHeaders)) {
+      if (!contentState.pageHeaders[page]) contentState.pageHeaders[page] = {};
+      Object.assign(contentState.pageHeaders[page], headers);
+    }
+  }
+  if (pageBlocks) {
+    for (const [page, blocks] of Object.entries(pageBlocks)) {
+      contentState.pageBlocks[page] = blocks;
+    }
+  }
+  if (navLabels) Object.assign(contentState.navLabels, navLabels);
+  if (Array.isArray(quickQuestions)) contentState.quickQuestions = quickQuestions;
+  res.json({ ok: true, content: contentState });
+});
+
 // ── Text Style Defaults ───────────────────────────────────────────────────
 export const styleState = {
   publicChannel: `Warm, dreamy, and confident — like a founder who genuinely cares about her community.
