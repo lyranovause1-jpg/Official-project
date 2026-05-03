@@ -5,6 +5,54 @@ const router = Router();
 export const GUILD_ID = "1495034928801382411";
 export const DISCORD_BASE = "https://discord.com/api/v10";
 
+// ── Autopilot Mode State ──────────────────────────────────────────────────
+export const autopilotState: { enabled: boolean; until: Date | null } = {
+  enabled: false,
+  until: null,
+};
+
+export function isAutopilotActive(): boolean {
+  if (!autopilotState.enabled || !autopilotState.until) return false;
+  if (autopilotState.until <= new Date()) {
+    autopilotState.enabled = false;
+    autopilotState.until = null;
+    return false;
+  }
+  return true;
+}
+
+// GET /autopilot — current autopilot state
+router.get("/autopilot", (req, res) => {
+  const active = isAutopilotActive();
+  res.json({
+    enabled: active,
+    until: active ? autopilotState.until?.toISOString() ?? null : null,
+  });
+});
+
+// POST /autopilot — enable with { until: ISO string } or disable with { enabled: false }
+router.post("/autopilot", (req: any, res: any) => {
+  const { enabled, until } = req.body as { enabled?: boolean; until?: string };
+  if (enabled === false) {
+    autopilotState.enabled = false;
+    autopilotState.until = null;
+    res.json({ ok: true, enabled: false, until: null });
+    return;
+  }
+  if (!until) {
+    res.status(400).json({ ok: false, error: "until (ISO string) is required to enable autopilot" });
+    return;
+  }
+  const untilDate = new Date(until);
+  if (isNaN(untilDate.getTime()) || untilDate <= new Date()) {
+    res.status(400).json({ ok: false, error: "until must be a future date" });
+    return;
+  }
+  autopilotState.enabled = true;
+  autopilotState.until = untilDate;
+  res.json({ ok: true, enabled: true, until: untilDate.toISOString() });
+});
+
 export function discordAuth() {
   return { Authorization: "Bot " + process.env.DISCORD_BOT_TOKEN?.trim() };
 }
