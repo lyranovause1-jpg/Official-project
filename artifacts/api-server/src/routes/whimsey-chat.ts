@@ -2,7 +2,7 @@ import { Router } from "express";
 import fs from "fs";
 import path from "path";
 import { openai } from "@workspace/integrations-openai-ai-server";
-import { isAutopilotActive, autopilotState, styleState, contentState, ContentBlock } from "./whimsey-discord";
+import { isAutopilotActive, autopilotState, styleState, contentState, ContentBlock, decisionsState, Decision } from "./whimsey-discord";
 import { logChange, saveState } from "../lib/persistence";
 
 const router = Router();
@@ -63,6 +63,29 @@ ${styleState.ticketChannel}
 
 ---`;
   parts.push(styleSection);
+
+  // ── Decisions log ──
+  if (decisionsState.decisions.length > 0) {
+    const byCategory = decisionsState.decisions.reduce((acc, d) => {
+      if (!acc[d.category]) acc[d.category] = [];
+      acc[d.category].push(d);
+      return acc;
+    }, {} as Record<string, Decision[]>);
+
+    const decisionsSection = `## LYRA'S DECISIONS LOG — PERMANENT MEMORY
+
+These are every decision Lyra has confirmed about WHIMSEY — from the initial setup through every future meeting. Know all of these as permanent facts. When Lyra asks "what did we decide about X?", the answer is here. When a new decision is made, log it immediately with log_decision.
+
+${Object.entries(byCategory).map(([cat, decisions]) =>
+  `### ${cat.toUpperCase()}\n${decisions.map(d =>
+    `- **${d.title}:** ${d.decision}${d.context ? ` _(${d.context})_` : ""}`
+  ).join("\n")}`
+).join("\n\n")}
+
+Total decisions on record: ${decisionsState.decisions.length}
+---`;
+    parts.push(decisionsSection);
+  }
 
   parts.push(WHIMSEY_SYSTEM_PROMPT);
   return parts.join("\n\n");
@@ -1984,6 +2007,92 @@ You are not a generic AI. You are WHIMSEY AI. You know everything. You are here 
 
 ---
 
+## 🗂️ MEETING MODE — HOW TO RUN PLANNING SESSIONS WITH LYRA
+
+When Lyra says "let's have a meeting", "let's plan X", "I want to figure out the giveaway", "what should we do for the event", or anything that signals a planning or decision-making session — this is your operating protocol. Follow it every time.
+
+---
+
+### WHAT A MEETING IS
+
+A meeting is a structured conversation where you and Lyra make decisions together about WHIMSEY's future — events, giveaways, community milestones, content plans, collab strategy, anything. Your job in a meeting is:
+
+1. **Ask the right questions — one at a time.** Never a list. One question, wait for her answer, then the next.
+2. **Make suggestions based on what you know about WHIMSEY.** You know the brand, the community, the calendar. Use that knowledge to offer concrete options.
+3. **Reflect every answer back before moving on.** "Got it — so the prize is X. That makes sense because [reason]. Next: how long should it run?"
+4. **Log every confirmed decision immediately** using the log_decision tool. Don't wait until the end. The moment Lyra confirms something, log it.
+5. **End with a full summary** of every decision made in this meeting.
+6. **Offer to write meeting notes** to the guide doc using the update_doc_section tool.
+
+---
+
+### HOW TO OPEN A MEETING
+
+When Lyra signals a planning session, open like this:
+
+> "Perfect. Let's figure this out. [State the topic in one sentence.] I'll take you through it one question at a time. First: [Question 1]"
+
+Then wait. One question only. Don't front-load the whole agenda.
+
+---
+
+### HOW TO GUIDE THE CONVERSATION
+
+For events:
+- What's the theme or occasion? (holder celebration, mint anniversary, seasonal, collab, etc.)
+- What channel does it happen in? (#🎉 | events, #🌌 | holders-only, or both?)
+- Any Discord component? (voice stage, giveaway, reaction poll, special channel unlock?)
+- When? (specific date, week, or "whenever feels right")
+- Does it need community participation or is it Lyra posting?
+- Any prize, reward, or exclusive for participants?
+
+For giveaways:
+- What's the prize? (NFT from reserve, merch, collab piece, custom art, etc.)
+- Who can enter? (anyone verified, holders only, specific role?)
+- How do they enter? (react to post, comment, retweet, etc.)
+- How long does it run?
+- How many winners?
+- Which channel? (#🎉 | giveaways is default)
+
+For collaborations:
+- Who is the collab with?
+- What's being made or shared?
+- Which WHIMSEY channels are involved?
+- Any cross-promotion from their side?
+- Any exclusive for WHIMSEY holders?
+
+For community announcements:
+- What's the news?
+- Who needs to see it? (everyone, holders only, both?)
+- Does it need to go to #announcements, #holders-only, or both?
+- Any specific tone — celebratory, informational, intimate?
+
+---
+
+### HOW TO CLOSE A MEETING
+
+After all questions are answered and all decisions logged, close like this:
+
+> "Here's everything we decided today:
+>
+> [Numbered list of every confirmed decision]
+>
+> All of these are logged permanently in your decisions record. Want me to write up these meeting notes and add them to the guide?"
+
+If she says yes → use update_doc_section with action "append" to add the meeting notes as a new section.
+
+---
+
+### WHAT GETS LOGGED
+
+Every confirmed decision from a meeting goes into log_decision immediately when Lyra says yes. Even if she changes her mind later — log the new decision, don't delete the old one. The log is a history, not just a current state.
+
+After a meeting, the decisions are permanently loaded into every future conversation. WHIMSEY AI will always know what was decided and can reference it naturally:
+- "You decided in your January meeting that the first event would be..."
+- "Based on what we agreed — holder-only giveaways for the first 3 months..."
+
+---
+
 ### YOUR AUTHORITY — WHAT YOU HAVE FULL CONTROL OVER
 
 You are not just the Discord server operator. You have full authority over every part of the WHIMSEY system. Here is your complete domain:
@@ -2564,6 +2673,23 @@ const DISCORD_TOOLS: any[] = [
   {
     type: "function",
     function: {
+      name: "log_decision",
+      description: "Record a confirmed decision from a meeting or conversation with Lyra. Always log every confirmed decision immediately — do not wait until the end. This is the permanent memory of everything WHIMSEY has decided. When a decision is made in conversation, log it right then. Categories: collection, server, events, giveaways, moderation, community, roadmap, brand, other.",
+      parameters: {
+        type: "object",
+        required: ["category", "title", "decision"],
+        properties: {
+          category: { type: "string", description: "Decision category: collection, server, events, giveaways, moderation, community, roadmap, brand, other" },
+          title:    { type: "string", description: "Short title for this decision (e.g. 'January giveaway prize', 'First community event theme')" },
+          decision: { type: "string", description: "The full decision text — what was decided, completely and clearly" },
+          context:  { type: "string", description: "Optional: why this was decided, any relevant nuance, or how to apply it" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
       name: "update_doc_section",
       description: "Add or replace a section in the WHIMSEY_DISCORD_SETUP.md guide document. Use 'append' to add a new section at the end of the doc, or 'replace_section' to find an existing section heading and replace that section's content. Use this to keep the guide current as Lyra makes decisions — new rules, changed permissions, post-mint updates, anything that belongs permanently in the guide.",
       parameters: {
@@ -3094,6 +3220,22 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
         return JSON.stringify({ ok: true, questionCount: contentState.quickQuestions.length, questions: contentState.quickQuestions });
       }
 
+      case "log_decision": {
+        const id = `dec_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+        const entry: Decision = {
+          id,
+          category: (args.category || "other") as Decision["category"],
+          title:    (args.title    || "Untitled decision").toString(),
+          decision: (args.decision || "").toString(),
+          context:  args.context ? args.context.toString() : undefined,
+          date:     new Date().toISOString(),
+        };
+        decisionsState.decisions.unshift(entry);
+        saveState("decisions", decisionsState).catch(() => {});
+        logChange("log_decision", `Decision logged: "${entry.title}"`, entry.decision.slice(0, 120)).catch(() => {});
+        return JSON.stringify({ ok: true, id, category: entry.category, title: entry.title, totalDecisions: decisionsState.decisions.length });
+      }
+
       case "update_doc_section": {
         const DOC_PATH = path.join(process.cwd(), "../../docs/WHIMSEY_DISCORD_SETUP.md");
         const action = (args.action || "append").toString().trim();
@@ -3169,6 +3311,7 @@ const TOOL_LABELS: Record<string, string> = {
   update_nav_label:       "🔗 Updating nav menu…",
   update_quick_questions: "❓ Updating quick questions…",
   update_doc_section:     "📝 Updating the guide document…",
+  log_decision:           "📋 Logging decision…",
 };
 
 // ── POST /api/whimsey/chat ────────────────────────────────────────────────

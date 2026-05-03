@@ -18,6 +18,15 @@ export interface ContentBlock {
   createdAt: string;
 }
 
+export interface Decision {
+  id: string;
+  category: "collection" | "server" | "events" | "giveaways" | "moderation" | "community" | "roadmap" | "brand" | "other";
+  title: string;
+  decision: string;
+  context?: string;
+  date: string;
+}
+
 export const contentState = {
   pageHeaders: {
     home:        { greeting: "Hey Lyra 🌷", subtitle: "Setting up Discord for the first time is genuinely hard. You're not confused because you're doing it wrong — you're confused because it's a lot. That's completely normal. One step at a time." },
@@ -74,6 +83,13 @@ export async function bootstrapState() {
   if (savedStyle) {
     if (savedStyle.publicChannel) styleState.publicChannel = savedStyle.publicChannel;
     if (savedStyle.ticketChannel) styleState.ticketChannel = savedStyle.ticketChannel;
+  }
+  const savedDecisions = await loadState("decisions");
+  if (savedDecisions && Array.isArray(savedDecisions.decisions) && savedDecisions.decisions.length > 0) {
+    decisionsState.decisions = savedDecisions.decisions;
+  } else {
+    decisionsState.decisions = [...SEEDED_DECISIONS];
+    saveState("decisions", decisionsState).catch(() => {});
   }
 }
 
@@ -136,6 +152,93 @@ Rules:
 - End with a clear next step or an offer to help further
 - Never feel like a bot — use natural, conversational phrasing
 - One emoji max, only if it genuinely fits`,
+};
+
+// ── Decisions Log ─────────────────────────────────────────────────────────
+const SEEDED_DECISIONS: Decision[] = [
+  {
+    id: "seed_001", category: "collection", date: "2025-10-01T00:00:00.000Z",
+    title: "Total NFT supply",
+    decision: "30,000 WHIMSEY NFTs total in the collection.",
+    context: "The full universe — every character finds a human.",
+  },
+  {
+    id: "seed_002", category: "collection", date: "2025-10-01T00:00:00.000Z",
+    title: "Team reserve",
+    decision: "900 NFTs kept in the team reserve (3% of total supply).",
+    context: "Reserved for giveaways, collaborations, and team use post-mint.",
+  },
+  {
+    id: "seed_003", category: "collection", date: "2025-10-01T00:00:00.000Z",
+    title: "Token ticker",
+    decision: "The collection token is called $CNDY.",
+  },
+  {
+    id: "seed_004", category: "server", date: "2025-10-01T00:00:00.000Z",
+    title: "Role hierarchy — 4 community roles",
+    decision: "Admin 💗 (top), Moderator ☁️, Holder 🌌, Verified 🩵 (bottom). Bot roles sit between Admin and Moderator. @everyone is locked to zero permissions.",
+  },
+  {
+    id: "seed_005", category: "server", date: "2025-10-01T00:00:00.000Z",
+    title: "Server structure — 12 categories",
+    decision: "🎟 ACCESS, 💗 VERIFY, 📣 ANNOUNCEMENT, 💬 COMMUNITY, 🌌 HOLDERS, 🎉 EVENTS, ☁️ STAFF, 🎫 TICKETS, 📋 AUDITS, 📈 MOMENTUM, 🩵 COLLAB, 💎 1-OF-1.",
+    context: "4 new private categories (STAFF, AUDITS, MOMENTUM, TICKETS) added to the existing 8.",
+  },
+  {
+    id: "seed_006", category: "server", date: "2025-10-01T00:00:00.000Z",
+    title: "Required bots — 5 total",
+    decision: "Auth (verification gate before server access), Collab.Land (wallet/NFT verification → Holder 🌌 role), Ticket Tool (support tickets), Carl-bot (automation, moderation, scheduled reports), NFT Tracker (live $CNDY sales feed — Phase C only, after mint).",
+  },
+  {
+    id: "seed_007", category: "moderation", date: "2025-10-01T00:00:00.000Z",
+    title: "WHIMSEY AI autonomy model",
+    decision: "WHIMSEY AI is CEO of operations. Acts immediately on all server actions — moderation, channels, roles, tickets, private posts — and reports to Lyra after. The only thing requiring Lyra's approval is posting to public community channels (⚠️ confirmation gate). No exceptions.",
+  },
+  {
+    id: "seed_008", category: "brand", date: "2025-10-01T00:00:00.000Z",
+    title: "Creator identity and brand aesthetic",
+    decision: "Creator is Lyra Nova. Brand is WHIMSEY — dreamy, warm, universe-themed. Core emoji palette: 💗❄️🌌🩵. Voice: warm, confident, personal — never corporate.",
+  },
+  {
+    id: "seed_009", category: "community", date: "2025-10-01T00:00:00.000Z",
+    title: "Public channel posting rule",
+    decision: "WHIMSEY AI never posts to any public community channel without showing the exact message and waiting for Lyra to confirm. This gate applies even during mint chaos and even if Lyra just asked for it verbally.",
+  },
+  {
+    id: "seed_010", category: "giveaways", date: "2025-10-01T00:00:00.000Z",
+    title: "First post-mint giveaway plan",
+    decision: "At T+24h after sold out, run the first giveaway in #giveaways via Carl-bot. Default: 1 WHIMSEY NFT from the 900-NFT reserve, 48-hour duration.",
+    context: "Exact prize and mechanics can be updated by Lyra when the time comes.",
+  },
+  {
+    id: "seed_011", category: "roadmap", date: "2025-10-01T00:00:00.000Z",
+    title: "Mint day timeline milestones",
+    decision: "T-1h: announcement. T-0: mint is live. T+2h: exclusive holders-only message. T+24h: giveaway starts + public sold-out recap. T+48h: X Space. T+1 week: first concrete milestone announcement.",
+  },
+  {
+    id: "seed_012", category: "roadmap", date: "2025-10-01T00:00:00.000Z",
+    title: "Phase D — permanent operating model",
+    decision: "After Phase C, the server runs on autopilot indefinitely. Bots handle everything automated. WHIMSEY AI monitors 24/7. Lyra posts in #announcements only when there is real news. Total weekly human time: ~30 minutes.",
+  },
+  {
+    id: "seed_013", category: "server", date: "2025-10-01T00:00:00.000Z",
+    title: "Carl-bot automation — 9 scheduled reports",
+    decision: "Carl-bot posts: daily recap at 23:55 IST, weekly recap Sundays, monthly recap last day of month, daily holder snapshot, server stats, NFT tracker feed, Twitter mirror, team pulse Mondays. Heartbeat post every hour in #audit-mod-actions.",
+  },
+  {
+    id: "seed_014", category: "moderation", date: "2025-10-01T00:00:00.000Z",
+    title: "Scammer handling policy",
+    decision: "Any member posting fake mint links or DMing members with fake offers: instant ban, no warning, no discussion. Carl-bot AutoMod handles auto-deletion. WHIMSEY AI handles the ban immediately and reports to #staff-chat.",
+  },
+  {
+    id: "seed_015", category: "community", date: "2025-10-01T00:00:00.000Z",
+    title: "Collab.Land wallet verification",
+    decision: "Holder 🌌 role is granted automatically by Collab.Land when a member connects a wallet holding $CNDY. Verification batches every 15 minutes. Members told to wait 15 min if verification seems slow — this is normal.",
+  },
+];
+
+export const decisionsState: { decisions: Decision[] } = {
+  decisions: [],
 };
 
 // GET /style
