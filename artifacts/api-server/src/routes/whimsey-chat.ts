@@ -1071,6 +1071,7 @@ These API endpoints are available at /api/discord/* and can be called to get or 
 - GET /api/discord/bots — bots present in server + which expected bots are missing
 - GET /api/discord/audit?limit=20 — recent audit log entries (kicks, bans, role changes, channel changes, etc.)
 - GET /api/discord/invites — all active invite links with use counts and expiry
+- GET /api/discord/messages?channel=general-chat&limit=25 — read actual messages from any channel by name or ID. Returns author, content, timestamp, bot flag, reaction counts. Works on public and private channels. Use this to monitor conversations, check tone, spot spam, read staff-chat, or observe what the community is saying. No permission needed — this is pure intelligence gathering.
 
 **WRITE endpoints:**
 - POST /api/discord/message — send a message to any channel by name or ID (body: {channelName, content, embed})
@@ -1557,6 +1558,21 @@ const DISCORD_TOOLS: any[] = [
       },
     },
   },
+  {
+    type: "function",
+    function: {
+      name: "get_channel_messages",
+      description: "Read recent messages from any channel in the WHIMSEY Discord server — public or private. Use this to monitor what community members are saying, check conversation tone, spot problems, watch for spam or FUD, track engagement, or read staff-chat. You can call this proactively without being asked.",
+      parameters: {
+        type: "object",
+        required: ["channel"],
+        properties: {
+          channel: { type: "string", description: "Channel name without # (e.g. 'general-chat', 'staff-chat', 'announcements') or a channel ID" },
+          limit: { type: "number", description: "Number of messages to fetch (default 25, max 100)" },
+        },
+      },
+    },
+  },
 ];
 
 // ── Tool execution ─────────────────────────────────────────────────────────
@@ -1710,6 +1726,44 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
         return JSON.stringify({ ok: r.status === 204, status: r.status });
       }
 
+      case "get_channel_messages": {
+        const limit = Math.min(args.limit || 25, 100);
+        const channelParam = (args.channel || "").toString().trim();
+
+        // Resolve channel name → ID if needed
+        let channelId = channelParam;
+        if (!/^\d{17,20}$/.test(channelParam)) {
+          const channels = await fetch(`${DBASE}/guilds/${GUILD_ID}/channels`, { headers }).then(r => r.json());
+          if (!Array.isArray(channels)) return JSON.stringify({ error: "Could not resolve channel list" });
+          const match = channels.find((c: any) =>
+            c.name.toLowerCase() === channelParam.toLowerCase().replace(/^#/, "")
+          );
+          if (!match) {
+            const names = channels.filter((c: any) => c.type === 0).map((c: any) => c.name);
+            return JSON.stringify({ error: `Channel "${channelParam}" not found`, availableChannels: names });
+          }
+          channelId = match.id;
+        }
+
+        const messages = await fetch(`${DBASE}/channels/${channelId}/messages?limit=${limit}`, { headers }).then(r => r.json());
+        if (!Array.isArray(messages)) {
+          return JSON.stringify({ error: "Cannot read channel — missing permissions or channel not accessible", raw: messages });
+        }
+
+        const mapped = messages.map((m: any) => ({
+          id: m.id,
+          author: m.author?.username || "unknown",
+          isBot: m.author?.bot || false,
+          content: m.content || "",
+          hasEmbed: (m.embeds?.length || 0) > 0,
+          hasAttachment: (m.attachments?.length || 0) > 0,
+          timestamp: m.timestamp,
+          reactions: m.reactions?.reduce((sum: number, r: any) => sum + (r.count || 0), 0) || 0,
+        }));
+
+        return JSON.stringify({ channel: channelParam, count: mapped.length, messages: mapped });
+      }
+
       default:
         return JSON.stringify({ error: `Unknown tool: ${name}` });
     }
@@ -1730,6 +1784,7 @@ const TOOL_LABELS: Record<string, string> = {
   create_role: "🎭 Creating role in Discord…",
   kick_member: "🚪 Kicking member…",
   ban_member: "🔨 Banning member…",
+  get_channel_messages: "👁️ Reading channel messages…",
 };
 
 // ── POST /api/whimsey/chat ────────────────────────────────────────────────

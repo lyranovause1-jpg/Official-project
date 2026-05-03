@@ -456,6 +456,63 @@ router.get("/discord/invites", async (req, res) => {
   }
 });
 
+// ── GET /api/discord/messages ────────────────────────────────────────────────
+router.get("/discord/messages", async (req, res) => {
+  const channelParam = (req.query.channel as string || "").trim();
+  const limit = Math.min(parseInt(req.query.limit as string || "25", 10), 100);
+
+  if (!channelParam) {
+    res.status(400).json({ ok: false, error: "channel query param required (name or ID)" });
+    return;
+  }
+
+  try {
+    let channelId = channelParam;
+
+    // If it's not a snowflake ID, resolve by name
+    if (!/^\d{17,20}$/.test(channelParam)) {
+      const channels = await dget(`/guilds/${GUILD_ID}/channels`);
+      if (!Array.isArray(channels)) {
+        res.status(500).json({ ok: false, error: "Could not fetch channel list" });
+        return;
+      }
+      const match = channels.find((c: any) =>
+        c.name.toLowerCase() === channelParam.toLowerCase().replace(/^#/, "")
+      );
+      if (!match) {
+        const names = channels.filter((c: any) => c.type === 0).map((c: any) => c.name);
+        res.status(404).json({ ok: false, error: `Channel "${channelParam}" not found`, availableChannels: names });
+        return;
+      }
+      channelId = match.id;
+    }
+
+    const messages = await dget(`/channels/${channelId}/messages?limit=${limit}`);
+    if (!Array.isArray(messages)) {
+      res.status(403).json({ ok: false, error: "Cannot read this channel — missing permissions or channel not found", raw: messages });
+      return;
+    }
+
+    const mapped = messages.map((m: any) => ({
+      id: m.id,
+      author: m.author?.username || "unknown",
+      authorId: m.author?.id,
+      isBot: m.author?.bot || false,
+      content: m.content || "",
+      embeds: m.embeds?.length || 0,
+      attachments: m.attachments?.length || 0,
+      timestamp: m.timestamp,
+      edited: m.edited_timestamp || null,
+      reactionCount: m.reactions?.reduce((sum: number, r: any) => sum + (r.count || 0), 0) || 0,
+    }));
+
+    res.json({ ok: true, channel: channelParam, count: mapped.length, messages: mapped });
+  } catch (err) {
+    req.log.error({ err }, "Discord messages error");
+    res.status(500).json({ ok: false, error: "Failed to fetch messages" });
+  }
+});
+
 // ── POST /api/discord/pin ─────────────────────────────────────────────────────
 router.post("/discord/pin", async (req, res) => {
   const { channelId, messageId } = req.body as { channelId: string; messageId: string };
