@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { loadState, saveState, getChangelog } from "../lib/persistence";
 
 const router = Router();
 
@@ -52,6 +53,30 @@ export const contentState = {
   ] as string[],
 };
 
+// ── Persist helpers ───────────────────────────────────────────────────────
+async function persistContent() { await saveState("content", contentState); }
+async function persistStyle()   { await saveState("style",   styleState);   }
+
+// ── Bootstrap: load saved state from DB on server start ──────────────────
+export async function bootstrapState() {
+  const savedContent = await loadState("content");
+  if (savedContent) {
+    if (savedContent.pageHeaders) Object.assign(contentState.pageHeaders, savedContent.pageHeaders);
+    if (savedContent.pageBlocks) {
+      for (const [page, blocks] of Object.entries(savedContent.pageBlocks as Record<string, ContentBlock[]>)) {
+        contentState.pageBlocks[page] = blocks;
+      }
+    }
+    if (savedContent.navLabels)     Object.assign(contentState.navLabels, savedContent.navLabels);
+    if (savedContent.quickQuestions) contentState.quickQuestions = savedContent.quickQuestions;
+  }
+  const savedStyle = await loadState("style");
+  if (savedStyle) {
+    if (savedStyle.publicChannel) styleState.publicChannel = savedStyle.publicChannel;
+    if (savedStyle.ticketChannel) styleState.ticketChannel = savedStyle.ticketChannel;
+  }
+}
+
 // GET /content — returns full contentState
 router.get("/content", (_req, res) => {
   res.json({ ok: true, content: contentState });
@@ -78,7 +103,14 @@ router.post("/content", (req: any, res: any) => {
   }
   if (navLabels) Object.assign(contentState.navLabels, navLabels);
   if (Array.isArray(quickQuestions)) contentState.quickQuestions = quickQuestions;
+  persistContent().catch(() => {});
   res.json({ ok: true, content: contentState });
+});
+
+// GET /changelog — returns recent AI change log entries
+router.get("/changelog", async (_req, res) => {
+  const entries = await getChangelog(50);
+  res.json({ ok: true, entries });
 });
 
 // ── Text Style Defaults ───────────────────────────────────────────────────
@@ -119,6 +151,7 @@ router.post("/style", (req: any, res: any) => {
   };
   if (typeof publicChannel === "string") styleState.publicChannel = publicChannel.trim();
   if (typeof ticketChannel === "string") styleState.ticketChannel = ticketChannel.trim();
+  persistStyle().catch(() => {});
   res.json({ ok: true, style: styleState });
 });
 

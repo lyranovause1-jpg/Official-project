@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import DynamicBlocks, { useContent } from "./DynamicBlocks";
+import AiChangelog from "./AiChangelog";
 
 interface ServerStatus {
   botsPresent: string[];
@@ -298,6 +299,9 @@ export default function HomeJourney() {
 
         {/* ── AI-added dynamic blocks ── */}
         <DynamicBlocks page="home" />
+
+        {/* ── AI change log ── */}
+        <AiChangelog />
 
         {/* ── Stuck card ── */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6 text-center shadow-sm">

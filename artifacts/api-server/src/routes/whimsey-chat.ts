@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { openai } from "@workspace/integrations-openai-ai-server";
 import { isAutopilotActive, autopilotState, styleState, contentState, ContentBlock } from "./whimsey-discord";
+import { logChange, saveState } from "../lib/persistence";
 
 const router = Router();
 
@@ -2480,13 +2481,16 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
         if (typeof args.ticketChannel === "string" && args.ticketChannel.trim()) {
           styleState.ticketChannel = args.ticketChannel.trim();
         }
+        const styleSummary = args.summary || "Updated text style guide";
+        saveState("style", styleState).catch(() => {});
+        logChange("update_style", styleSummary, `Public: ${args.publicChannel ? "updated" : "unchanged"} | Ticket: ${args.ticketChannel ? "updated" : "unchanged"}`).catch(() => {});
         return JSON.stringify({
           ok: true,
           updated: {
             publicChannel: typeof args.publicChannel === "string",
             ticketChannel: typeof args.ticketChannel === "string",
           },
-          summary: args.summary || "Style updated",
+          summary: styleSummary,
           currentStyle: {
             publicChannel: styleState.publicChannel.slice(0, 120) + "…",
             ticketChannel: styleState.ticketChannel.slice(0, 120) + "…",
@@ -2500,6 +2504,9 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
         if (args.title)    contentState.pageHeaders[page].title    = args.title;
         if (args.subtitle) contentState.pageHeaders[page].subtitle = args.subtitle;
         if (args.greeting) contentState.pageHeaders[page].greeting = args.greeting;
+        saveState("content", contentState).catch(() => {});
+        const changed = [args.title && "title", args.subtitle && "subtitle", args.greeting && "greeting"].filter(Boolean).join(", ");
+        logChange("update_page_header", `Updated ${page} page header (${changed})`, JSON.stringify(contentState.pageHeaders[page])).catch(() => {});
         return JSON.stringify({ ok: true, page, updated: contentState.pageHeaders[page] });
       }
 
@@ -2518,6 +2525,8 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
           createdAt:   new Date().toISOString(),
         };
         contentState.pageBlocks[page].push(block);
+        saveState("content", contentState).catch(() => {});
+        logChange("add_page_block", `Added "${block.title}" block to ${page} page`, `Icon: ${block.icon} | Type: ${block.type} | Body: ${block.body.slice(0, 80)}`).catch(() => {});
         return JSON.stringify({ ok: true, blockId: id, page, block });
       }
 
@@ -2532,14 +2541,21 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
         if (args.type)        blocks[idx].type        = args.type;
         if (args.actionLabel) blocks[idx].actionLabel = args.actionLabel;
         if (args.actionPath)  blocks[idx].actionPath  = args.actionPath;
+        saveState("content", contentState).catch(() => {});
+        logChange("edit_page_block", `Edited "${blocks[idx].title}" block on ${page} page`, `blockId: ${args.blockId}`).catch(() => {});
         return JSON.stringify({ ok: true, blockId: args.blockId, updated: blocks[idx] });
       }
 
       case "remove_page_block": {
         const page = (args.page || "").toString().toLowerCase().trim();
         const before = (contentState.pageBlocks[page] || []).length;
+        const removedBlock = (contentState.pageBlocks[page] || []).find((b: ContentBlock) => b.id === args.blockId);
         contentState.pageBlocks[page] = (contentState.pageBlocks[page] || []).filter((b: ContentBlock) => b.id !== args.blockId);
         const removed = before > contentState.pageBlocks[page].length;
+        if (removed) {
+          saveState("content", contentState).catch(() => {});
+          logChange("remove_page_block", `Removed "${removedBlock?.title ?? args.blockId}" block from ${page} page`, `blockId: ${args.blockId}`).catch(() => {});
+        }
         return JSON.stringify({ ok: removed, blockId: args.blockId, page, remaining: contentState.pageBlocks[page].length });
       }
 
@@ -2548,6 +2564,8 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
         const label = (args.label || "").toString().trim();
         if (!path || !label) return JSON.stringify({ ok: false, error: "path and label are required" });
         contentState.navLabels[path] = label;
+        saveState("content", contentState).catch(() => {});
+        logChange("update_nav_label", `Renamed nav item "${path}" to "${label}"`).catch(() => {});
         return JSON.stringify({ ok: true, path, label, allNavLabels: contentState.navLabels });
       }
 
@@ -2556,6 +2574,8 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
           return JSON.stringify({ ok: false, error: "questions must be a non-empty array" });
         }
         contentState.quickQuestions = args.questions.map((q: any) => String(q));
+        saveState("content", contentState).catch(() => {});
+        logChange("update_quick_questions", `Updated home page quick questions (${contentState.quickQuestions.length} questions)`, contentState.quickQuestions.join(" | ")).catch(() => {});
         return JSON.stringify({ ok: true, questionCount: contentState.quickQuestions.length, questions: contentState.quickQuestions });
       }
 
