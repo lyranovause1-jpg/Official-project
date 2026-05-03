@@ -120,9 +120,9 @@ export default function HomeJourney() {
               Server
             </button>
           </Link>
-          <Link href="/guide">
+          <Link href="/simulator">
             <button className="px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-              Full Guide
+              Drills
             </button>
           </Link>
           <Link href="/ai">

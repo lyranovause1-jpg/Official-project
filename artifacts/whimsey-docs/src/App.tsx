@@ -6,6 +6,7 @@ import docRaw from "@docs/WHIMSEY_DISCORD_SETUP.md?raw";
 import AiChat from "./AiChat";
 import DiscordDashboard from "./DiscordDashboard";
 import HomeJourney from "./HomeJourney";
+import ScenarioSimulator from "./ScenarioSimulator";
 
 type Mode = "read" | "do" | "reference" | "mixed" | null;
 type Heading = { id: string; text: string; clean: string; level: number; mode: Mode };
@@ -328,6 +329,7 @@ export default function App() {
       <Route path="/ai" component={AiChat} />
       <Route path="/discord" component={DiscordDashboard} />
       <Route path="/guide" component={DocsPage} />
+      <Route path="/simulator" component={ScenarioSimulator} />
       <Route component={HomeJourney} />
     </Switch>
   );

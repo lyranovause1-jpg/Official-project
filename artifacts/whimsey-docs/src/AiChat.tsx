@@ -32,6 +32,7 @@ const TOOL_LABELS: Record<string, string> = {
   create_role:          "Creating role…",
   kick_member:          "Kicking member…",
   ban_member:           "Banning member…",
+  get_channel_messages: "Reading channel messages…",
 };
 
 function loadHistory(): Message[] {
