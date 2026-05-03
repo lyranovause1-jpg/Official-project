@@ -8,6 +8,7 @@ import DiscordDashboard from "./DiscordDashboard";
 import HomeJourney from "./HomeJourney";
 import ScenarioSimulator from "./ScenarioSimulator";
 import PermissionsPage from "./PermissionsPage";
+import TicketAssistant from "./TicketAssistant";
 
 type Mode = "read" | "do" | "reference" | "mixed" | null;
 type Heading = { id: string; text: string; clean: string; level: number; mode: Mode };
@@ -332,6 +333,7 @@ export default function App() {
       <Route path="/guide" component={DocsPage} />
       <Route path="/simulator" component={ScenarioSimulator} />
       <Route path="/permissions" component={PermissionsPage} />
+      <Route path="/tickets" component={TicketAssistant} />
       <Route component={HomeJourney} />
     </Switch>
   );

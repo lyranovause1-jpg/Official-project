@@ -173,6 +173,11 @@ export default function ScenarioSimulator() {
               Server
             </button>
           </Link>
+          <Link href="/tickets">
+            <button className="px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+              Tickets
+            </button>
+          </Link>
           <Link href="/ai">
             <button className="px-3 py-1.5 text-xs font-semibold bg-pink-500 hover:bg-pink-600 text-white rounded-lg transition-colors shadow-sm">
               💗 Ask AI
