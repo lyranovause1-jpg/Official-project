@@ -1986,11 +1986,31 @@ You are not a generic AI. You are WHIMSEY AI. You know everything. You are here 
 
 You are not just the Discord server operator. You have full authority over every part of the WHIMSEY system. Here is your complete domain:
 
-**The WHIMSEY Discord Server:**
-- All channels, roles, bots, permissions, slowmode, verification levels
-- All member management — joins, kicks, bans, role assignments
-- All audit logs, tickets, and support responses
-- Full operational authority — you own this server
+**The WHIMSEY Discord Server — Complete Tool Access:**
+- **Read:** get_server_status, get_channels, get_roles, get_bots, get_invites, get_audit_log, get_channel_messages, get_members
+- **Channel management:** create_channel (place in any category by name), delete_channel, update_channel (rename, topic, slowmode)
+- **Messaging:** send_discord_message (post to any channel including ALL 📈 | MOMENTUM channels), pin_message, delete_message
+- **Role management:** create_role, assign_role (give a role to a member), remove_role (take a role from a member)
+- **Member moderation:** kick_member, ban_member, unban_member, timeout_member (temporarily silence)
+- **App content:** update_page_header, add_page_block, edit_page_block, remove_page_block, update_nav_label, update_quick_questions, update_style
+
+**📈 | MOMENTUM CHANNELS — Your Full Responsibility:**
+You have complete read and write authority over all 8 momentum channels. These are YOUR domain:
+- #momentum-daily-recap — you post the daily summary at 23:55 IST (and can post anytime Lyra asks)
+- #momentum-weekly-recap — weekly wrap every Sunday
+- #momentum-monthly-recap — monthly recap last day of month
+- #momentum-holder-snapshot — daily holder count snapshot
+- #momentum-server-stats — live member/channel/engagement counts
+- #momentum-collection-feed — NFT Tracker feed ($CNDY sales, listings, mints, transfers)
+- #momentum-twitter-feed — Twitter/X activity mirror
+- #momentum-team-pulse — weekly contributor highlights (Carl-bot Monday 12:00 IST)
+
+When Lyra asks you to update a momentum channel — post a recap, change the topic, set a new slowmode, or anything — you do it immediately using send_discord_message or update_channel. No confirmation gate needed for momentum channels (they're private, staff-only).
+
+**📋 | AUDITS CHANNELS — Read only:**
+You can READ all 17 audit channels but you never POST to them (they are tamper-free bot-write-only logs). You monitor them and report to Lyra.
+
+**Everything is tracked:** Every mutation you make — every message sent, every channel created, every role assigned, every member kicked — is automatically logged to the WHIMSEY change log so Lyra always knows exactly what you did and when.
 
 **The WHIMSEY App (this tool — guides, AI, dashboard, permissions, tickets, drills):**
 - You know the full guide documentation (WHIMSEY_DISCORD_SETUP.md) — you can suggest edits, flag errors, and advise on any section
@@ -2283,6 +2303,145 @@ const DISCORD_TOOLS: any[] = [
       },
     },
   },
+  {
+    type: "function",
+    function: {
+      name: "create_channel",
+      description: "Create a new text channel in the WHIMSEY server. Use this to set up momentum channels, audit channels, or any new channel Lyra needs. You can place it inside a category by name.",
+      parameters: {
+        type: "object",
+        required: ["name"],
+        properties: {
+          name:         { type: "string",  description: "Channel name (use lowercase-with-hyphens, e.g. 'momentum-daily-recap')" },
+          topic:        { type: "string",  description: "Channel topic/description" },
+          categoryName: { type: "string",  description: "Category name to place the channel in (e.g. '📈 | MOMENTUM', '📋 | AUDITS'). Case-insensitive fuzzy match." },
+          categoryId:   { type: "string",  description: "Category ID (use if you already have the exact ID from get_channels)" },
+          slowmode:     { type: "number",  description: "Slowmode in seconds (0 = off)" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "delete_channel",
+      description: "Delete a channel from the WHIMSEY server. Use channel name or ID.",
+      parameters: {
+        type: "object",
+        properties: {
+          channelId:   { type: "string", description: "Discord channel ID to delete" },
+          channelName: { type: "string", description: "Channel name (without #) — will be resolved to ID automatically" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "assign_role",
+      description: "Give a Discord role to a specific member. Use this to manually assign Admin 💗, Holder 🌌, Verified 🩵, or any other role. You must have the user ID and role ID (get them from get_members and get_roles).",
+      parameters: {
+        type: "object",
+        required: ["userId", "roleId"],
+        properties: {
+          userId: { type: "string", description: "Discord user ID" },
+          roleId: { type: "string", description: "Discord role ID to assign" },
+          reason: { type: "string", description: "Reason for the assignment" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "remove_role",
+      description: "Remove a Discord role from a specific member.",
+      parameters: {
+        type: "object",
+        required: ["userId", "roleId"],
+        properties: {
+          userId: { type: "string", description: "Discord user ID" },
+          roleId: { type: "string", description: "Discord role ID to remove" },
+          reason: { type: "string", description: "Reason for removal" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "timeout_member",
+      description: "Temporarily silence (timeout) a member — they cannot send messages or join voice channels for the duration. Set durationMinutes to 0 or omit it to remove an existing timeout.",
+      parameters: {
+        type: "object",
+        required: ["userId"],
+        properties: {
+          userId:          { type: "string", description: "Discord user ID to timeout" },
+          durationMinutes: { type: "number", description: "How many minutes to timeout (omit or 0 to remove timeout)" },
+          reason:          { type: "string", description: "Reason for the timeout" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "unban_member",
+      description: "Lift a ban — allow a previously banned user back into the server.",
+      parameters: {
+        type: "object",
+        required: ["userId"],
+        properties: {
+          userId: { type: "string", description: "Discord user ID to unban" },
+          reason: { type: "string", description: "Reason for unbanning" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "get_members",
+      description: "Get a list of members in the WHIMSEY server — includes usernames, nicknames, roles, and join dates. Use this to find a user ID before assigning or removing a role, or to check who's in the server.",
+      parameters: {
+        type: "object",
+        properties: {
+          limit: { type: "number", description: "How many members to fetch (default 50, max 100)" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "pin_message",
+      description: "Pin a message in a channel so it stays at the top. Use the channel ID and message ID (from get_channel_messages).",
+      parameters: {
+        type: "object",
+        required: ["channelId", "messageId"],
+        properties: {
+          channelId: { type: "string", description: "Discord channel ID" },
+          messageId: { type: "string", description: "Discord message ID to pin" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "delete_message",
+      description: "Delete a specific message from a channel. Use this to remove spam, inappropriate content, or any message that shouldn't be there. Get the messageId from get_channel_messages.",
+      parameters: {
+        type: "object",
+        required: ["channelId", "messageId"],
+        properties: {
+          channelId: { type: "string", description: "Discord channel ID" },
+          messageId: { type: "string", description: "Discord message ID to delete" },
+          reason:    { type: "string", description: "Reason for deletion (for audit log)" },
+        },
+      },
+    },
+  },
 ];
 
 // ── Tool execution ─────────────────────────────────────────────────────────
@@ -2392,6 +2551,7 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
           method: "POST", headers: jsonHeaders,
           body: JSON.stringify({ content: args.content }),
         }).then(r => r.json());
+        if (result.id) logChange("send_discord_message", `Posted to #${args.channelName}`, args.content.slice(0, 150)).catch(() => {});
         return JSON.stringify({ ok: !!result.id, messageId: result.id, channel: args.channelName, preview: args.content.slice(0, 80) });
       }
 
@@ -2403,6 +2563,14 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
         const result = await fetch(`${DBASE}/channels/${args.channelId}`, {
           method: "PATCH", headers: jsonHeaders, body: JSON.stringify(body),
         }).then(r => r.json());
+        if (result.id) {
+          const changes = [
+            args.slowmode !== undefined && `slowmode → ${args.slowmode}s`,
+            args.topic !== undefined && `topic updated`,
+            args.name !== undefined && `renamed to "${args.name}"`,
+          ].filter(Boolean).join(", ");
+          logChange("update_channel", `Updated #${result.name} (${changes})`, JSON.stringify(body)).catch(() => {});
+        }
         return JSON.stringify({ ok: !!result.id, channel: result.name, updates: body });
       }
 
@@ -2415,6 +2583,7 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
             hoist: args.hoist ?? false, mentionable: args.mentionable ?? false,
           }),
         }).then(r => r.json());
+        if (result.id) logChange("create_role", `Created role "${args.name}"${args.color ? ` (${args.color})` : ""}`, `roleId: ${result.id}`).catch(() => {});
         return JSON.stringify({ ok: !!result.id, roleId: result.id, roleName: result.name, color: args.color });
       }
 
@@ -2422,6 +2591,7 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
         const r = await fetch(`${DBASE}/guilds/${GUILD_ID}/members/${args.userId}`, {
           method: "DELETE", headers,
         });
+        if (r.status === 204) logChange("kick_member", `Kicked member (userId: ${args.userId})`, `Reason: ${args.reason || "none"}`).catch(() => {});
         return JSON.stringify({ ok: r.status === 204, status: r.status, reason: args.reason });
       }
 
@@ -2433,7 +2603,120 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
             reason: args.reason || "Banned via WHIMSEY AI",
           }),
         });
+        if (r.status === 204) logChange("ban_member", `Banned member (userId: ${args.userId})`, `Reason: ${args.reason || "Banned via WHIMSEY AI"}`).catch(() => {});
         return JSON.stringify({ ok: r.status === 204, status: r.status });
+      }
+
+      case "create_channel": {
+        const body: any = { name: args.name, type: 0 };
+        if (args.topic) body.topic = args.topic;
+        if (args.slowmode !== undefined) body.rate_limit_per_user = args.slowmode;
+        // Resolve category name → ID
+        if (args.categoryName) {
+          const allChannels = await fetch(`${DBASE}/guilds/${GUILD_ID}/channels`, { headers }).then(r => r.json());
+          if (Array.isArray(allChannels)) {
+            const cat = allChannels.find((c: any) => c.type === 4 && c.name.toLowerCase().includes((args.categoryName || "").toLowerCase()));
+            if (cat) body.parent_id = cat.id;
+          }
+        }
+        if (args.categoryId) body.parent_id = args.categoryId;
+        const result = await fetch(`${DBASE}/guilds/${GUILD_ID}/channels`, {
+          method: "POST", headers: jsonHeaders, body: JSON.stringify(body),
+        }).then(r => r.json());
+        if (result.id) logChange("create_channel", `Created channel #${result.name}${body.parent_id ? ` in category` : ""}`, `channelId: ${result.id} | topic: ${args.topic || "none"}`).catch(() => {});
+        return JSON.stringify({ ok: !!result.id, channelId: result.id, channelName: result.name, parentId: result.parent_id });
+      }
+
+      case "delete_channel": {
+        // Support name-based lookup
+        let channelId = args.channelId;
+        let channelName = args.channelId;
+        if (args.channelName) {
+          const allChannels = await fetch(`${DBASE}/guilds/${GUILD_ID}/channels`, { headers }).then(r => r.json());
+          if (Array.isArray(allChannels)) {
+            const match = allChannels.find((c: any) => c.name.toLowerCase() === (args.channelName || "").toLowerCase().replace(/^#/, ""));
+            if (match) { channelId = match.id; channelName = match.name; }
+          }
+        }
+        const r = await fetch(`${DBASE}/channels/${channelId}`, { method: "DELETE", headers });
+        const ok = r.status === 200 || r.status === 204 || r.status === 201;
+        if (ok) logChange("delete_channel", `Deleted channel #${channelName}`, `channelId: ${channelId}`).catch(() => {});
+        return JSON.stringify({ ok, channelId, channelName });
+      }
+
+      case "assign_role": {
+        const r = await fetch(`${DBASE}/guilds/${GUILD_ID}/members/${args.userId}/roles/${args.roleId}`, {
+          method: "PUT", headers,
+        });
+        const ok = r.status === 204;
+        if (ok) logChange("assign_role", `Assigned role (${args.roleId}) to user (${args.userId})`, `Reason: ${args.reason || "none"}`).catch(() => {});
+        return JSON.stringify({ ok, userId: args.userId, roleId: args.roleId, status: r.status });
+      }
+
+      case "remove_role": {
+        const r = await fetch(`${DBASE}/guilds/${GUILD_ID}/members/${args.userId}/roles/${args.roleId}`, {
+          method: "DELETE", headers,
+        });
+        const ok = r.status === 204;
+        if (ok) logChange("remove_role", `Removed role (${args.roleId}) from user (${args.userId})`, `Reason: ${args.reason || "none"}`).catch(() => {});
+        return JSON.stringify({ ok, userId: args.userId, roleId: args.roleId, status: r.status });
+      }
+
+      case "timeout_member": {
+        const until = args.durationMinutes
+          ? new Date(Date.now() + args.durationMinutes * 60 * 1000).toISOString()
+          : null;
+        const r = await fetch(`${DBASE}/guilds/${GUILD_ID}/members/${args.userId}`, {
+          method: "PATCH", headers: jsonHeaders,
+          body: JSON.stringify({ communication_disabled_until: until }),
+        });
+        const ok = r.status === 200;
+        if (ok) logChange("timeout_member", `Timed out user (${args.userId}) for ${args.durationMinutes || 0} min`, `Reason: ${args.reason || "none"} | Until: ${until || "removed"}`).catch(() => {});
+        return JSON.stringify({ ok, userId: args.userId, until, status: r.status });
+      }
+
+      case "unban_member": {
+        const r = await fetch(`${DBASE}/guilds/${GUILD_ID}/bans/${args.userId}`, {
+          method: "DELETE", headers,
+        });
+        const ok = r.status === 204;
+        if (ok) logChange("unban_member", `Unbanned user (${args.userId})`, `Reason: ${args.reason || "none"}`).catch(() => {});
+        return JSON.stringify({ ok, userId: args.userId, status: r.status });
+      }
+
+      case "get_members": {
+        const limit = Math.min(args.limit || 50, 100);
+        const members = await fetch(`${DBASE}/guilds/${GUILD_ID}/members?limit=${limit}`, { headers }).then(r => r.json());
+        if (!Array.isArray(members)) return JSON.stringify({ error: "Could not fetch members" });
+        return JSON.stringify({
+          count: members.length,
+          members: members.map((m: any) => ({
+            id: m.user?.id,
+            username: m.user?.username,
+            nickname: m.nick || null,
+            roles: m.roles,
+            joinedAt: m.joined_at,
+            isBot: m.user?.bot || false,
+          })),
+        });
+      }
+
+      case "pin_message": {
+        const r = await fetch(`${DBASE}/channels/${args.channelId}/pins/${args.messageId}`, {
+          method: "PUT", headers,
+        });
+        const ok = r.status === 204;
+        if (ok) logChange("pin_message", `Pinned message in channel (${args.channelId})`, `messageId: ${args.messageId}`).catch(() => {});
+        return JSON.stringify({ ok, channelId: args.channelId, messageId: args.messageId, status: r.status });
+      }
+
+      case "delete_message": {
+        const r = await fetch(`${DBASE}/channels/${args.channelId}/messages/${args.messageId}`, {
+          method: "DELETE", headers,
+        });
+        const ok = r.status === 204;
+        if (ok) logChange("delete_message", `Deleted message in channel (${args.channelId})`, `messageId: ${args.messageId} | Reason: ${args.reason || "none"}`).catch(() => {});
+        return JSON.stringify({ ok, channelId: args.channelId, messageId: args.messageId, status: r.status });
       }
 
       case "get_channel_messages": {
@@ -2588,24 +2871,33 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
 }
 
 const TOOL_LABELS: Record<string, string> = {
-  get_server_status: "🔍 Checking your live server…",
-  get_bots: "🤖 Checking bot status…",
-  get_audit_log: "📋 Reading audit log…",
-  get_channels: "📂 Fetching channels…",
-  get_roles: "🎭 Fetching roles…",
-  get_invites: "🔗 Fetching invites…",
-  send_discord_message: "✉️ Sending message to Discord…",
-  update_channel: "✏️ Updating channel…",
-  create_role: "🎭 Creating role in Discord…",
-  kick_member: "🚪 Kicking member…",
-  ban_member: "🔨 Banning member…",
-  get_channel_messages: "👁️ Reading channel messages…",
-  update_style:         "✍️ Updating your text style guide…",
-  update_page_header:   "🏷️ Updating page header…",
-  add_page_block:       "➕ Adding new section to the app…",
-  edit_page_block:      "✏️ Editing section…",
-  remove_page_block:    "🗑️ Removing section…",
-  update_nav_label:     "🔗 Updating nav menu…",
+  get_server_status:      "🔍 Checking your live server…",
+  get_bots:               "🤖 Checking bot status…",
+  get_audit_log:          "📋 Reading audit log…",
+  get_channels:           "📂 Fetching channels…",
+  get_roles:              "🎭 Fetching roles…",
+  get_invites:            "🔗 Fetching invites…",
+  get_members:            "👥 Fetching server members…",
+  send_discord_message:   "✉️ Sending message to Discord…",
+  update_channel:         "✏️ Updating channel…",
+  create_channel:         "📢 Creating channel…",
+  delete_channel:         "🗑️ Deleting channel…",
+  create_role:            "🎭 Creating role in Discord…",
+  assign_role:            "🏷️ Assigning role to member…",
+  remove_role:            "🏷️ Removing role from member…",
+  kick_member:            "🚪 Kicking member…",
+  ban_member:             "🔨 Banning member…",
+  timeout_member:         "⏱️ Timing out member…",
+  unban_member:           "✅ Unbanning member…",
+  pin_message:            "📌 Pinning message…",
+  delete_message:         "🗑️ Deleting message…",
+  get_channel_messages:   "👁️ Reading channel messages…",
+  update_style:           "✍️ Updating your text style guide…",
+  update_page_header:     "🏷️ Updating page header…",
+  add_page_block:         "➕ Adding new section to the app…",
+  edit_page_block:        "✏️ Editing section…",
+  remove_page_block:      "🗑️ Removing section…",
+  update_nav_label:       "🔗 Updating nav menu…",
   update_quick_questions: "❓ Updating quick questions…",
 };
 
