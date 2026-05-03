@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import DynamicBlocks, { useContent } from "./DynamicBlocks";
 import AiChangelog from "./AiChangelog";
+import DiscordActivityFeed from "./DiscordActivityFeed";
 
 interface ServerStatus {
   botsPresent: string[];
@@ -299,6 +300,9 @@ export default function HomeJourney() {
 
         {/* ── AI-added dynamic blocks ── */}
         <DynamicBlocks page="home" />
+
+        {/* ── Discord activity feed ── */}
+        <DiscordActivityFeed />
 
         {/* ── AI change log ── */}
         <AiChangelog />
