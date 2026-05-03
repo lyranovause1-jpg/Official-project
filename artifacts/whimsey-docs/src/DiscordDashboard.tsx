@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { Link } from "wouter";
 
 interface ServerInfo {
   name: string; id: string; memberCount: number; onlineCount: number;
@@ -7,16 +8,23 @@ interface ServerInfo {
 }
 interface Channel { id: string; name: string; category: string | null; slowmode: number; topic: string | null; }
 interface Role { id: string; name: string; color: string | null; position: number; managed: boolean; }
-interface BotMember { username: string; id: string; avatar: string | null; joinedAt: string; }
+interface Bot { name: string; id: string; avatar: string | null; enabled: boolean; }
 interface AuditEntry { id: string; action: string; username: string; targetId: string; reason: string | null; createdAt: string; }
 interface Invite { code: string; uses: number; maxUses: number; channel: string; createdBy: string; expiresAt: string | null; }
 
 type Tab = "overview" | "channels" | "roles" | "bots" | "audit" | "invites" | "post";
 
-const EXPECTED_BOTS = ["Carl-bot", "Auth", "Collab.Land", "Ticket Tool", "NFT Tracker"];
+const REQUIRED_BOTS = ["Carl-bot", "Auth", "Collab.Land", "Ticket Tool", "WHIMSEY AI"];
+
+const ROLE_SETUP_TODO = [
+  { name: "Admin 💗", color: "#FF66B2", desc: "Lyra. Administrator ON." },
+  { name: "Moderator ☁️", color: "#A8D8FF", desc: "Lyra's team. No Administrator." },
+  { name: "Holder 🌌", color: "#7B2FBE", desc: "NFT holders. Collab.Land assigns." },
+  { name: "Verified 🩵", color: "#5865F2", desc: "Wallet-verified humans. Auth assigns." },
+];
 
 function StatusDot({ ok }: { ok: boolean }) {
-  return <span className={`inline-block w-2 h-2 rounded-full ${ok ? "bg-emerald-400" : "bg-red-400"}`} />;
+  return <span className={`inline-block w-2 h-2 rounded-full shrink-0 ${ok ? "bg-emerald-400" : "bg-red-400"}`} />;
 }
 
 function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
@@ -33,6 +41,8 @@ function StatBox({ label, value, sub }: { label: string; value: string | number;
   );
 }
 
+const verLevels = ["None", "Low", "Medium", "High", "Highest"];
+
 export default function DiscordDashboard() {
   const [tab, setTab] = useState<Tab>("overview");
   const [loading, setLoading] = useState(false);
@@ -41,7 +51,7 @@ export default function DiscordDashboard() {
   const [server, setServer] = useState<ServerInfo | null>(null);
   const [channels, setChannels] = useState<Channel[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
-  const [bots, setBots] = useState<BotMember[]>([]);
+  const [bots, setBots] = useState<Bot[]>([]);
   const [missingBots, setMissingBots] = useState<string[]>([]);
   const [audit, setAudit] = useState<AuditEntry[]>([]);
   const [invites, setInvites] = useState<Invite[]>([]);
@@ -87,11 +97,11 @@ export default function DiscordDashboard() {
       const r = await fetch("/api/discord/message", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ channelName: postChannel.replace("#", ""), content: postContent }),
+        body: JSON.stringify({ channelName: postChannel.replace(/^#/, ""), content: postContent }),
       });
       const d = await r.json();
       if (d.ok) {
-        setPostResult("✅ Posted successfully to #" + postChannel.replace("#", ""));
+        setPostResult("✅ Posted successfully to #" + postChannel.replace(/^#/, ""));
         setPostContent("");
       } else {
         setPostResult("❌ Failed: " + (d.error || "Unknown error"));
@@ -113,12 +123,21 @@ export default function DiscordDashboard() {
     { id: "post", label: "Post Message", emoji: "✉️" },
   ];
 
-  const verLevels = ["None", "Low", "Medium", "High", "Highest"];
+  const rolesNeeded = ROLE_SETUP_TODO.filter(r =>
+    !roles.some(existing => existing.name.toLowerCase().includes(r.name.toLowerCase().split(" ")[0]))
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 via-white to-violet-50">
       {/* Header */}
       <header className="bg-white/80 backdrop-blur border-b border-pink-100 px-4 py-3 flex items-center gap-3 shadow-sm sticky top-0 z-10">
+        <Link href="/">
+          <button className="p-2 rounded-lg hover:bg-pink-50 transition-colors text-gray-400 hover:text-pink-600" aria-label="Back to docs">
+            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path d="M19 12H5M12 5l-7 7 7 7" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        </Link>
         <div className="w-9 h-9 rounded-full bg-gradient-to-br from-pink-400 to-violet-500 flex items-center justify-center text-lg shadow">
           {server?.icon ? <img src={server.icon} className="w-9 h-9 rounded-full" alt="server" /> : "🌌"}
         </div>
@@ -128,23 +147,44 @@ export default function DiscordDashboard() {
         </div>
         <div className="flex items-center gap-2">
           {lastRefresh && (
-            <span className="text-[10px] text-gray-400">
-              Updated {lastRefresh.toLocaleTimeString()}
+            <span className="text-[10px] text-gray-400 hidden sm:block">
+              {lastRefresh.toLocaleTimeString()}
             </span>
           )}
+          <Link href="/ai">
+            <button className="flex items-center gap-1 px-2.5 py-1.5 text-xs bg-gradient-to-r from-pink-500 to-violet-500 text-white rounded-lg font-medium">
+              💗 Ask AI
+            </button>
+          </Link>
           <button
             onClick={fetchAll}
             disabled={loading}
             className="px-3 py-1.5 text-xs bg-pink-500 text-white rounded-lg hover:bg-pink-600 disabled:opacity-50 transition-colors font-medium"
           >
-            {loading ? "Refreshing…" : "↻ Refresh"}
+            {loading ? "…" : "↻"}
           </button>
         </div>
       </header>
 
+      {/* Setup alerts */}
+      {(missingBots.length > 0 || rolesNeeded.length > 0) && (
+        <div className="bg-amber-50 border-b border-amber-200 px-4 py-2">
+          <div className="max-w-3xl mx-auto flex items-center gap-2 flex-wrap">
+            <span className="text-xs font-bold text-amber-700">⚠️ Setup incomplete —</span>
+            {missingBots.length > 0 && (
+              <span className="text-xs text-amber-600">Missing bots: {missingBots.join(", ")}</span>
+            )}
+            {missingBots.length > 0 && rolesNeeded.length > 0 && <span className="text-xs text-amber-400">·</span>}
+            {rolesNeeded.length > 0 && (
+              <span className="text-xs text-amber-600">Roles to create: {rolesNeeded.map(r => r.name).join(", ")}</span>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Tabs */}
       <div className="sticky top-[57px] z-10 bg-white/90 backdrop-blur border-b border-pink-100 px-4">
-        <div className="flex gap-1 overflow-x-auto py-2 scrollbar-hide">
+        <div className="flex gap-1 overflow-x-auto py-2 scrollbar-hide max-w-3xl mx-auto">
           {TABS.map(t => (
             <button
               key={t.id}
@@ -174,7 +214,6 @@ export default function DiscordDashboard() {
                   <StatBox label="Boosts" value={server.boosts} sub={`Tier ${server.boostTier}`} />
                   <StatBox label="Verification" value={verLevels[server.verificationLevel] || "?"} />
                 </div>
-
                 <Card>
                   <h2 className="text-sm font-bold text-gray-900 mb-1">Server Description</h2>
                   <p className="text-xs text-gray-600 leading-relaxed">{server.description || "No description set."}</p>
@@ -182,12 +221,12 @@ export default function DiscordDashboard() {
               </>
             )}
 
-            {/* Bot health summary */}
+            {/* Bot Health */}
             <Card>
               <h2 className="text-sm font-bold text-gray-900 mb-3">Bot Health</h2>
               <div className="space-y-2">
-                {EXPECTED_BOTS.map(name => {
-                  const present = bots.some(b => b.username.toLowerCase().includes(name.toLowerCase()));
+                {REQUIRED_BOTS.map(name => {
+                  const present = bots.some(b => b.name.toLowerCase().includes(name.toLowerCase()));
                   return (
                     <div key={name} className="flex items-center justify-between py-1.5 border-b border-gray-50 last:border-0">
                       <div className="flex items-center gap-2">
@@ -195,21 +234,54 @@ export default function DiscordDashboard() {
                         <span className="text-sm text-gray-800 font-medium">{name}</span>
                       </div>
                       <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${present ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-500"}`}>
-                        {present ? "In server" : "NOT FOUND"}
+                        {present ? "In server ✓" : "NOT FOUND"}
                       </span>
                     </div>
                   );
                 })}
               </div>
-              {missingBots.length > 0 && (
+              {missingBots.length === 0 ? (
+                <div className="mt-3 p-3 bg-emerald-50 rounded-xl border border-emerald-100">
+                  <p className="text-xs text-emerald-700 font-semibold">✅ All required bots present!</p>
+                </div>
+              ) : (
                 <div className="mt-3 p-3 bg-red-50 rounded-xl border border-red-100">
-                  <p className="text-xs text-red-700 font-semibold">⚠️ {missingBots.length} required bot(s) missing — invite them before mint day!</p>
+                  <p className="text-xs text-red-700 font-semibold">⚠️ {missingBots.length} bot(s) missing — invite before mint day!</p>
                   <p className="text-xs text-red-500 mt-1">Missing: {missingBots.join(", ")}</p>
                 </div>
               )}
-              {missingBots.length === 0 && bots.length > 0 && (
-                <div className="mt-3 p-3 bg-emerald-50 rounded-xl border border-emerald-100">
-                  <p className="text-xs text-emerald-700 font-semibold">✅ All expected bots are present!</p>
+            </Card>
+
+            {/* Role Setup Status */}
+            <Card>
+              <h2 className="text-sm font-bold text-gray-900 mb-3">Role Setup Status</h2>
+              <div className="space-y-2">
+                {ROLE_SETUP_TODO.map(r => {
+                  const created = roles.some(existing =>
+                    existing.name.toLowerCase().includes(r.name.toLowerCase().split(" ")[0])
+                  );
+                  return (
+                    <div key={r.name} className="flex items-center gap-3 py-1.5 border-b border-gray-50 last:border-0">
+                      <div className="w-3 h-3 rounded-full shrink-0" style={{ background: r.color }} />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-800">{r.name}</p>
+                        <p className="text-[10px] text-gray-400">{r.desc}</p>
+                      </div>
+                      <span className={`text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ${created ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"}`}>
+                        {created ? "Created ✓" : "Needed"}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+              {rolesNeeded.length > 0 && (
+                <div className="mt-3 p-3 bg-amber-50 rounded-xl border border-amber-100">
+                  <p className="text-xs text-amber-700 font-semibold">💬 Tip: Ask WHIMSEY AI to create these roles for you!</p>
+                  <Link href="/ai">
+                    <button className="mt-2 w-full text-[11px] bg-gradient-to-r from-pink-500 to-violet-500 text-white rounded-lg py-1.5 font-semibold">
+                      Open AI Chat →
+                    </button>
+                  </Link>
                 </div>
               )}
             </Card>
@@ -240,34 +312,34 @@ export default function DiscordDashboard() {
           <Card>
             <h2 className="text-sm font-bold text-gray-900 mb-3">Bots in Server ({bots.length})</h2>
             {bots.length === 0 ? (
-              <p className="text-xs text-gray-400">No bots detected with current permissions. Bots may need GUILD_MEMBERS intent enabled.</p>
+              <p className="text-xs text-gray-400">No bots detected.</p>
             ) : (
               <div className="space-y-3">
                 {bots.map(b => (
                   <div key={b.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
                     {b.avatar
-                      ? <img src={b.avatar} className="w-10 h-10 rounded-full" alt={b.username} />
-                      : <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-violet-500 flex items-center justify-center text-white font-bold text-sm">B</div>
+                      ? <img src={b.avatar} className="w-10 h-10 rounded-full" alt={b.name} onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                      : <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-violet-500 flex items-center justify-center text-white font-bold text-sm">🤖</div>
                     }
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-gray-900">{b.username}</p>
-                      <p className="text-[11px] text-gray-400">ID: {b.id} · Joined {new Date(b.joinedAt).toLocaleDateString()}</p>
+                      <p className="text-sm font-bold text-gray-900">{b.name}</p>
+                      <p className="text-[11px] text-gray-400">ID: {b.id}</p>
                     </div>
-                    <StatusDot ok={true} />
+                    <StatusDot ok={b.enabled !== false} />
                   </div>
                 ))}
               </div>
             )}
             <div className="mt-4 pt-4 border-t border-gray-100">
-              <h3 className="text-xs font-bold text-gray-700 mb-2">Required Bots Status</h3>
+              <h3 className="text-xs font-bold text-gray-700 mb-2">Required Bot Checklist</h3>
               <div className="space-y-1.5">
-                {EXPECTED_BOTS.map(name => {
-                  const found = bots.find(b => b.username.toLowerCase().includes(name.toLowerCase()));
+                {REQUIRED_BOTS.map(name => {
+                  const found = bots.find(b => b.name.toLowerCase().includes(name.toLowerCase()));
                   return (
                     <div key={name} className="flex items-center justify-between text-xs">
                       <span className="text-gray-700">{name}</span>
                       <span className={`font-medium ${found ? "text-emerald-600" : "text-red-500"}`}>
-                        {found ? "✓ " + found.username : "✗ Not in server"}
+                        {found ? "✓ " + found.name : "✗ Not in server"}
                       </span>
                     </div>
                   );
@@ -281,12 +353,13 @@ export default function DiscordDashboard() {
         {tab === "channels" && (
           <Card>
             <h2 className="text-sm font-bold text-gray-900 mb-3">Channels ({channels.length})</h2>
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               {channels.map(c => (
                 <div key={c.id} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium text-gray-900">#{c.name}</p>
                     {c.category && <p className="text-[10px] text-gray-400">{c.category}</p>}
+                    {c.topic && <p className="text-[10px] text-gray-400 truncate max-w-[200px]">{c.topic}</p>}
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     {c.slowmode > 0 && (
@@ -308,10 +381,7 @@ export default function DiscordDashboard() {
             <div className="space-y-2">
               {roles.sort((a, b) => b.position - a.position).map(r => (
                 <div key={r.id} className="flex items-center gap-3 py-2 border-b border-gray-50 last:border-0">
-                  <div
-                    className="w-3 h-3 rounded-full shrink-0 border border-gray-200"
-                    style={{ background: r.color || "#99aab5" }}
-                  />
+                  <div className="w-3 h-3 rounded-full shrink-0 border border-gray-200" style={{ background: r.color || "#99aab5" }} />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-800">{r.name}</p>
                     <p className="text-[10px] text-gray-400">Position {r.position}{r.managed ? " · Bot-managed" : ""}</p>
@@ -320,13 +390,24 @@ export default function DiscordDashboard() {
                 </div>
               ))}
             </div>
+            {rolesNeeded.length > 0 && (
+              <div className="mt-4 p-3 bg-amber-50 rounded-xl border border-amber-100">
+                <p className="text-xs text-amber-700 font-semibold mb-2">Roles still to create:</p>
+                {rolesNeeded.map(r => (
+                  <div key={r.name} className="flex items-center gap-2 mb-1">
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ background: r.color }} />
+                    <span className="text-xs text-amber-700">{r.name} — {r.desc}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </Card>
         )}
 
         {/* AUDIT LOG */}
         {tab === "audit" && (
           <Card>
-            <h2 className="text-sm font-bold text-gray-900 mb-3">Audit Log (last 15 entries)</h2>
+            <h2 className="text-sm font-bold text-gray-900 mb-3">Audit Log (last 15)</h2>
             {audit.length === 0 ? (
               <p className="text-xs text-gray-400">No entries found.</p>
             ) : (
@@ -373,7 +454,7 @@ export default function DiscordDashboard() {
         {tab === "post" && (
           <Card>
             <h2 className="text-sm font-bold text-gray-900 mb-1">Post a Message</h2>
-            <p className="text-xs text-gray-500 mb-4">Send a message to any channel in your WHIMSEY server directly from here.</p>
+            <p className="text-xs text-gray-500 mb-4">Send a message to any channel directly from here. No need to open Discord.</p>
             <div className="space-y-3">
               <div>
                 <label className="text-xs font-semibold text-gray-700 block mb-1">Channel name</label>
@@ -381,8 +462,12 @@ export default function DiscordDashboard() {
                   value={postChannel}
                   onChange={e => setPostChannel(e.target.value)}
                   placeholder="e.g. general-chat or #announcements"
+                  list="channel-suggestions"
                   className="w-full text-sm border border-pink-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-pink-300 bg-pink-50/30"
                 />
+                <datalist id="channel-suggestions">
+                  {channels.map(c => <option key={c.id} value={c.name} />)}
+                </datalist>
               </div>
               <div>
                 <label className="text-xs font-semibold text-gray-700 block mb-1">Message</label>
@@ -406,6 +491,14 @@ export default function DiscordDashboard() {
                   {postResult}
                 </div>
               )}
+            </div>
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              <p className="text-[11px] text-gray-400 text-center">Or ask WHIMSEY AI to post it for you →</p>
+              <Link href="/ai">
+                <button className="mt-2 w-full text-xs bg-gradient-to-r from-pink-500 to-violet-500 text-white rounded-xl py-2 font-semibold hover:opacity-90 transition-opacity">
+                  Open AI Chat 💗
+                </button>
+              </Link>
             </div>
           </Card>
         )}

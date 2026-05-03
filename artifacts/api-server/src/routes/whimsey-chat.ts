@@ -1016,10 +1016,321 @@ These API endpoints are available at /api/discord/* and can be called to get or 
 - Roles currently set up: @everyone, Collab.Land (managed), WHIMSEY AI (managed)
 - Roles NOT YET created: Admin 💗, Moderator ☁️, Holder 🌌, Verified 🩵 — these are the next setup steps
 
-When Lyra asks about her server's current state, tell her to check the Live Server dashboard at /discord in the app, or offer to describe what the API shows. When she asks you to take an action (post a message, change slowmode, etc.), explain exactly what you would do via the API and confirm before acting.
+When Lyra asks about her server's current state, use your get_server_status or get_bots tool to check live data — do not guess. When she asks you to post a message, send it immediately using send_discord_message. When she says "create role X", use create_role. You have full admin access. Act on her behalf.
 
 You are not a generic AI. You are WHIMSEY AI. You know everything. You are here for Lyra. Let's build something dreamy. 💗❄️🌌`;
 
+// ── Discord Tools for AI ───────────────────────────────────────────────────
+const DISCORD_TOOLS: any[] = [
+  {
+    type: "function",
+    function: {
+      name: "get_server_status",
+      description: "Get a live snapshot of the WHIMSEY Discord server — member count, channels, categories, roles, and which bots are present. Use this whenever Lyra asks about the current state of her server.",
+      parameters: { type: "object", properties: {} },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "get_bots",
+      description: "Check which bots are currently in the WHIMSEY Discord server and which required bots are missing.",
+      parameters: { type: "object", properties: {} },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "get_audit_log",
+      description: "Get recent audit log entries showing server activity (kicks, bans, role changes, channel changes, etc.).",
+      parameters: {
+        type: "object",
+        properties: {
+          limit: { type: "number", description: "Number of entries (default 10, max 100)" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "get_channels",
+      description: "Get all channels in the WHIMSEY server with their categories, slowmode settings, and topics.",
+      parameters: { type: "object", properties: {} },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "get_roles",
+      description: "Get all roles in the WHIMSEY server with their colors, positions, and settings.",
+      parameters: { type: "object", properties: {} },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "get_invites",
+      description: "Get all active invite links in the WHIMSEY server.",
+      parameters: { type: "object", properties: {} },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "send_discord_message",
+      description: "Send a message to any channel in the WHIMSEY Discord server on Lyra's behalf. Use this when she asks you to post, announce, or send something to Discord.",
+      parameters: {
+        type: "object",
+        required: ["channelName", "content"],
+        properties: {
+          channelName: { type: "string", description: "Channel name without # (e.g. 'general-chat', 'announcements')" },
+          content: { type: "string", description: "The message text to send" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "update_channel",
+      description: "Update a channel's slowmode (in seconds), topic, or name. Use channel ID from get_channels.",
+      parameters: {
+        type: "object",
+        required: ["channelId"],
+        properties: {
+          channelId: { type: "string", description: "Discord channel ID" },
+          slowmode: { type: "number", description: "Slowmode delay in seconds (0 = off)" },
+          topic: { type: "string", description: "New channel topic/description" },
+          name: { type: "string", description: "New channel name" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "create_role",
+      description: "Create a new role in the WHIMSEY server. Use this to create Admin 💗, Moderator ☁️, Holder 🌌, Verified 🩵, etc.",
+      parameters: {
+        type: "object",
+        required: ["name"],
+        properties: {
+          name: { type: "string", description: "Role name (e.g. 'Admin 💗')" },
+          color: { type: "string", description: "Hex color code (e.g. '#FF66B2')" },
+          hoist: { type: "boolean", description: "Show role members separately in member list" },
+          mentionable: { type: "boolean", description: "Allow anyone to @mention this role" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "kick_member",
+      description: "Kick a member from the WHIMSEY server by their user ID.",
+      parameters: {
+        type: "object",
+        required: ["userId"],
+        properties: {
+          userId: { type: "string", description: "Discord user ID" },
+          reason: { type: "string", description: "Reason for kick" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "ban_member",
+      description: "Ban a member from the WHIMSEY server by their user ID.",
+      parameters: {
+        type: "object",
+        required: ["userId"],
+        properties: {
+          userId: { type: "string", description: "Discord user ID" },
+          reason: { type: "string", description: "Reason for ban" },
+          deleteMessageDays: { type: "number", description: "Days of messages to delete (0-7)" },
+        },
+      },
+    },
+  },
+];
+
+// ── Tool execution ─────────────────────────────────────────────────────────
+const GUILD_ID = "1495034928801382411";
+const DBASE = "https://discord.com/api/v10";
+
+async function executeDiscordTool(name: string, args: Record<string, any>): Promise<string> {
+  const token = process.env.DISCORD_BOT_TOKEN?.trim();
+  const headers: Record<string, string> = { Authorization: `Bot ${token}` };
+  const jsonHeaders = { ...headers, "Content-Type": "application/json" };
+
+  try {
+    switch (name) {
+      case "get_server_status": {
+        const [guild, channels, roles, integrations] = await Promise.all([
+          fetch(`${DBASE}/guilds/${GUILD_ID}?with_counts=true`, { headers }).then(r => r.json()),
+          fetch(`${DBASE}/guilds/${GUILD_ID}/channels`, { headers }).then(r => r.json()),
+          fetch(`${DBASE}/guilds/${GUILD_ID}/roles`, { headers }).then(r => r.json()),
+          fetch(`${DBASE}/guilds/${GUILD_ID}/integrations`, { headers }).then(r => r.json()),
+        ]);
+        const cats = Array.isArray(channels) ? channels.filter((c: any) => c.type === 4).map((c: any) => c.name) : [];
+        const chans = Array.isArray(channels) ? channels.filter((c: any) => c.type === 0).map((c: any) => c.name) : [];
+        const roleNames = Array.isArray(roles) ? roles.sort((a: any, b: any) => b.position - a.position).map((r: any) => r.name) : [];
+        const bots = Array.isArray(integrations) ? integrations.map((i: any) => i.name) : [];
+        return JSON.stringify({
+          serverName: guild.name,
+          memberCount: guild.approximate_member_count,
+          onlineCount: guild.approximate_presence_count,
+          boosts: guild.premium_subscription_count || 0,
+          boostTier: guild.premium_tier || 0,
+          verificationLevel: guild.verification_level,
+          description: guild.description,
+          categories: cats,
+          channelCount: chans.length,
+          channels: chans,
+          roles: roleNames,
+          botsPresent: bots,
+          status: "live data from Discord API",
+        });
+      }
+
+      case "get_bots": {
+        const integrations = await fetch(`${DBASE}/guilds/${GUILD_ID}/integrations`, { headers }).then(r => r.json());
+        const present = Array.isArray(integrations) ? integrations.map((i: any) => ({ name: i.name, id: i.account?.id, enabled: i.enabled })) : [];
+        const expected = ["Carl-bot", "Auth", "Collab.Land", "Ticket Tool", "NFT Tracker", "WHIMSEY AI"];
+        const missing = expected.filter(e => !present.some((p: any) => p.name.toLowerCase().includes(e.toLowerCase())));
+        return JSON.stringify({ botsPresent: present, missingBots: missing, allBotsPresent: missing.length === 0 });
+      }
+
+      case "get_audit_log": {
+        const limit = args.limit || 10;
+        const logs = await fetch(`${DBASE}/guilds/${GUILD_ID}/audit-logs?limit=${limit}`, { headers }).then(r => r.json());
+        const userMap: Record<string, string> = {};
+        if (Array.isArray(logs.users)) for (const u of logs.users) userMap[u.id] = u.username;
+        const actionNames: Record<number, string> = {
+          1:"SERVER_UPDATE",10:"CHANNEL_CREATE",11:"CHANNEL_UPDATE",12:"CHANNEL_DELETE",
+          20:"MEMBER_KICK",22:"MEMBER_BAN_ADD",23:"MEMBER_BAN_REMOVE",25:"MEMBER_ROLE_UPDATE",
+          30:"ROLE_CREATE",31:"ROLE_UPDATE",32:"ROLE_DELETE",40:"INVITE_CREATE",
+          80:"INTEGRATION_CREATE",81:"INTEGRATION_UPDATE",
+        };
+        const entries = (logs.audit_log_entries || []).map((e: any) => ({
+          action: actionNames[e.action_type] || `ACTION_${e.action_type}`,
+          by: userMap[e.user_id] || e.user_id,
+          reason: e.reason || null,
+          time: new Date(Number(BigInt(e.id) >> BigInt(22)) + 1420070400000).toISOString(),
+        }));
+        return JSON.stringify({ entries });
+      }
+
+      case "get_channels": {
+        const channels = await fetch(`${DBASE}/guilds/${GUILD_ID}/channels`, { headers }).then(r => r.json());
+        if (!Array.isArray(channels)) return JSON.stringify({ error: "Failed to fetch channels" });
+        const catMap: Record<string, string> = {};
+        channels.filter((c: any) => c.type === 4).forEach((c: any) => { catMap[c.id] = c.name; });
+        const list = channels.filter((c: any) => c.type === 0).map((c: any) => ({
+          id: c.id, name: c.name, category: catMap[c.parent_id] || null,
+          slowmode: c.rate_limit_per_user || 0, topic: c.topic || null,
+        }));
+        return JSON.stringify({ channelCount: list.length, channels: list });
+      }
+
+      case "get_roles": {
+        const roles = await fetch(`${DBASE}/guilds/${GUILD_ID}/roles`, { headers }).then(r => r.json());
+        if (!Array.isArray(roles)) return JSON.stringify({ error: "Failed to fetch roles" });
+        const list = roles.sort((a: any, b: any) => b.position - a.position).map((r: any) => ({
+          id: r.id, name: r.name,
+          color: r.color ? "#" + r.color.toString(16).padStart(6, "0") : null,
+          position: r.position, managed: r.managed, hoist: r.hoist,
+        }));
+        return JSON.stringify({ roleCount: list.length, roles: list });
+      }
+
+      case "get_invites": {
+        const invites = await fetch(`${DBASE}/guilds/${GUILD_ID}/invites`, { headers }).then(r => r.json());
+        if (!Array.isArray(invites)) return JSON.stringify({ error: "Failed to fetch invites" });
+        return JSON.stringify({ invites: invites.map((i: any) => ({ code: i.code, uses: i.uses, channel: i.channel?.name })) });
+      }
+
+      case "send_discord_message": {
+        const channels = await fetch(`${DBASE}/guilds/${GUILD_ID}/channels`, { headers }).then(r => r.json());
+        if (!Array.isArray(channels)) return JSON.stringify({ ok: false, error: "Could not fetch channels" });
+        const channel = channels.find((c: any) =>
+          c.name.toLowerCase() === (args.channelName || "").toLowerCase().replace(/^#/, "")
+        );
+        if (!channel) return JSON.stringify({ ok: false, error: `Channel #${args.channelName} not found. Available channels: ${channels.filter((c:any)=>c.type===0).map((c:any)=>c.name).join(", ")}` });
+        const result = await fetch(`${DBASE}/channels/${channel.id}/messages`, {
+          method: "POST", headers: jsonHeaders,
+          body: JSON.stringify({ content: args.content }),
+        }).then(r => r.json());
+        return JSON.stringify({ ok: !!result.id, messageId: result.id, channel: args.channelName, preview: args.content.slice(0, 80) });
+      }
+
+      case "update_channel": {
+        const body: any = {};
+        if (args.slowmode !== undefined) body.rate_limit_per_user = args.slowmode;
+        if (args.topic !== undefined) body.topic = args.topic;
+        if (args.name !== undefined) body.name = args.name;
+        const result = await fetch(`${DBASE}/channels/${args.channelId}`, {
+          method: "PATCH", headers: jsonHeaders, body: JSON.stringify(body),
+        }).then(r => r.json());
+        return JSON.stringify({ ok: !!result.id, channel: result.name, updates: body });
+      }
+
+      case "create_role": {
+        const colorInt = args.color ? parseInt((args.color as string).replace("#", ""), 16) : 0;
+        const result = await fetch(`${DBASE}/guilds/${GUILD_ID}/roles`, {
+          method: "POST", headers: jsonHeaders,
+          body: JSON.stringify({
+            name: args.name, color: colorInt,
+            hoist: args.hoist ?? false, mentionable: args.mentionable ?? false,
+          }),
+        }).then(r => r.json());
+        return JSON.stringify({ ok: !!result.id, roleId: result.id, roleName: result.name, color: args.color });
+      }
+
+      case "kick_member": {
+        const r = await fetch(`${DBASE}/guilds/${GUILD_ID}/members/${args.userId}`, {
+          method: "DELETE", headers,
+        });
+        return JSON.stringify({ ok: r.status === 204, status: r.status, reason: args.reason });
+      }
+
+      case "ban_member": {
+        const r = await fetch(`${DBASE}/guilds/${GUILD_ID}/bans/${args.userId}`, {
+          method: "PUT", headers: jsonHeaders,
+          body: JSON.stringify({
+            delete_message_seconds: (args.deleteMessageDays || 0) * 86400,
+            reason: args.reason || "Banned via WHIMSEY AI",
+          }),
+        });
+        return JSON.stringify({ ok: r.status === 204, status: r.status });
+      }
+
+      default:
+        return JSON.stringify({ error: `Unknown tool: ${name}` });
+    }
+  } catch (err: any) {
+    return JSON.stringify({ error: err.message || "Tool execution failed" });
+  }
+}
+
+const TOOL_LABELS: Record<string, string> = {
+  get_server_status: "🔍 Checking your live server…",
+  get_bots: "🤖 Checking bot status…",
+  get_audit_log: "📋 Reading audit log…",
+  get_channels: "📂 Fetching channels…",
+  get_roles: "🎭 Fetching roles…",
+  get_invites: "🔗 Fetching invites…",
+  send_discord_message: "✉️ Sending message to Discord…",
+  update_channel: "✏️ Updating channel…",
+  create_role: "🎭 Creating role in Discord…",
+  kick_member: "🚪 Kicking member…",
+  ban_member: "🔨 Banning member…",
+};
+
+// ── POST /api/whimsey/chat ────────────────────────────────────────────────
 router.post("/whimsey/chat", async (req, res) => {
   const { messages } = req.body as {
     messages: { role: "user" | "assistant"; content: string }[];
@@ -1034,30 +1345,102 @@ router.post("/whimsey/chat", async (req, res) => {
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
   res.setHeader("Access-Control-Allow-Origin", "*");
+  res.flushHeaders();
+
+  function send(data: object) {
+    res.write(`data: ${JSON.stringify(data)}\n\n`);
+  }
+
+  let currentMessages: any[] = [
+    { role: "system", content: WHIMSEY_SYSTEM_PROMPT },
+    ...messages,
+  ];
 
   try {
-    const stream = await openai.chat.completions.create({
-      model: "gpt-5.4",
-      max_completion_tokens: 16000,
-      messages: [
-        { role: "system", content: WHIMSEY_SYSTEM_PROMPT },
-        ...messages,
-      ],
-      stream: true,
-    });
+    // Tool loop — max 4 iterations to prevent runaway chains
+    for (let iteration = 0; iteration < 4; iteration++) {
+      const stream = await openai.chat.completions.create({
+        model: "gpt-5.4",
+        max_completion_tokens: 16000,
+        messages: currentMessages,
+        tools: DISCORD_TOOLS,
+        tool_choice: "auto",
+        stream: true,
+      } as any);
 
-    for await (const chunk of stream) {
-      const content = chunk.choices[0]?.delta?.content;
-      if (content) {
-        res.write(`data: ${JSON.stringify({ content })}\n\n`);
+      let fullContent = "";
+      const toolCalls: Record<number, { id: string; name: string; arguments: string }> = {};
+      let finishReason: string | null = null;
+
+      for await (const chunk of stream as any) {
+        const choice = chunk.choices?.[0];
+        if (!choice) continue;
+
+        if (choice.finish_reason) finishReason = choice.finish_reason;
+
+        const delta = choice.delta;
+
+        if (delta?.content) {
+          fullContent += delta.content;
+          send({ content: delta.content });
+        }
+
+        if (delta?.tool_calls) {
+          for (const tc of delta.tool_calls) {
+            const idx: number = tc.index ?? 0;
+            if (!toolCalls[idx]) toolCalls[idx] = { id: "", name: "", arguments: "" };
+            if (tc.id) toolCalls[idx].id = tc.id;
+            if (tc.function?.name) toolCalls[idx].name += tc.function.name;
+            if (tc.function?.arguments) toolCalls[idx].arguments += tc.function.arguments;
+          }
+        }
       }
+
+      const toolCallList = Object.values(toolCalls);
+
+      if (finishReason === "tool_calls" && toolCallList.length > 0) {
+        // Add assistant message with tool calls
+        currentMessages.push({
+          role: "assistant",
+          content: fullContent || null,
+          tool_calls: toolCallList.map(tc => ({
+            id: tc.id,
+            type: "function",
+            function: { name: tc.name, arguments: tc.arguments },
+          })),
+        });
+
+        // Execute each tool and stream status to frontend
+        for (const tc of toolCallList) {
+          const label = TOOL_LABELS[tc.name] || `⚙️ Running ${tc.name}…`;
+          send({ tool_call: tc.name, label });
+
+          let args: Record<string, any> = {};
+          try { args = JSON.parse(tc.arguments || "{}"); } catch { /* ignore */ }
+
+          const result = await executeDiscordTool(tc.name, args);
+          send({ tool_done: tc.name });
+
+          currentMessages.push({
+            role: "tool",
+            tool_call_id: tc.id,
+            content: result,
+          });
+        }
+
+        // Continue loop for final response
+        continue;
+      }
+
+      // Normal finish — we're done
+      break;
     }
 
-    res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+    send({ done: true });
     res.end();
   } catch (err) {
     req.log.error({ err }, "Error streaming chat");
-    res.write(`data: ${JSON.stringify({ error: "Something went wrong. Please try again. 💗" })}\n\n`);
+    send({ error: "Something went wrong. Please try again. 💗" });
     res.end();
   }
 });

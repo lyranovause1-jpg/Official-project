@@ -10,15 +10,29 @@ const STORAGE_KEY = "whimsey_ai_history";
 const MAX_STORED   = 60;
 
 const SUGGESTED = [
-  "How do I configure the Moderator ☁️ permissions?",
-  "What's the exact role order after all bots are invited?",
-  "How does the @everyone lockdown work?",
-  "Walk me through setting up Carl-bot autopilot",
-  "What do I do with NFT Tracker before mint day?",
-  "How do I make #holder-verify visible only to Verified 🩵?",
+  "What's the current state of my server right now?",
+  "Which bots are missing from my server?",
+  "Post 'Hello WHIMSEY fam! 💗' to general-chat",
+  "Create the Admin 💗 role with color #FF66B2",
+  "How do I configure Moderator ☁️ permissions?",
   "What's my Day 1 plan step by step?",
+  "Walk me through setting up Carl-bot autopilot",
   "How do I test my server before going public?",
 ];
+
+const TOOL_LABELS: Record<string, string> = {
+  get_server_status: "🔍 Reading your live server…",
+  get_bots: "🤖 Checking bot status…",
+  get_audit_log: "📋 Reading audit log…",
+  get_channels: "📂 Fetching channels…",
+  get_roles: "🎭 Fetching roles…",
+  get_invites: "🔗 Fetching invites…",
+  send_discord_message: "✉️ Sending to Discord…",
+  update_channel: "✏️ Updating channel…",
+  create_role: "🎭 Creating role in Discord…",
+  kick_member: "🚪 Kicking member…",
+  ban_member: "🔨 Banning member…",
+};
 
 function loadHistory(): Message[] {
   try {
@@ -26,16 +40,13 @@ function loadHistory(): Message[] {
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
+  } catch { return []; }
 }
 
 function saveHistory(msgs: Message[]) {
   try {
-    const toStore = msgs.slice(-MAX_STORED);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(toStore));
-  } catch { /* storage full or unavailable */ }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(msgs.slice(-MAX_STORED)));
+  } catch { /* storage full */ }
 }
 
 function formatRelativeTime(ts: number): string {
@@ -43,10 +54,10 @@ function formatRelativeTime(ts: number): string {
   const min  = Math.floor(diff / 60_000);
   const hr   = Math.floor(diff / 3_600_000);
   const day  = Math.floor(diff / 86_400_000);
-  if (min < 1)   return "just now";
-  if (min < 60)  return `${min}m ago`;
-  if (hr  < 24)  return `${hr}h ago`;
-  if (day < 7)   return `${day}d ago`;
+  if (min < 1)  return "just now";
+  if (min < 60) return `${min}m ago`;
+  if (hr  < 24) return `${hr}h ago`;
+  if (day < 7)  return `${day}d ago`;
   return new Date(ts).toLocaleDateString();
 }
 
@@ -54,12 +65,26 @@ function TypingDots() {
   return (
     <div className="flex items-center gap-1 px-1 py-0.5">
       {[0, 1, 2].map((i) => (
-        <span
-          key={i}
-          className="w-2 h-2 rounded-full bg-pink-400 animate-bounce"
-          style={{ animationDelay: `${i * 0.15}s`, animationDuration: "0.8s" }}
-        />
+        <span key={i} className="w-2 h-2 rounded-full bg-pink-400 animate-bounce"
+          style={{ animationDelay: `${i * 0.15}s`, animationDuration: "0.8s" }} />
       ))}
+    </div>
+  );
+}
+
+function ToolCallBanner({ label }: { label: string }) {
+  return (
+    <div className="flex gap-3 items-end mb-3">
+      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center text-sm font-bold shadow-sm shrink-0">💗</div>
+      <div className="bg-indigo-50 border border-indigo-200 rounded-2xl rounded-bl-sm px-4 py-2.5 shadow-sm flex items-center gap-2">
+        <span className="text-indigo-600 text-xs font-semibold animate-pulse">{label}</span>
+        <div className="flex gap-0.5">
+          {[0, 1, 2].map(i => (
+            <span key={i} className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce"
+              style={{ animationDelay: `${i * 0.15}s`, animationDuration: "0.8s" }} />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -97,19 +122,13 @@ function ClearModal({ onConfirm, onCancel }: { onConfirm: () => void; onCancel: 
         <div className="text-3xl text-center mb-3">🌷</div>
         <h2 className="text-base font-bold text-gray-900 text-center mb-1">Start a new conversation?</h2>
         <p className="text-sm text-gray-500 text-center mb-5">
-          This will clear your saved chat history. Your WHIMSEY guide and AI knowledge are always here — nothing is lost permanently.
+          This will clear your saved chat history. Your WHIMSEY guide and AI knowledge are always here.
         </p>
         <div className="flex gap-3">
-          <button
-            onClick={onCancel}
-            className="flex-1 py-2 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors font-medium"
-          >
+          <button onClick={onCancel} className="flex-1 py-2 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors font-medium">
             Keep chatting
           </button>
-          <button
-            onClick={onConfirm}
-            className="flex-1 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-violet-500 text-white text-sm font-semibold hover:opacity-90 transition-opacity shadow"
-          >
+          <button onClick={onConfirm} className="flex-1 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-violet-500 text-white text-sm font-semibold hover:opacity-90 transition-opacity shadow">
             Clear &amp; restart
           </button>
         </div>
@@ -122,6 +141,7 @@ export default function AiChat() {
   const [messages, setMessages]     = useState<Message[]>(() => loadHistory());
   const [input, setInput]           = useState("");
   const [streaming, setStreaming]   = useState(false);
+  const [toolLabel, setToolLabel]   = useState<string | null>(null);
   const [showClear, setShowClear]   = useState(false);
   const [savedAt, setSavedAt]       = useState<number | null>(() => {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -135,7 +155,7 @@ export default function AiChat() {
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, streaming]);
+  }, [messages, streaming, toolLabel]);
 
   useEffect(() => {
     if (messages.length === 0) return;
@@ -173,6 +193,7 @@ export default function AiChat() {
     setMessages((prev) => [...prev, userMsg, assistantMsg]);
     setInput("");
     setStreaming(true);
+    setToolLabel(null);
 
     const history = [...messages, userMsg].map(({ role, content }) => ({ role, content }));
 
@@ -202,7 +223,9 @@ export default function AiChat() {
           if (!line.startsWith("data: ")) continue;
           try {
             const parsed = JSON.parse(line.slice(6));
+
             if (parsed.content) {
+              setToolLabel(null);
               setMessages((prev) => {
                 const copy = [...prev];
                 const last = copy[copy.length - 1];
@@ -212,7 +235,18 @@ export default function AiChat() {
                 return copy;
               });
             }
+
+            if (parsed.tool_call) {
+              const label = parsed.label || TOOL_LABELS[parsed.tool_call] || `⚙️ Running ${parsed.tool_call}…`;
+              setToolLabel(label);
+            }
+
+            if (parsed.tool_done) {
+              setToolLabel(null);
+            }
+
             if (parsed.error) {
+              setToolLabel(null);
               setMessages((prev) => {
                 const copy = [...prev];
                 copy[copy.length - 1] = { ...copy[copy.length - 1], content: parsed.error };
@@ -232,6 +266,7 @@ export default function AiChat() {
       }
     } finally {
       setStreaming(false);
+      setToolLabel(null);
       abortRef.current = null;
       inputRef.current?.focus();
     }
@@ -241,7 +276,7 @@ export default function AiChat() {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input); }
   }
 
-  const lastIsTyping = streaming && messages[messages.length - 1]?.role === "assistant" && messages[messages.length - 1]?.content === "";
+  const lastIsTyping = streaming && toolLabel === null && messages[messages.length - 1]?.role === "assistant" && messages[messages.length - 1]?.content === "";
   const hasHistory   = messages.length > 0;
 
   return (
@@ -263,21 +298,25 @@ export default function AiChat() {
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-bold text-gray-900 leading-tight">WHIMSEY AI</p>
-          <p className="text-[11px] text-pink-500 font-medium">Your personal Discord setup expert · $CNDY · 30,000 NFTs</p>
+          <p className="text-[11px] text-pink-500 font-medium">Live Discord access · $CNDY · 30,000 NFTs</p>
         </div>
         <div className="flex items-center gap-2">
-          {/* Saved indicator */}
           {savedLabel && (
             <span className={`text-[10px] font-medium transition-all ${savedLabel === "Saved ✓" ? "text-emerald-500" : "text-gray-400"}`}>
               {savedLabel}
             </span>
           )}
-          {/* Online dot */}
+          {/* Server status dot */}
           <div className="flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[11px] text-gray-400 font-medium">Online</span>
+            <span className="text-[11px] text-gray-400 font-medium">Live</span>
           </div>
-          {/* New conversation button */}
+          {/* Discord link */}
+          <Link href="/discord">
+            <button className="flex items-center gap-1 px-2 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors text-indigo-600 text-[11px] font-medium">
+              🌌 Server
+            </button>
+          </Link>
           {hasHistory && (
             <button
               onClick={() => setShowClear(true)}
@@ -299,10 +338,7 @@ export default function AiChat() {
           <span className="text-[11px] text-pink-600 font-medium">
             💾 Picking up where you left off · {messages.length} messages saved
           </span>
-          <button
-            onClick={() => setShowClear(true)}
-            className="text-[10px] text-pink-400 hover:text-pink-600 underline underline-offset-2 transition-colors"
-          >
+          <button onClick={() => setShowClear(true)} className="text-[10px] text-pink-400 hover:text-pink-600 underline underline-offset-2 transition-colors">
             Start fresh
           </button>
         </div>
@@ -317,18 +353,21 @@ export default function AiChat() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-gray-800 mb-1">Hey, Lyra Nova! 🌷</h1>
-              <p className="text-sm text-gray-500 max-w-xs leading-relaxed">
-                I know your entire WHIMSEY server inside-out — every role, every bot, every permission toggle.
-                Ask me anything, and I'll remember this conversation next time you're back. ❄️
+              <p className="text-sm text-gray-500 max-w-sm leading-relaxed">
+                I know your entire WHIMSEY server inside-out — every role, every bot, every permission.
+                I can also <strong>read and act on your server in real time</strong> — post messages, create roles, check who's missing. Just ask. ❄️
               </p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-xl mt-2">
+            {/* Capability badges */}
+            <div className="flex flex-wrap justify-center gap-1.5">
+              {["💬 Post to Discord", "🎭 Create roles", "🔍 Check server status", "🤖 Bot health", "📋 Audit log", "✏️ Edit channels"].map(b => (
+                <span key={b} className="text-[11px] bg-white border border-pink-100 rounded-full px-2.5 py-1 text-gray-600 font-medium shadow-sm">{b}</span>
+              ))}
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-xl mt-1">
               {SUGGESTED.map((q) => (
-                <button
-                  key={q}
-                  onClick={() => send(q)}
-                  className="text-left text-xs bg-white border border-pink-100 hover:border-pink-300 hover:bg-pink-50 rounded-xl px-3 py-2.5 text-gray-700 transition-colors shadow-sm"
-                >
+                <button key={q} onClick={() => send(q)}
+                  className="text-left text-xs bg-white border border-pink-100 hover:border-pink-300 hover:bg-pink-50 rounded-xl px-3 py-2.5 text-gray-700 transition-colors shadow-sm">
                   {q}
                 </button>
               ))}
@@ -339,6 +378,7 @@ export default function AiChat() {
             {messages.map((msg) => (
               <MessageBubble key={msg.id} msg={msg} />
             ))}
+            {toolLabel && <ToolCallBanner label={toolLabel} />}
             {lastIsTyping && (
               <div className="flex gap-3 items-end mb-4">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center text-sm font-bold shadow-sm shrink-0">💗</div>
@@ -352,16 +392,13 @@ export default function AiChat() {
         )}
       </main>
 
-      {/* ── Quick pills (when there are messages) ── */}
+      {/* ── Quick pills ── */}
       {hasHistory && !streaming && (
         <div className="shrink-0 px-4 pb-2">
           <div className="max-w-2xl mx-auto flex gap-2 flex-wrap">
-            {SUGGESTED.slice(0, 3).map((q) => (
-              <button
-                key={q}
-                onClick={() => send(q)}
-                className="text-[11px] bg-white border border-pink-100 hover:border-pink-300 hover:bg-pink-50 rounded-full px-3 py-1 text-gray-600 transition-colors shadow-sm truncate max-w-[200px]"
-              >
+            {SUGGESTED.slice(0, 4).map((q) => (
+              <button key={q} onClick={() => send(q)}
+                className="text-[11px] bg-white border border-pink-100 hover:border-pink-300 hover:bg-pink-50 rounded-full px-3 py-1 text-gray-600 transition-colors shadow-sm truncate max-w-[220px]">
                 {q}
               </button>
             ))}
@@ -382,7 +419,7 @@ export default function AiChat() {
               e.target.style.height = Math.min(e.target.scrollHeight, 160) + "px";
             }}
             onKeyDown={handleKeyDown}
-            placeholder="Ask anything about your WHIMSEY Discord setup… 💗"
+            placeholder="Ask anything — or tell me to post, create roles, check your server… 💗"
             disabled={streaming}
             className="flex-1 resize-none rounded-2xl border border-pink-200 bg-pink-50/50 px-4 py-2.5 text-sm text-gray-800 placeholder:text-pink-300 outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 disabled:opacity-60 transition-all overflow-hidden leading-relaxed"
             style={{ minHeight: "42px" }}
@@ -399,7 +436,7 @@ export default function AiChat() {
           </button>
         </div>
         <p className="text-center text-[10px] text-gray-300 mt-1.5">
-          Enter to send · Shift+Enter for new line · Conversation auto-saved locally
+          Enter to send · Shift+Enter for new line · Conversation auto-saved · Live Discord access enabled
         </p>
       </div>
     </div>

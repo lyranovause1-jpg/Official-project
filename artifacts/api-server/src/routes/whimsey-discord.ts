@@ -2,79 +2,94 @@ import { Router } from "express";
 
 const router = Router();
 
-const GUILD_ID = "1495034928801382411";
-const BASE = "https://discord.com/api/v10";
+export const GUILD_ID = "1495034928801382411";
+export const DISCORD_BASE = "https://discord.com/api/v10";
 
-function auth() {
+export function discordAuth() {
   return { Authorization: "Bot " + process.env.DISCORD_BOT_TOKEN?.trim() };
 }
 
-async function dget(path: string) {
-  const r = await fetch(BASE + path, { headers: auth() });
+export async function dget(path: string) {
+  const r = await fetch(DISCORD_BASE + path, { headers: discordAuth() });
   return r.json();
 }
 
-async function dpost(path: string, body: unknown) {
-  const r = await fetch(BASE + path, {
+export async function dpost(path: string, body: unknown) {
+  const r = await fetch(DISCORD_BASE + path, {
     method: "POST",
-    headers: { ...auth(), "Content-Type": "application/json" },
+    headers: { ...discordAuth(), "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
   return r.json();
 }
 
-async function dpatch(path: string, body: unknown) {
-  const r = await fetch(BASE + path, {
+export async function dpatch(path: string, body: unknown) {
+  const r = await fetch(DISCORD_BASE + path, {
     method: "PATCH",
-    headers: { ...auth(), "Content-Type": "application/json" },
+    headers: { ...discordAuth(), "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
   return r.json();
 }
 
-async function ddel(path: string) {
-  const r = await fetch(BASE + path, { method: "DELETE", headers: auth() });
+export async function ddel(path: string) {
+  const r = await fetch(DISCORD_BASE + path, { method: "DELETE", headers: discordAuth() });
   return r.status === 204 ? { success: true } : r.json();
 }
 
 // ── GET /api/discord/status ──────────────────────────────────────────────────
-// Full server health snapshot — members, channels, roles, bot statuses
 router.get("/discord/status", async (req, res) => {
   try {
-    const [guild, channels, roles, bots] = await Promise.all([
+    const [guild, channels, roles, integrations] = await Promise.all([
       dget(`/guilds/${GUILD_ID}?with_counts=true`),
       dget(`/guilds/${GUILD_ID}/channels`),
       dget(`/guilds/${GUILD_ID}/roles`),
-      dget(`/guilds/${GUILD_ID}/members?limit=100`),
+      dget(`/guilds/${GUILD_ID}/integrations`),
     ]);
 
+    const catMap: Record<string, string> = {};
+    if (Array.isArray(channels)) {
+      channels.filter((c: any) => c.type === 4).forEach((c: any) => { catMap[c.id] = c.name; });
+    }
+
     const textChannels = Array.isArray(channels)
-      ? channels.filter((c: any) => c.type === 0).map((c: any) => ({
-          id: c.id, name: c.name, parent_id: c.parent_id,
-          slowmode: c.rate_limit_per_user || 0, topic: c.topic || null,
-        }))
+      ? channels
+          .filter((c: any) => c.type === 0 || c.type === 5)
+          .sort((a: any, b: any) => (a.position || 0) - (b.position || 0))
+          .map((c: any) => ({
+            id: c.id, name: c.name,
+            category: catMap[c.parent_id] || null,
+            slowmode: c.rate_limit_per_user || 0,
+            topic: c.topic || null,
+          }))
       : [];
 
     const categories = Array.isArray(channels)
-      ? channels.filter((c: any) => c.type === 4).map((c: any) => ({
-          id: c.id, name: c.name,
-        }))
+      ? channels
+          .filter((c: any) => c.type === 4)
+          .sort((a: any, b: any) => (a.position || 0) - (b.position || 0))
+          .map((c: any) => ({ id: c.id, name: c.name }))
       : [];
 
     const roleList = Array.isArray(roles)
-      ? roles.map((r: any) => ({
-          id: r.id, name: r.name, color: r.color,
-          position: r.position, managed: r.managed,
-          memberCount: null,
-        }))
+      ? roles
+          .sort((a: any, b: any) => b.position - a.position)
+          .map((r: any) => ({
+            id: r.id, name: r.name,
+            color: r.color ? "#" + r.color.toString(16).padStart(6, "0") : null,
+            position: r.position, managed: r.managed,
+          }))
       : [];
 
-    const botMembers = Array.isArray(bots)
-      ? bots.filter((m: any) => m.user?.bot).map((m: any) => ({
-          username: m.user.username,
-          id: m.user.id,
-          roles: m.roles,
-          joinedAt: m.joined_at,
+    const botList = Array.isArray(integrations)
+      ? integrations.map((i: any) => ({
+          name: i.name,
+          id: i.account?.id,
+          avatar: i.application?.icon
+            ? `https://cdn.discordapp.com/app-icons/${i.application.id}/${i.application.icon}.png`
+            : null,
+          enabled: i.enabled,
+          joinedAt: null,
         }))
       : [];
 
@@ -96,7 +111,7 @@ router.get("/discord/status", async (req, res) => {
       categories,
       channels: textChannels,
       roles: roleList,
-      bots: botMembers,
+      bots: botList,
     });
   } catch (err) {
     req.log.error({ err }, "Discord status error");
@@ -105,48 +120,17 @@ router.get("/discord/status", async (req, res) => {
 });
 
 // ── GET /api/discord/members ─────────────────────────────────────────────────
-// Recent members + role counts
 router.get("/discord/members", async (req, res) => {
   try {
-    const members = await dget(`/guilds/${GUILD_ID}/members?limit=100`);
-    const roles = await dget(`/guilds/${GUILD_ID}/roles`);
-
-    if (!Array.isArray(members)) {
-      res.json({ ok: false, error: (members as any).message });
-      return;
-    }
-
-    const roleCounts: Record<string, number> = {};
-    for (const m of members) {
-      for (const rid of m.roles) {
-        roleCounts[rid] = (roleCounts[rid] || 0) + 1;
-      }
-    }
-
-    const roleMap: Record<string, string> = {};
-    if (Array.isArray(roles)) {
-      for (const r of roles) roleMap[r.id] = r.name;
-    }
-
-    const roleSummary = Object.entries(roleCounts).map(([id, count]) => ({
-      id, name: roleMap[id] || id, count,
-    })).sort((a, b) => b.count - a.count);
-
+    const guild = await dget(`/guilds/${GUILD_ID}?with_counts=true`);
     res.json({
       ok: true,
-      totalFetched: members.length,
-      humanMembers: members.filter((m: any) => !m.user?.bot).length,
-      botMembers: members.filter((m: any) => m.user?.bot).length,
-      roleSummary,
-      recentJoins: members
-        .filter((m: any) => !m.user?.bot)
-        .sort((a: any, b: any) => new Date(b.joined_at).getTime() - new Date(a.joined_at).getTime())
-        .slice(0, 10)
-        .map((m: any) => ({
-          username: m.user.username,
-          joinedAt: m.joined_at,
-          roles: m.roles.map((rid: string) => roleMap[rid] || rid),
-        })),
+      totalFetched: guild.approximate_member_count,
+      humanMembers: guild.approximate_member_count,
+      botMembers: 0,
+      roleSummary: [],
+      recentJoins: [],
+      note: "Full member list requires Server Members Intent in Discord Developer Portal",
     });
   } catch (err) {
     req.log.error({ err }, "Discord members error");
@@ -155,7 +139,6 @@ router.get("/discord/members", async (req, res) => {
 });
 
 // ── GET /api/discord/channels ────────────────────────────────────────────────
-// All channels with their categories and slowmode
 router.get("/discord/channels", async (req, res) => {
   try {
     const channels = await dget(`/guilds/${GUILD_ID}/channels`);
@@ -165,17 +148,13 @@ router.get("/discord/channels", async (req, res) => {
     }
 
     const catMap: Record<string, string> = {};
-    channels.filter((c: any) => c.type === 4).forEach((c: any) => {
-      catMap[c.id] = c.name;
-    });
+    channels.filter((c: any) => c.type === 4).forEach((c: any) => { catMap[c.id] = c.name; });
 
     const structured = channels
       .filter((c: any) => c.type !== 4)
       .sort((a: any, b: any) => (a.position || 0) - (b.position || 0))
       .map((c: any) => ({
-        id: c.id,
-        name: c.name,
-        type: c.type,
+        id: c.id, name: c.name, type: c.type,
         category: catMap[c.parent_id] || null,
         slowmode: c.rate_limit_per_user || 0,
         topic: c.topic || null,
@@ -201,8 +180,7 @@ router.get("/discord/roles", async (req, res) => {
       id: r.id, name: r.name,
       color: r.color ? "#" + r.color.toString(16).padStart(6, "0") : null,
       position: r.position, managed: r.managed,
-      permissions: r.permissions,
-      hoist: r.hoist,
+      permissions: r.permissions, hoist: r.hoist,
     }));
     res.json({ ok: true, count: sorted.length, roles: sorted });
   } catch (err) {
@@ -212,36 +190,35 @@ router.get("/discord/roles", async (req, res) => {
 });
 
 // ── GET /api/discord/bots ────────────────────────────────────────────────────
+// Uses /integrations — does NOT require GUILD_MEMBERS privileged intent
 router.get("/discord/bots", async (req, res) => {
   try {
-    const members = await dget(`/guilds/${GUILD_ID}/members?limit=100`);
-    if (!Array.isArray(members)) {
-      res.json({ ok: false, error: (members as any).message });
+    const integrations = await dget(`/guilds/${GUILD_ID}/integrations`);
+    if (!Array.isArray(integrations)) {
+      res.json({ ok: false, error: (integrations as any).message });
       return;
     }
-    const bots = members
-      .filter((m: any) => m.user?.bot)
-      .map((m: any) => ({
-        username: m.user.username,
-        id: m.user.id,
-        discriminator: m.user.discriminator,
-        avatar: m.user.avatar
-          ? `https://cdn.discordapp.com/avatars/${m.user.id}/${m.user.avatar}.png`
-          : null,
-        joinedAt: m.joined_at,
-        roles: m.roles,
-      }));
 
-    const expectedBots = ["Carl-bot", "Auth", "Collab.Land", "Ticket Tool", "WHIMSEY AI"];
-    const present = bots.map((b: any) => b.username);
-    const missing = expectedBots.filter(name =>
-      !present.some((p: string) => p.toLowerCase().includes(name.toLowerCase()))
+    const bots = integrations.map((i: any) => ({
+      name: i.name,
+      id: i.account?.id,
+      avatar: i.application?.icon
+        ? `https://cdn.discordapp.com/app-icons/${i.application.id}/${i.application.icon}.png`
+        : null,
+      enabled: i.enabled,
+      joinedAt: null,
+    }));
+
+    const EXPECTED = ["Carl-bot", "Auth", "Collab.Land", "Ticket Tool", "WHIMSEY AI"];
+    const presentNames = bots.map((b: any) => b.name.toLowerCase());
+    const missing = EXPECTED.filter(
+      name => !presentNames.some((p: string) => p.includes(name.toLowerCase()))
     );
 
     res.json({
       ok: true,
       bots,
-      expectedBots,
+      expectedBots: EXPECTED,
       missingBots: missing,
       allBotsPresent: missing.length === 0,
     });
@@ -252,13 +229,9 @@ router.get("/discord/bots", async (req, res) => {
 });
 
 // ── POST /api/discord/message ─────────────────────────────────────────────────
-// Send a message to any channel
 router.post("/discord/message", async (req, res) => {
   const { channelId, channelName, content, embed } = req.body as {
-    channelId?: string;
-    channelName?: string;
-    content?: string;
-    embed?: Record<string, unknown>;
+    channelId?: string; channelName?: string; content?: string; embed?: Record<string, unknown>;
   };
 
   if (!content && !embed) {
@@ -268,19 +241,18 @@ router.post("/discord/message", async (req, res) => {
 
   try {
     let targetId = channelId;
-
     if (!targetId && channelName) {
       const channels = await dget(`/guilds/${GUILD_ID}/channels`);
       if (Array.isArray(channels)) {
         const found = channels.find((c: any) =>
-          c.name.toLowerCase() === channelName.toLowerCase().replace("#", "")
+          c.name.toLowerCase() === channelName.toLowerCase().replace(/^#/, "")
         );
         targetId = found?.id;
       }
     }
 
     if (!targetId) {
-      res.status(400).json({ ok: false, error: "Channel not found" });
+      res.status(400).json({ ok: false, error: `Channel "${channelName}" not found` });
       return;
     }
 
@@ -289,7 +261,7 @@ router.post("/discord/message", async (req, res) => {
     if (embed) body.embeds = [embed];
 
     const result = await dpost(`/channels/${targetId}/messages`, body);
-    res.json({ ok: true, messageId: result.id, channelId: targetId });
+    res.json({ ok: !!result.id, messageId: result.id, channelId: targetId });
   } catch (err) {
     req.log.error({ err }, "Discord message error");
     res.status(500).json({ ok: false, error: "Failed to send message" });
@@ -297,14 +269,9 @@ router.post("/discord/message", async (req, res) => {
 });
 
 // ── PATCH /api/discord/channel/:id ───────────────────────────────────────────
-// Edit a channel (slowmode, topic, name)
 router.patch("/discord/channel/:id", async (req, res) => {
   const { id } = req.params;
-  const { slowmode, topic, name } = req.body as {
-    slowmode?: number;
-    topic?: string;
-    name?: string;
-  };
+  const { slowmode, topic, name } = req.body as { slowmode?: number; topic?: string; name?: string; };
 
   try {
     const body: Record<string, unknown> = {};
@@ -313,15 +280,37 @@ router.patch("/discord/channel/:id", async (req, res) => {
     if (name !== undefined) body.name = name;
 
     const result = await dpatch(`/channels/${id}`, body);
-    res.json({ ok: true, channel: { id: result.id, name: result.name } });
+    res.json({ ok: !!result.id, channel: { id: result.id, name: result.name } });
   } catch (err) {
     req.log.error({ err }, "Discord channel patch error");
     res.status(500).json({ ok: false, error: "Failed to update channel" });
   }
 });
 
+// ── POST /api/discord/roles/create ───────────────────────────────────────────
+router.post("/discord/roles/create", async (req, res) => {
+  const { name, color, hoist, mentionable } = req.body as {
+    name: string; color?: string; hoist?: boolean; mentionable?: boolean;
+  };
+  if (!name) {
+    res.status(400).json({ ok: false, error: "name required" });
+    return;
+  }
+  try {
+    const colorInt = color ? parseInt(color.replace("#", ""), 16) : 0;
+    const result = await dpost(`/guilds/${GUILD_ID}/roles`, {
+      name, color: colorInt,
+      hoist: hoist ?? false,
+      mentionable: mentionable ?? false,
+    });
+    res.json({ ok: !!result.id, roleId: result.id, roleName: result.name });
+  } catch (err) {
+    req.log.error({ err }, "Discord role create error");
+    res.status(500).json({ ok: false, error: "Failed to create role" });
+  }
+});
+
 // ── POST /api/discord/role ────────────────────────────────────────────────────
-// Assign a role to a member
 router.post("/discord/role", async (req, res) => {
   const { userId, roleId } = req.body as { userId: string; roleId: string };
   if (!userId || !roleId) {
@@ -329,11 +318,11 @@ router.post("/discord/role", async (req, res) => {
     return;
   }
   try {
-    const result = await fetch(
-      `${BASE}/guilds/${GUILD_ID}/members/${userId}/roles/${roleId}`,
-      { method: "PUT", headers: auth() }
+    const r = await fetch(
+      `${DISCORD_BASE}/guilds/${GUILD_ID}/members/${userId}/roles/${roleId}`,
+      { method: "PUT", headers: discordAuth() }
     );
-    res.json({ ok: result.status === 204, status: result.status });
+    res.json({ ok: r.status === 204, status: r.status });
   } catch (err) {
     req.log.error({ err }, "Discord role assign error");
     res.status(500).json({ ok: false, error: "Failed to assign role" });
@@ -341,7 +330,6 @@ router.post("/discord/role", async (req, res) => {
 });
 
 // ── DELETE /api/discord/role ──────────────────────────────────────────────────
-// Remove a role from a member
 router.delete("/discord/role", async (req, res) => {
   const { userId, roleId } = req.body as { userId: string; roleId: string };
   if (!userId || !roleId) {
@@ -349,11 +337,11 @@ router.delete("/discord/role", async (req, res) => {
     return;
   }
   try {
-    const result = await fetch(
-      `${BASE}/guilds/${GUILD_ID}/members/${userId}/roles/${roleId}`,
-      { method: "DELETE", headers: auth() }
+    const r = await fetch(
+      `${DISCORD_BASE}/guilds/${GUILD_ID}/members/${userId}/roles/${roleId}`,
+      { method: "DELETE", headers: discordAuth() }
     );
-    res.json({ ok: result.status === 204, status: result.status });
+    res.json({ ok: r.status === 204, status: r.status });
   } catch (err) {
     req.log.error({ err }, "Discord role remove error");
     res.status(500).json({ ok: false, error: "Failed to remove role" });
@@ -362,7 +350,7 @@ router.delete("/discord/role", async (req, res) => {
 
 // ── POST /api/discord/kick ────────────────────────────────────────────────────
 router.post("/discord/kick", async (req, res) => {
-  const { userId, reason } = req.body as { userId: string; reason?: string };
+  const { userId } = req.body as { userId: string; reason?: string };
   if (!userId) {
     res.status(400).json({ ok: false, error: "userId required" });
     return;
@@ -386,18 +374,18 @@ router.post("/discord/ban", async (req, res) => {
     return;
   }
   try {
-    const result = await fetch(
-      `${BASE}/guilds/${GUILD_ID}/bans/${userId}`,
+    const r = await fetch(
+      `${DISCORD_BASE}/guilds/${GUILD_ID}/bans/${userId}`,
       {
         method: "PUT",
-        headers: { ...auth(), "Content-Type": "application/json" },
+        headers: { ...discordAuth(), "Content-Type": "application/json" },
         body: JSON.stringify({
           delete_message_seconds: (deleteMessageDays || 0) * 86400,
           reason: reason || "Banned via WHIMSEY AI",
         }),
       }
     );
-    res.json({ ok: result.status === 204, status: result.status });
+    res.json({ ok: r.status === 204, status: r.status });
   } catch (err) {
     req.log.error({ err }, "Discord ban error");
     res.status(500).json({ ok: false, error: "Failed to ban member" });
@@ -457,13 +445,9 @@ router.get("/discord/invites", async (req, res) => {
       return;
     }
     const mapped = invites.map((inv: any) => ({
-      code: inv.code,
-      uses: inv.uses,
-      maxUses: inv.max_uses,
-      channel: inv.channel?.name,
-      createdBy: inv.inviter?.username,
-      expiresAt: inv.expires_at,
-      temporary: inv.temporary,
+      code: inv.code, uses: inv.uses, maxUses: inv.max_uses,
+      channel: inv.channel?.name, createdBy: inv.inviter?.username,
+      expiresAt: inv.expires_at, temporary: inv.temporary,
     }));
     res.json({ ok: true, count: mapped.length, invites: mapped });
   } catch (err) {
@@ -480,8 +464,8 @@ router.post("/discord/pin", async (req, res) => {
     return;
   }
   try {
-    const r = await fetch(`${BASE}/channels/${channelId}/pins/${messageId}`, {
-      method: "PUT", headers: auth(),
+    const r = await fetch(`${DISCORD_BASE}/channels/${channelId}/pins/${messageId}`, {
+      method: "PUT", headers: discordAuth(),
     });
     res.json({ ok: r.status === 204, status: r.status });
   } catch (err) {
