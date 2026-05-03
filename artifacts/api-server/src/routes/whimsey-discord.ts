@@ -561,6 +561,75 @@ router.get("/discord/messages", async (req, res) => {
   }
 });
 
+// ── GET /api/discord/feed — unified private channel message feed ──────────────
+router.get("/discord/feed", async (req, res) => {
+  const limit = Math.min(parseInt(req.query.limit as string || "30", 10), 50);
+  try {
+    const raw = await dget(`/guilds/${GUILD_ID}/channels`);
+    if (!Array.isArray(raw)) {
+      res.status(500).json({ ok: false, error: "Could not fetch channels" });
+      return;
+    }
+
+    // Build category map
+    const catMap: Record<string, string> = {};
+    raw.filter((c: any) => c.type === 4).forEach((c: any) => { catMap[c.id] = c.name; });
+
+    // A channel is private if @everyone (role id === guild id) has VIEW_CHANNEL denied
+    const VIEW_CHANNEL = BigInt(0x400);
+    const privateChannels = raw.filter((c: any) => {
+      if (c.type !== 0 && c.type !== 5) return false; // text + announcement only
+      const overwrites: any[] = c.permission_overwrites || [];
+      const everyoneOverwrite = overwrites.find((o: any) => o.id === GUILD_ID);
+      if (!everyoneOverwrite) return false;
+      const deny = BigInt(everyoneOverwrite.deny || "0");
+      return (deny & VIEW_CHANNEL) === VIEW_CHANNEL;
+    });
+
+    // Fetch messages from all private channels in parallel
+    const results = await Promise.allSettled(
+      privateChannels.map(async (ch: any) => {
+        const msgs = await dget(`/channels/${ch.id}/messages?limit=${limit}`);
+        if (!Array.isArray(msgs)) return [];
+        return msgs.map((m: any) => ({
+          id: m.id,
+          channelId: ch.id,
+          channelName: ch.name,
+          category: catMap[ch.parent_id] || null,
+          author: m.author?.username || "unknown",
+          authorId: m.author?.id,
+          isBot: m.author?.bot || false,
+          content: m.content || "",
+          embeds: (m.embeds || []).map((e: any) => ({
+            title: e.title || null,
+            description: e.description || null,
+            color: e.color || null,
+          })),
+          attachmentCount: m.attachments?.length || 0,
+          timestamp: m.timestamp,
+          edited: m.edited_timestamp || null,
+          reactionCount: m.reactions?.reduce((s: number, r: any) => s + (r.count || 0), 0) || 0,
+        }));
+      })
+    );
+
+    const all: any[] = [];
+    results.forEach((r) => { if (r.status === "fulfilled") all.push(...r.value); });
+    all.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+    res.json({
+      ok: true,
+      channelCount: privateChannels.length,
+      channels: privateChannels.map((c: any) => ({ id: c.id, name: c.name, category: catMap[c.parent_id] || null })),
+      total: all.length,
+      messages: all,
+    });
+  } catch (err) {
+    req.log.error({ err }, "Discord feed error");
+    res.status(500).json({ ok: false, error: "Failed to build feed" });
+  }
+});
+
 // ── POST /api/discord/pin ─────────────────────────────────────────────────────
 router.post("/discord/pin", async (req, res) => {
   const { channelId, messageId } = req.body as { channelId: string; messageId: string };
