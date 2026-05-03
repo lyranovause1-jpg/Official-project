@@ -282,12 +282,23 @@ export default function PermissionsPage() {
           <EntityCard key={entity.name} entity={entity} />
         ))}
 
+        {/* ── No human mods callout ── */}
+        <div className="rounded-2xl bg-amber-50 border border-amber-100 p-5 space-y-2">
+          <div className="flex items-center gap-2">
+            <span className="text-base">💡</span>
+            <p className="text-sm font-bold text-gray-800">You don't need human moderators — ever.</p>
+          </div>
+          <p className="text-xs text-gray-600 leading-relaxed">
+            This entire system is designed to run indefinitely with just you and the bots. Carl-bot handles automated enforcement 24/7. WHIMSEY AI handles intelligent oversight and escalation. You handle strategy and final calls. The Moderator ☁️ role exists in the Discord hierarchy for technical reasons only — it is never assigned to any person. Nothing breaks, nothing degrades, and nothing requires a human mod to keep working.
+          </p>
+        </div>
+
         {/* ── Summary callout ── */}
         <div className="rounded-2xl bg-gradient-to-br from-pink-50 to-violet-50 border border-pink-100 p-5 space-y-3">
-          <p className="text-sm font-bold text-gray-800">The one-line summary</p>
+          <p className="text-sm font-bold text-gray-800">The one-line summary per bot</p>
           <div className="space-y-2 text-xs text-gray-600 leading-relaxed">
             <p>
-              <span className="font-semibold text-gray-800">WHIMSEY AI</span> — one gate only: posting to public channels. Everything else it does freely and silently.
+              <span className="font-semibold text-gray-800">WHIMSEY AI</span> — one gate only: posting to public channels. Everything else it does freely and silently. It is your full-time eyes on the server.
             </p>
             <p>
               <span className="font-semibold text-gray-800">Carl-bot</span> — runs your entire server on autopilot once configured. You set it up once, it works forever.

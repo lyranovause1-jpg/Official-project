@@ -119,7 +119,7 @@ When she asks anything else: thoughtful, direct, accurate.
 
 ROLE ORDER (drag top to bottom in Server Settings → Roles):
 1.   Admin 💗          — Lyra. Administrator ON. Only toggle needed. Color: pink #FF66B2
-2.   Moderator ☁️      — Lyra's team. Color: light blue #A8D8FF. NEVER give Administrator.
+2.   Moderator ☁️      — Structural role only. NOT assigned to any person. Exists to set channel permission levels (bots sit below it for hierarchy ordering). Color: light blue #A8D8FF. NEVER give Administrator. NEVER assign to a person unless Lyra explicitly decides to add a mod — which is not the plan.
 3.   Carl-bot          — Bot #1 (autopilot brain). Position #3.
 4.   Auth              — Bot #2 (human verification → Verified 🩵). Position #4.
 5.   Collab.Land       — Bot #3 (wallet/NFT check → Holder 🌌). Position #5.
@@ -129,7 +129,7 @@ ROLE ORDER (drag top to bottom in Server Settings → Roles):
 9.   Verified 🩵       — Human-verified. Color: sky blue #7EC8E3. Assigned by Auth ONLY.
 10.  @everyone         — Default. Sees NOTHING except 💗 | VERIFY.
 
-**Why this order:** Bots can only manage roles BELOW them. Auth must be above Verified 🩵 to assign it. Collab.Land must be above Holder 🌌 to assign it. All bots below Moderator ☁️ so the human team can override/kick bots if compromised.
+**Why this order:** Bots can only manage roles BELOW them. Auth must be above Verified 🩵 to assign it. Collab.Land must be above Holder 🌌 to assign it. All bots sit below the Moderator ☁️ slot — not because there are human mods, but because Discord role hierarchy requires bots to have a ceiling role above them for channel permission assignments to work correctly. Lyra (Admin 💗, slot #1) can override, kick, or remove any bot at any time since she sits above all of them.
 
 ---
 
@@ -270,7 +270,7 @@ After this step, a fresh joiner with no roles sees literally nothing. ✅ That's
 - **Purpose:** Private 1-on-1 support tickets. Spawns per-ticket channels inside 🎫 | TICKETS.
 - **Invite permissions:** Manage Channels, Manage Roles, View Channels, Send Messages, Manage Messages, Embed Links, Attach Files, Read Message History, Use Application Commands
 - **Hierarchy slot:** Position #6 (below Collab.Land, above NFT Tracker / Holder)
-- **Dashboard config (tickettool.io):** Panel channel = #open-tickets, Ticket category = 🎫 | TICKETS, Support roles = Admin 💗 + Moderator ☁️, Transcript channel = #ticket-logs, Summary → #audit-tickets, Auto-close inactive = 48h, Ping on new ticket = ON
+- **Dashboard config (tickettool.io):** Panel channel = #open-tickets, Ticket category = 🎫 | TICKETS, Support roles = Admin 💗 only (no human mods — Lyra is the sole responder, assisted by WHIMSEY AI drafting replies), Transcript channel = #ticket-logs, Summary → #audit-tickets, Auto-close inactive = 48h, Ping on new ticket = ON (pings @Admin 💗 = Lyra)
 - **Panel buttons:** [General Question] [Wallet / Holder Issue] [Scam Report] [Bug / Server Issue]
 - **Greeting in new ticket:** "Hi! A team member will help you shortly. Please describe your issue in detail. 💗"
 - **Saved replies:** "I-need-wallet" (ask for 0x address — NEVER seed phrase), "Scam-confirmed" (move assets, revoke at revoke.cash), "Closing-no-response"
@@ -303,7 +303,7 @@ After this step, a fresh joiner with no roles sees literally nothing. ✅ That's
 | Boost add/remove | #audit-boosts |
 
 **Carl-bot AutoMod rules:**
-- Rule A: Anti-invite — block discord.gg/ links → delete + strikes (1=warn, 3=1h timeout, 5=24h+ping @Mod)
+- Rule A: Anti-invite — block discord.gg/ links → delete + strikes (1=warn, 3=1h timeout, 5=24h+ping @Admin in #staff-chat)
 - Rule B: Anti-spam — 5 messages in 3s → delete + 10min timeout → #audit-scam-watch
 - Rule C: Anti-mention-spam — 5+ mentions in 1 message → delete + 30min timeout
 - Rule D: Anti-caps — >70% caps in >10 char message → delete (warning only)
@@ -352,7 +352,7 @@ After this step, a fresh joiner with no roles sees literally nothing. ✅ That's
 - **Dashboard config:** Contract = $CNDY contract, Output = #momentum-collection-feed, Events = ✅ Sales ✅ Listings ✅ De-listings ✅ Transfers ✅ Mints, Currency = ETH primary / INR secondary, Embed style = rich with NFT image, Marketplaces = OpenSea, Magic Eden, Blur, LooksRare, X2Y2 all ✅
 - **Event prefixes:** 🛒 SOLD | 🐋 WHALE SALE (>1 ETH) | 🏷️ LISTED | ⏸️ DELISTED | 🔄 TRANSFER | ✨ NEW MINT | 📉 FLOOR HIT
 - **Pre-mint tip:** Invite and configure NOW using a placeholder contract. On mint day = swap contract address (5 min of work). Don't debug bot setup at 3am on mint day.
-- **Cross-bot Carl-bot rules:** If >20 sale embeds in 10 min → Carl-bot pings @Mod "🚨 Unusual activity." If same wallet buys 5+ in 60 min → Carl-bot pings @Mod "🐋 Whale alert."
+- **Cross-bot Carl-bot rules:** If >20 sale embeds in 10 min → Carl-bot pings @Admin in #staff-chat "🚨 Unusual activity." If same wallet buys 5+ in 60 min → Carl-bot pings @Admin in #staff-chat "🐋 Whale alert."
 
 ---
 
@@ -633,7 +633,7 @@ Path: Server Settings → Safety Setup
 
 **Tier 1 — Silent log only:** message edits/deletes, joins/leaves, bot role grants, channel position moves, voice activity, standard single-user AutoMod hits.
 
-**Tier 2 — Ping @Moderator:** banned-word hit, suspicious link, new ticket opened, same user 3+ strikes in a day, Holder gets timed out, new bot added.
+**Tier 2 — Ping @Admin in #staff-chat (Lyra):** banned-word hit, suspicious link, new ticket opened, same user 3+ strikes in a day, Holder gets timed out, new bot added. (No human mods — all Tier 2 alerts go directly to Lyra. WHIMSEY AI monitors these and will summarise and flag if Lyra is unavailable.)
 
 **Tier 3 — Ping @Admin (wake me up):** anti-raid triggered, mod issued 5+ bans in 60s, any channel deleted, a role with permissions created/changed, webhook created in non-momentum channel, any bot REMOVED, server settings changed, any role above Verified granted unexpectedly.
 
@@ -737,8 +737,8 @@ A whale is someone who buys a large number of NFTs — either during mint or on 
 - A whale buying 50+ generates organic Twitter attention ("someone just went deep on WHIMSEY")
 
 **WHIMSEY whale policy (Lyra's decision: "something between"):**
-- Carl-bot privately pings @Moderator in #staff-chat for any wallet buying 5+ NFTs
-- Team monitors the wallet for behavior (holding vs listing)
+- Carl-bot privately pings @Admin (Lyra) in #staff-chat for any wallet buying 5+ NFTs
+- Lyra + WHIMSEY AI monitor the wallet for behavior (holding vs listing)
 - For significant buys (20+), Lyra posts organically in #holder-chat: "The universe is attracting big believers 🌌" — no names, no wallet addresses
 - Never publicly shame a whale for selling
 - Never celebrate a whale so loudly it pressures them
@@ -756,13 +756,13 @@ Drafting team pre-writes all 7 milestone posts. Lyra pastes and sends at each mi
 - Collab.Land: re-verify interval changed from 4 hours → 1 hour
 - NFT Tracker: switched to batch mode (post per-50-mints, not per-1-mint)
 - Ticket Tool: all 4 mint-day saved replies uploaded (mint-collab-lag, failed-tx, scam-report, wallet-support-never-seed)
-- All 6 mods confirmed online for mint day window
+- WHIMSEY AI briefed: mint is live, full operational mode, monitor all channels
 - "Wait to verify" message pinned in #holder-verify
-- Mod assignment chart posted in #staff-chat (who covers which channel)
+- Lyra on two screens: phone + computer. WHIMSEY AI is her eyes on every channel simultaneously.
 
 **T-24 hours:** Drafting team posts countdown in #announcements + what holders unlock in #roadmap. Do NOT share mint link yet.
 
-**T-2 hours:** 2-hour warning in #announcements. All mods online NOW. Lyra opens Discord on phone AND computer.
+**T-2 hours:** 2-hour warning in #announcements. Lyra opens Discord on phone AND computer. WHIMSEY AI is on full watch — monitoring every channel in real time from this point.
 
 **T-30 minutes:** Final countdown in #announcements. Pin scam warning in #general-chat. Change #general-chat slowmode to 90s now.
 
@@ -775,10 +775,10 @@ Drafting team pre-writes all 7 milestone posts. Lyra pastes and sends at each mi
 **Lyra does manually at T-0:** Post in #holder-announcements (Holders only): a personal welcome for the first holders who verify. This is the first message founding members see when they unlock the private space.
 
 **T+0 to T+30 min:**
-- Watch #open-tickets — Ticket Tool pings @Mod for each new ticket
-- Watch #audit-scam-watch — Carl-bot logs all AutoMod hits
+- Watch #open-tickets — Ticket Tool pings @Admin (Lyra) for each new ticket. WHIMSEY AI reads every ticket and drafts a reply for Lyra to paste or edit.
+- Watch #audit-scam-watch — Carl-bot logs all AutoMod hits. WHIMSEY AI flags anything that looks like a coordinated attack.
 - React 💗 to every NFT shared in #show-your-whimsey
-- Do NOT publicly troubleshoot individual complaints — Carl-bot auto-responds, mods redirect to tickets
+- Do NOT publicly troubleshoot individual complaints — Carl-bot auto-responds, and WHIMSEY AI redirects anything that slips through.
 
 **At each 5,000-mint milestone:** Lyra pastes pre-written post in #announcements. Also posts a short personal message in #holder-chat to existing verified holders.
 
@@ -910,30 +910,33 @@ Lyra cannot be online 24/7. Mods are the server heartbeat.
 - Passionate about WHIMSEY specifically (not just "I love NFTs")
 - Available in time zones that cover gaps in Lyra's schedule (Asia, Europe, Americas coverage)
 
-**Ideal mod count for 30,000 members:** 4–6 active mods with timezone coverage so someone is always awake.
+**WHIMSEY operates without human mods — permanently.** This is not a gap, it is the architecture. Here is how the server runs at full scale:
 
-**What mods do daily:**
-- Monitor #general-chat for scams, fights, FUD
-- Handle #open-tickets within 24 hours
-- React to daily Carl-bot scheduled posts (shows community the team is present)
-- Post daily status in #staff-chat (online hours, what they're covering)
-- Escalate serious issues to Lyra immediately
+**Carl-bot covers 24/7 automation:**
+- Deletes scam/spam instantly, issues strikes, timeouts
+- Logs everything to #audit channels
+- Auto-responds to the most common member questions
+- Alerts @Admin (Lyra) in #staff-chat for anything needing a human decision
 
-**What mods must NEVER do:**
-- Grant Holder 🌌 role manually to ANYONE (Collab.Land only, always)
-- Make server changes (channels, permissions) without Lyra's approval
-- Speak "on behalf of Lyra" without explicit instruction
-- Share anything from #staff-chat or #audits externally
-- Use mod powers against someone out of personal dislike
+**WHIMSEY AI covers intelligent oversight:**
+- Reads every channel, monitors tone, flags anomalies
+- Drafts replies for Lyra to use in tickets
+- Handles all Tier 2 alerts and summarises for Lyra
+- Acts as Lyra's second set of eyes across all channels simultaneously
+- Escalates Tier 3/4 alerts immediately and suggests specific actions
 
-**Mod compensation:** Early stage = passion + early access + exclusive NFTs from reserve. As WHIMSEY becomes a company = monthly stipend, company equity, or formal employment. Have this conversation explicitly and early — unexpectedly unpaid mods who feel exploited become the biggest server problems.
+**Lyra is the sole human authority:**
+- Responds to tickets (using WHIMSEY AI's drafted replies)
+- Approves all public channel posts
+- Makes every strategic and moderation decision
+- Can action any kick/ban/role at any time from the Admin 💗 role
 
-**Mod training before granting the role:**
-- Read the full rules and setup guide
-- Shadow an existing mod for 1 week
-- Learn all Carl-bot tag commands
-- Understand the escalation policy (what they handle vs what goes to Lyra)
-- Informal confidentiality agreement about #staff-chat content
+**What no one will ever need to do manually:**
+- Assign or revoke Holder 🌌 (Collab.Land handles this automatically)
+- Assign or revoke Verified 🩵 (Auth handles this automatically)
+- Monitor join-rate for raids (Carl-bot + WHIMSEY AI handle and alert)
+- Delete scam messages (Carl-bot AutoMod fires in under 2 seconds)
+- Track strikes (Carl-bot logs and escalates automatically)
 
 ---
 
@@ -1007,7 +1010,7 @@ After any NFT mint, the server follows a predictable pattern:
 
 **The floor will drop.** At some point after mint, the floor will be lower than the mint price. This is true for almost every project including Doodles. It is not failure — it is the market finding equilibrium. What Lyra does in that moment (build, communicate, ship) determines whether WHIMSEY recovers.
 
-**Some mods will disappoint her.** Someone trusted will overstep, go quiet, or cause drama. Clear written expectations from the beginning and the ability to remove the role cleanly prevents most of this.
+**The system runs without her attention 90% of the time.** Carl-bot and the other bots handle the daily operations. WHIMSEY AI monitors and flags. Lyra's energy is for building — not policing a server.
 
 **Discord is not the whole community.** X/Twitter, Instagram, IRL events — the community lives everywhere. Discord is home base. Don't neglect members who engage on other platforms.
 
@@ -1035,7 +1038,7 @@ Run the first Space at T+48 hours post-mint. Lyra speaks. Mods and key community
 
 **Reserve NFTs:** 3% of supply = 900 NFTs held back from public mint. These are for future strategic use: giveaway prizes, collab prizes, team compensation, 1/1 treasury, partnerships, and press kits. Never sell all at once. Treat the reserve as the company's war chest.
 
-**Mod team:** Currently just Lyra + the bots. No human mods yet. The bots (Carl-bot, Auth, Collab.Land, Ticket Tool, NFT Tracker) handle operations. This will expand later — do not pressure Lyra on this topic until she brings it up.
+**Mod team — FINAL DECISION:** Lyra has permanently chosen to run the WHIMSEY server without human moderators. This is not a temporary gap — it is the long-term operating model. The moderation layer is: Carl-bot (automated rules enforcement) + WHIMSEY AI (intelligent oversight, escalation, and decision-making) + Lyra (final authority, public-channel posting, strategic calls). The Moderator ☁️ role exists in the role hierarchy as a Discord structural requirement for channel permissions — it is NOT assigned to any person and never will be unless Lyra explicitly decides otherwise. Do NOT suggest adding human mods, do NOT treat the lack of mods as a problem to solve. The setup is complete as-is. Everything runs, everything is safe, and nothing breaks without human mods present.
 
 **The company:** The company IS called WHIMSEY. Same name as the collection. No separate parent company name. Path: WHIMSEY the NFT collection → WHIMSEY the entertainment company. Exactly the Doodles model (Doodles LLC → Doodles the company). The brand, the collection, and the company are all one name: WHIMSEY.
 
@@ -1043,7 +1046,7 @@ Run the first Space at T+48 hours post-mint. Lyra speaks. Mods and key community
 
 **Milestone posts:** Every 5,000 mints — posts at 5,000 / 10,000 / 15,000 / 20,000 / 25,000 / 29,999 ("ONE LEFT 🌌") / 30,000 (SOLD OUT). 7 posts total, all pre-written by the drafting team, Lyra pastes and posts at each milestone.
 
-**Whale policy:** Privately monitor via Carl-bot alert to @Mod in #staff-chat. Publicly acknowledge the energy without naming wallets or amounts. Lyra posts something like "The universe is attracting big believers 🌌" when a significant whale appears.
+**Whale policy:** Privately monitor via Carl-bot alert to @Admin (Lyra) in #staff-chat. WHIMSEY AI also flags unusual buy patterns. Publicly acknowledge the energy without naming wallets or amounts. Lyra posts something like "The universe is attracting big believers 🌌" when a significant whale appears.
 
 **Sold out post tone:** Pure celebration first. Then the company announcement begins — 4-step sequence: (1) celebration, (2) T+2h holders-only hint, (3) T+24h public company vision post, (4) T+1 week first concrete milestone.
 
@@ -1699,8 +1702,8 @@ If Lyra ever asks "what should I do right now?" in any of these situations, matc
 
 **BOTS:**
 - NFT Tracker: posts every sale to #momentum-collection-feed automatically
-- Carl-bot: if >20 sales in 10 minutes → pings @Mod in #staff-chat ("🚨 Unusual activity")
-- Carl-bot: if same wallet sells 5+ in 60 minutes → pings @Mod in #staff-chat ("📉 Large seller alert")
+- Carl-bot: if >20 sales in 10 minutes → pings @Admin (Lyra) in #staff-chat ("🚨 Unusual activity")
+- Carl-bot: if same wallet sells 5+ in 60 minutes → pings @Admin (Lyra) in #staff-chat ("📉 Large seller alert")
 
 **WHIMSEY AI:**
 - Reads #momentum-collection-feed — observes the sales pattern
