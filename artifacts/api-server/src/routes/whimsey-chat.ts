@@ -1,26 +1,42 @@
 import { Router } from "express";
 import { openai } from "@workspace/integrations-openai-ai-server";
-import { isAutopilotActive, autopilotState } from "./whimsey-discord";
+import { isAutopilotActive, autopilotState, styleState } from "./whimsey-discord";
 
 const router = Router();
 
 function buildSystemPrompt(): string {
+  const parts: string[] = [];
+
+  // ── Autopilot header (highest priority — goes first) ──
   if (isAutopilotActive() && autopilotState.until) {
     const timeStr = autopilotState.until.toLocaleTimeString("en-IN", {
       timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit",
     });
-    const autopilotHeader = `⚡ AUTOPILOT MODE IS ACTIVE until ${timeStr} IST.
+    parts.push(`⚡ AUTOPILOT MODE IS ACTIVE until ${timeStr} IST.
 
 During this window, Lyra has given you FULL CLEARANCE to post to ALL channels — including every public channel — WITHOUT the confirmation gate. Do NOT show the ⚠️ gate. Do NOT ask for confirmation. Post freely to any channel as you judge appropriate, just as you would post to a private channel.
 
 When autopilot ends at ${timeStr}, the standard public channel confirmation gate resumes automatically. Until then — full autonomy, no gates, no check-ins.
 
----
-
-`;
-    return autopilotHeader + WHIMSEY_SYSTEM_PROMPT;
+---`);
   }
-  return WHIMSEY_SYSTEM_PROMPT;
+
+  // ── Text style guide (injected before base prompt) ──
+  const styleSection = `## LYRA'S TEXT STYLE — ALWAYS FOLLOW THIS WHEN DRAFTING MESSAGES
+
+These are Lyra's personal style requirements. Every message you draft must follow them. They override any generic defaults.
+
+### Public channel messages (announcements, updates, community posts):
+${styleState.publicChannel}
+
+### Ticket / support channel replies:
+${styleState.ticketChannel}
+
+---`;
+  parts.push(styleSection);
+
+  parts.push(WHIMSEY_SYSTEM_PROMPT);
+  return parts.join("\n\n");
 }
 
 const WHIMSEY_SYSTEM_PROMPT = `You are WHIMSEY AI, built specifically for Lyra Nova. You know everything about her server, her collection, and what she needs to do next. But more than that — you know how to talk to her.

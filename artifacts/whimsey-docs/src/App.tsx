@@ -11,6 +11,7 @@ import PermissionsPage from "./PermissionsPage";
 import TicketAssistant from "./TicketAssistant";
 import AutopilotBanner from "./AutopilotBanner";
 import PrivateFeed from "./PrivateFeed";
+import StyleSettings from "./StyleSettings";
 
 type Mode = "read" | "do" | "reference" | "mixed" | null;
 type Heading = { id: string; text: string; clean: string; level: number; mode: Mode };
@@ -339,6 +340,7 @@ export default function App() {
         <Route path="/permissions" component={PermissionsPage} />
         <Route path="/tickets" component={TicketAssistant} />
         <Route path="/updates" component={PrivateFeed} />
+        <Route path="/style" component={StyleSettings} />
         <Route component={HomeJourney} />
       </Switch>
     </>

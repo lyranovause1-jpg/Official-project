@@ -135,6 +135,11 @@ export default function HomeJourney() {
               Tickets
             </button>
           </Link>
+          <Link href="/style">
+            <button className="px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+              Style
+            </button>
+          </Link>
           <Link href="/updates">
             <button className="px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-1">
               <span className="relative flex h-1.5 w-1.5">

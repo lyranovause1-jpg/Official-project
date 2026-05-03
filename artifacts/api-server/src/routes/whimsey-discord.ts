@@ -5,6 +5,47 @@ const router = Router();
 export const GUILD_ID = "1495034928801382411";
 export const DISCORD_BASE = "https://discord.com/api/v10";
 
+// ── Text Style Defaults ───────────────────────────────────────────────────
+export const styleState = {
+  publicChannel: `Warm, dreamy, and confident — like a founder who genuinely cares about her community.
+
+Rules:
+- Open with a one-line hook that earns attention
+- Short paragraphs only (1-3 lines max) — never one big block of text
+- Use line breaks between ideas
+- Emojis: 1-3 max per message, placed purposefully — never at the start of every line
+- End with energy: a call to action, a question, or a line that makes people feel something
+- Never sound corporate or generic
+- Always feel like it's from Lyra personally, even when WHIMSEY AI is writing it`,
+
+  ticketChannel: `Friendly, patient, and direct — like a helpful team member who actually read the question.
+
+Rules:
+- Address the member's exact issue in the first line — no generic openers
+- Keep it short: 3-5 lines maximum for most replies
+- Plain language — no jargon, no walls of text
+- If there are steps, number them clearly (1. 2. 3.)
+- End with a clear next step or an offer to help further
+- Never feel like a bot — use natural, conversational phrasing
+- One emoji max, only if it genuinely fits`,
+};
+
+// GET /style
+router.get("/style", (req, res) => {
+  res.json({ ok: true, style: styleState });
+});
+
+// POST /style
+router.post("/style", (req: any, res: any) => {
+  const { publicChannel, ticketChannel } = req.body as {
+    publicChannel?: string;
+    ticketChannel?: string;
+  };
+  if (typeof publicChannel === "string") styleState.publicChannel = publicChannel.trim();
+  if (typeof ticketChannel === "string") styleState.ticketChannel = ticketChannel.trim();
+  res.json({ ok: true, style: styleState });
+});
+
 // ── Autopilot Mode State ──────────────────────────────────────────────────
 export const autopilotState: { enabled: boolean; until: Date | null } = {
   enabled: false,
