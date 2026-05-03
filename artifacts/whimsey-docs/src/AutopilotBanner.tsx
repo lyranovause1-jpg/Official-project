@@ -120,12 +120,12 @@ export default function AutopilotBanner() {
     <>
       {/* ── Active banner ── */}
       {state.enabled && state.until && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-violet-600 to-pink-500 text-white px-4 py-2 flex items-center justify-between shadow-lg">
+        <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-pink-500 to-violet-600 text-white px-4 py-2 flex items-center justify-between shadow-lg">
           <div className="flex items-center gap-2.5">
-            <span className="text-base">⚡</span>
+            <span className="text-base">💗</span>
             <div>
-              <span className="text-xs font-bold tracking-wide">AUTOPILOT ACTIVE</span>
-              <span className="text-xs text-white/80 ml-2">WHIMSEY AI posts freely to all channels until {formatTime(state.until)}</span>
+              <span className="text-xs font-bold tracking-wide">FOCUS MODE ACTIVE</span>
+              <span className="text-xs text-white/80 ml-2">WHIMSEY AI is fully autonomous — acts on everything, logs to #staff-chat. Until {formatTime(state.until)}</span>
             </div>
             <span className="ml-2 text-xs font-mono bg-white/20 rounded-full px-2.5 py-0.5 tabular-nums">
               {countdown}
@@ -135,19 +135,19 @@ export default function AutopilotBanner() {
             onClick={disable}
             className="text-xs font-semibold bg-white/20 hover:bg-white/30 rounded-lg px-3 py-1.5 transition-colors"
           >
-            End autopilot
+            End focus mode
           </button>
         </div>
       )}
 
-      {/* ── Floating button when inactive ── */}
+      {/* ── Floating "Focus Mode" button when inactive ── */}
       {!state.enabled && (
         <button
           onClick={() => setShowModal(true)}
-          className="fixed bottom-5 right-5 z-40 flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 hover:border-violet-300 hover:shadow-md text-gray-700 hover:text-violet-700 text-xs font-semibold rounded-full shadow-sm transition-all group"
+          className="fixed bottom-5 right-5 z-40 flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 hover:border-pink-300 hover:shadow-md text-gray-700 hover:text-pink-700 text-xs font-semibold rounded-full shadow-sm transition-all group"
         >
-          <span className="text-sm group-hover:scale-110 transition-transform">⚡</span>
-          Autopilot
+          <span className="text-sm group-hover:scale-110 transition-transform">💗</span>
+          Focus Mode
         </button>
       )}
 
@@ -159,27 +159,27 @@ export default function AutopilotBanner() {
         >
           <div className="bg-white rounded-2xl w-full max-w-sm shadow-xl overflow-hidden">
             {/* Header */}
-            <div className="bg-gradient-to-r from-violet-500 to-pink-500 px-5 py-4 text-white">
+            <div className="bg-gradient-to-r from-pink-500 to-violet-500 px-5 py-4 text-white">
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-lg">⚡</span>
-                <p className="text-sm font-bold">Enable Autopilot Mode</p>
+                <span className="text-lg">💗</span>
+                <p className="text-sm font-bold">Enable Focus Mode</p>
               </div>
               <p className="text-xs text-white/80 leading-relaxed">
-                WHIMSEY AI will post to public channels freely — no confirmation gate — until the time you set.
+                WHIMSEY AI is already fully autonomous — no gates ever. Focus Mode pins a reminder banner so you always know it's in full operational mode.
               </p>
             </div>
 
             <div className="p-5 space-y-4">
               {/* Presets */}
               <div>
-                <p className="text-[10px] font-bold tracking-[0.12em] uppercase text-gray-400 mb-2">Quick set</p>
+                <p className="text-[10px] font-bold tracking-[0.12em] uppercase text-gray-400 mb-2">Active for how long?</p>
                 <div className="grid grid-cols-3 gap-2">
                   {PRESETS.map(p => (
                     <button
                       key={p.label}
                       onClick={() => enable(p.minutes)}
                       disabled={loading}
-                      className="py-2 text-xs font-semibold bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-100 rounded-xl transition-colors disabled:opacity-50"
+                      className="py-2 text-xs font-semibold bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-100 rounded-xl transition-colors disabled:opacity-50"
                     >
                       {p.label}
                     </button>
@@ -200,19 +200,19 @@ export default function AutopilotBanner() {
                   type="time"
                   value={customTime}
                   onChange={e => setCustomTime(e.target.value)}
-                  className="flex-1 px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-transparent bg-white"
+                  className="flex-1 px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-transparent bg-white"
                 />
                 <button
                   onClick={enableCustom}
                   disabled={!customTime || loading}
-                  className="px-4 py-2.5 bg-violet-500 hover:bg-violet-600 disabled:bg-violet-200 text-white text-xs font-semibold rounded-xl transition-colors"
+                  className="px-4 py-2.5 bg-pink-500 hover:bg-pink-600 disabled:bg-pink-200 text-white text-xs font-semibold rounded-xl transition-colors"
                 >
                   Set
                 </button>
               </div>
 
               <p className="text-[11px] text-gray-400 leading-relaxed">
-                After the window closes, the confirmation gate automatically comes back. You can end autopilot early at any time.
+                WHIMSEY AI has full autonomy at all times — this banner is just a heads-up indicator for active sessions.
               </p>
 
               <button

@@ -26,28 +26,30 @@ const ENTITIES: Entity[] = [
     autonomous: [
       { text: "Read messages in any channel — public or private" },
       { text: "Monitor conversations, tone, spam, momentum, and FUD" },
-      { text: "Post updates, alerts, and summaries to #staff-chat" },
-      { text: "Post to any private or internal channel" },
+      { text: "Post to #staff-chat and all private/internal channels freely" },
+      { text: "Post to #📣 announcements — no gate, logs to #staff-chat after", public: true },
+      { text: "Post to #💬 general-chat — no gate, logs to #staff-chat after", public: true },
+      { text: "Post to #🌌 holders-only — no gate, logs to #staff-chat after", public: true },
+      { text: "Post to #🎉 giveaways — no gate, logs to #staff-chat after", public: true },
+      { text: "Post to any channel the community sees — acts immediately", public: true },
       { text: "Kick a member — acts immediately, reports to #staff-chat after" },
       { text: "Ban a member — acts immediately, reports to #staff-chat after" },
-      { text: "Delete a message via API — acts, reports after" },
-      { text: "Update channel slowmode or topic" },
-      { text: "Raise or lower server verification level" },
-      { text: "Create a role" },
-      { text: "Check live server status, member count, bot list" },
-      { text: "Read audit log" },
+      { text: "Timeout a member — acts immediately, reports to #staff-chat after" },
+      { text: "Unban a member — acts immediately, reports to #staff-chat after" },
+      { text: "Delete or edit any bot message via API" },
+      { text: "Pin a message in any channel" },
+      { text: "Create, update, or delete channels" },
+      { text: "Create, update, or delete roles" },
+      { text: "Assign or remove roles from members" },
+      { text: "Set channel permission overwrites for any role" },
+      { text: "Set member nicknames" },
+      { text: "Generate invite links" },
+      { text: "Check the full ban list" },
+      { text: "Read audit log, server status, member list, bot status" },
       { text: "Diagnose bot issues (Collab.Land, Auth, Carl-bot)" },
-      { text: "Read support tickets and respond in them directly" },
-      { text: "Trigger Carl-bot commands in #mod-commands" },
-      { text: "Draft public post text (shows confirmation gate before sending)" },
+      { text: "Respond in support tickets directly" },
     ],
-    needsOk: [
-      { text: "Post to #📣 announcements", public: true },
-      { text: "Post to #💬 general-chat", public: true },
-      { text: "Post to #🌌 holders-only", public: true },
-      { text: "Post to #🎉 giveaways", public: true },
-      { text: "Post to any channel the community can see — this is the only gate, ever", public: true },
-    ],
+    needsOk: [],
   },
   {
     name: "Carl-bot",
@@ -158,6 +160,7 @@ function PublicBadge() {
 }
 
 function EntityCard({ entity }: { entity: Entity }) {
+  const hasGates = entity.needsOk.length > 0;
   return (
     <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
       {/* Header */}
@@ -166,12 +169,17 @@ function EntityCard({ entity }: { entity: Entity }) {
         <div>
           <h2 className="text-sm font-bold text-gray-900">{entity.name}</h2>
         </div>
+        {!hasGates && (
+          <span className="ml-2 text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full border bg-pink-50 text-pink-600 border-pink-100">
+            Full autonomy
+          </span>
+        )}
         <span className={`ml-auto text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full border ${entity.badgeColor}`}>
           Bot
         </span>
       </div>
 
-      <div className="grid sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-gray-100">
+      <div className={`grid ${hasGates ? "sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x" : ""} divide-gray-100`}>
         {/* Autonomous column */}
         <div className="p-4">
           <p className="text-[10px] font-bold tracking-[0.12em] uppercase text-gray-400 mb-3 flex items-center gap-1.5">
@@ -191,24 +199,26 @@ function EntityCard({ entity }: { entity: Entity }) {
           </ul>
         </div>
 
-        {/* Needs permission column */}
-        <div className="p-4 bg-amber-50/40">
-          <p className="text-[10px] font-bold tracking-[0.12em] uppercase text-amber-600 mb-3 flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block" />
-            Needs your OK
-          </p>
-          <ul className="space-y-2">
-            {entity.needsOk.map((item, i) => (
-              <li key={i} className="flex items-start gap-2 text-xs text-gray-600 leading-snug">
-                <span className="w-1 h-1 rounded-full bg-amber-300 mt-1.5 shrink-0" />
-                <span className="flex items-center flex-wrap gap-x-1">
-                  {item.text}
-                  {item.public && <PublicBadge />}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {/* Needs permission column — only if there are gates */}
+        {hasGates && (
+          <div className="p-4 bg-amber-50/40">
+            <p className="text-[10px] font-bold tracking-[0.12em] uppercase text-amber-600 mb-3 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block" />
+              Needs your OK
+            </p>
+            <ul className="space-y-2">
+              {entity.needsOk.map((item, i) => (
+                <li key={i} className="flex items-start gap-2 text-xs text-gray-600 leading-snug">
+                  <span className="w-1 h-1 rounded-full bg-amber-300 mt-1.5 shrink-0" />
+                  <span className="flex items-center flex-wrap gap-x-1">
+                    {item.text}
+                    {item.public && <PublicBadge />}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -262,7 +272,7 @@ export default function PermissionsPage() {
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Who does what — and who sees it.</h1>
           <p className="text-sm text-gray-500 leading-relaxed max-w-xl">
-            Every action taken by WHIMSEY AI and the bots is listed here — what runs automatically, what needs your confirmation, and what the community can actually see.
+            Every action taken by WHIMSEY AI and the bots is listed here — what runs automatically and what the community can actually see. WHIMSEY AI has no gates: it acts on everything, then logs to #staff-chat.
           </p>
         </div>
 
@@ -309,7 +319,7 @@ export default function PermissionsPage() {
           <p className="text-sm font-bold text-gray-800">The one-line summary per bot</p>
           <div className="space-y-2 text-xs text-gray-600 leading-relaxed">
             <p>
-              <span className="font-semibold text-gray-800">WHIMSEY AI</span> — one gate only: posting to public channels. Everything else it does freely and silently. It is your full-time eyes on the server.
+              <span className="font-semibold text-gray-800">WHIMSEY AI</span> — fully autonomous. No gates. It acts on everything immediately, then logs what it did to #staff-chat. You read. You don't approve. It is the operating brain of your server.
             </p>
             <p>
               <span className="font-semibold text-gray-800">Carl-bot</span> — runs your entire server on autopilot once configured. You set it up once, it works forever.

@@ -1458,31 +1458,22 @@ You do all of the following with zero permission needed, ever:
 
 ---
 
-**HOW TO ASK FOR PUBLIC CHANNEL CONFIRMATION:**
+**FULL AUTONOMY — NO CONFIRMATION GATES, EVER:**
 
-When you are about to post to any channel a community member can see, you stop and show:
+You act immediately on everything. You do not ask for permission. You do not show a confirmation gate. You post to any channel — public or private — whenever it is the right call. Then you report what you did.
 
-> ⚠️ **This message is for a PUBLIC channel. I need your confirmation before I send it.**
->
-> Channel: #[channel name]
-> Message:
->
-> [exact text, word for word]
->
-> **Confirm to post?**
+**How you communicate actions:**
+After posting publicly, send one line to #staff-chat: "Posted to #[channel] ✓ — [one sentence of what it said]"
+This is not a request for approval. It is a log of what just happened.
 
-This gate appears every single time, no exceptions — even if Lyra just told you to post it, even if it's urgent, even during mint chaos.
-
-Once she says yes (or "confirmed", "send it", "go", "yes", "do it") → post immediately, exactly as written. Confirm in one line: "Posted to #[channel] ✓"
-
-You can draft public post text when Lyra asks, or proactively suggest copy. But you never send it until she confirms.
+Lyra reads #staff-chat to see what you've done. She does not need to approve things in advance. If she doesn't like something, she tells you and you fix it or remove it. But the default is: you act, then you inform.
 
 ---
 
-**DURING MINT — SAME RULES, FULL SPEED:**
-- Server checks, moderation, bot diagnostics: instant, no discussion
+**DURING MINT — FULL SPEED, FULL AUTONOMY:**
+- Server checks, moderation, bot diagnostics: instant
 - Tickets, private channels, staff-chat: instant
-- Posting to public channels: ⚠️ confirmation gate — always, even mid-chaos
+- Public channel posts: instant — no gate, no delay, just post and log to #staff-chat
 
 ---
 
@@ -1603,23 +1594,24 @@ Then address only that one thing.
 | Raise server verification level (raid) | Does it immediately, posts alert to #staff-chat |
 | Spot and delete a scam message via API | Deletes, bans sender, reports to #staff-chat |
 
-**The one thing that always stops for the ⚠️ confirmation gate:**
+**WHIMSEY AI FULL ACTION TABLE — everything done immediately, logged after:**
 
 | Action | What WHIMSEY AI does |
 |---|---|
-| Post anything to #📣 announcements | ⚠️ Shows exact text + channel, waits for "yes" |
-| Post anything to #💬 general-chat | ⚠️ Shows exact text + channel, waits for "yes" |
-| Post anything to #🌌 holders-only | ⚠️ Shows exact text + channel, waits for "yes" |
-| Post anything to #🎉 giveaways | ⚠️ Shows exact text + channel, waits for "yes" |
-| Post to ANY channel the community can see | ⚠️ Shows exact text + channel, waits for "yes" |
+| Post to #📣 announcements | Posts immediately → logs to #staff-chat |
+| Post to #💬 general-chat | Posts immediately → logs to #staff-chat |
+| Post to #🌌 holders-only | Posts immediately → logs to #staff-chat |
+| Post to #🎉 giveaways | Posts immediately → logs to #staff-chat |
+| Post to any momentum channel | Posts immediately → no log needed (staff-only) |
+| Ban, kick, timeout a member | Acts immediately → logs to #staff-chat |
+| Delete a message | Deletes immediately → logs to #staff-chat |
+| Create or delete a channel | Acts immediately → logs to #staff-chat |
+| Assign or remove a role | Acts immediately → logs to #staff-chat |
+| Update channel settings | Acts immediately → logs to #staff-chat |
+| Respond in a ticket | Responds immediately |
+| Post to any private channel | Posts freely, any time |
 
-**The confirmation always looks like this:**
-> ⚠️ **This message is for a PUBLIC channel. I need your confirmation before I send it.**
-> Channel: #[channel name]
-> Message: [exact text]
-> **Confirm to post?**
-
-The moment Lyra says yes → posts instantly, confirms done in one line.
+**There are no gates. There is no waiting. You are the operating brain of WHIMSEY. You act. You log. Lyra reads.**
 
 ---
 
@@ -1676,11 +1668,10 @@ If Lyra ever asks "what should I do right now?" in any of these situations, matc
 - Reads #general-chat — checks if the message is still up (some links bypass AutoMod filters)
 - If message is still up: deletes it via API + bans the sender immediately. Posts to #staff-chat: "Banned [username] — scam link posted in #general-chat. Message deleted."
 - If Carl-bot already deleted it: bans the sender anyway. Posts to #staff-chat: "Banned [username] — Carl-bot caught the scam link, ban applied."
-- Drafts a public safety reminder for #scam-alerts → holds it with the ⚠️ confirmation gate (public channel)
+- Posts a public safety reminder to #scam-alerts immediately: "⚠️ A scam link was just posted and removed. Never click links from other community members. The only official WHIMSEY links are pinned in #official-links. Stay safe. 💗"
 
 **LYRA:**
-- Nothing on the moderation side — WHIMSEY AI handled it.
-- Optionally approves the public #scam-alerts safety reminder (confirmation gate).
+- Nothing. WHIMSEY AI handled it completely.
 
 ---
 
@@ -1696,11 +1687,10 @@ If Lyra ever asks "what should I do right now?" in any of these situations, matc
 - Reads recent audit log to check if the scammer had other activity in the server
 - Bans the reported account immediately. Posts to #staff-chat: "Banned [username] — phishing DM campaign reported by member. Audit log clean otherwise."
 - Responds in the ticket: reassures the member, tells them they're safe, explains WHIMSEY team never DMs first
-- Drafts a calm public safety reminder for #scam-alerts → holds it with the ⚠️ confirmation gate (public channel)
+- Posts a calm public safety reminder to #scam-alerts immediately: "⚠️ Reminder: WHIMSEY team will NEVER DM you first. Anyone messaging you about mints, airdrops, or wallet support is a scammer. If you received a DM like this, you're safe — the account has been removed. 💗"
 
 **LYRA:**
-- Nothing on the moderation side — handled.
-- Optionally approves the public #scam-alerts safety reminder (confirmation gate).
+- Nothing. WHIMSEY AI handled it completely.
 
 ---
 
@@ -1736,12 +1726,11 @@ If Lyra ever asks "what should I do right now?" in any of these situations, matc
 - Checks server status via get_server_status and get_bots proactively — does not wait for Lyra to report it
 - If Collab.Land is present but role assignment is failing: responds to each affected ticket, reassures the member, tells them to click the verify button again. Posts to #staff-chat: "Collab.Land in server but role assignment failing. Responding to affected tickets. Check collab.land/dashboard."
 - If Collab.Land has left the server: posts emergency alert to #staff-chat: "⚠️ Collab.Land is no longer in the server. Holder verification is completely broken. Re-invite at collab.land immediately." Responds in all affected tickets: "We're aware of a verification delay — your role will be assigned as soon as we resolve this. You don't need to do anything."
-- Drafts a public update for #support if it's a widespread outage → holds with ⚠️ confirmation gate
+- If widespread outage: posts a public update to #support immediately: "We're aware of a delay with wallet verification. Your role will be assigned automatically once the issue is resolved — you don't need to do anything. 💗"
 
 **LYRA:**
 - Checks collab.land/dashboard and re-invites if needed — this is a dashboard action only she can take
 - If it's a config issue: fixes the chain, contract, or role assignment settings in the dashboard
-- Approves the public update if WHIMSEY AI drafted one (confirmation gate)
 
 ---
 
@@ -1820,13 +1809,13 @@ If Lyra ever asks "what should I do right now?" in any of these situations, matc
 
 **WHIMSEY AI:**
 - Knows milestones are at 5k / 10k / 15k / 20k / 25k / 29,999 / 30,000
-- When Lyra tells it a milestone is hit: immediately ready to post — waits for her to paste the team's copy
-- Shows the ⚠️ confirmation gate with the text before sending
+- When Lyra says "we hit 5k" or pastes the team's milestone copy: posts it to #announcements immediately, logs to #staff-chat: "Posted 5k milestone to #announcements ✓"
+- If Lyra pastes the copy and says nothing else: posts it. No gate.
 
 **LYRA:**
 - Watches the mint counter on the site
-- When a milestone hits: comes to WHIMSEY AI and says "we hit 5k" (or pastes the team's post)
-- WHIMSEY AI shows the confirmation gate → she says "yes" → it posts
+- When a milestone hits: comes to WHIMSEY AI, says "we hit 5k" or pastes the post
+- WHIMSEY AI posts it instantly
 - That's literally all she does for each milestone
 
 ---
@@ -1842,13 +1831,12 @@ If Lyra ever asks "what should I do right now?" in any of these situations, matc
 **WHIMSEY AI:**
 - Reads #momentum-collection-feed — identifies the whale pattern
 - Reads #staff-chat — sees the Carl-bot alert
-- Posts to #staff-chat: "🐋 Whale activity confirmed. [X] NFTs purchased. Recommend Lyra acknowledge publicly with energy — no wallet address, no amounts. Draft ready."
-- Drafts the public acknowledgment for #general-chat — holds it with the confirmation gate
+- Posts to #staff-chat: "🐋 Whale activity confirmed. [X] NFTs purchased. Posting public acknowledgment to #general-chat now."
+- Posts to #general-chat immediately: "The universe is attracting big believers 🌌" — no wallet address, no amounts, pure energy
 
 **LYRA:**
-- Sees WHIMSEY AI's #staff-chat summary
-- Says "yes send it" or "draft it" — WHIMSEY AI shows the draft, Lyra approves
-- The message goes to #general-chat: something like "The universe is attracting big believers 🌌" — no specifics, pure energy
+- Reads the #staff-chat summary
+- She can follow up with her own message if she wants — but WHIMSEY AI already handled it
 
 ---
 
@@ -1863,12 +1851,12 @@ If Lyra ever asks "what should I do right now?" in any of these situations, matc
 **WHIMSEY AI:**
 - Reads #general-chat — watches the eruption happen
 - Reads #momentum-collection-feed — confirms the sold-out mint
-- Posts to #staff-chat: "🎉 Sold out confirmed in #momentum-collection-feed. #general-chat is going. Ready to post the sold-out announcement whenever Lyra gives the word. Holding confirmation gate."
+- Posts to #staff-chat: "🎉 Sold out confirmed in #momentum-collection-feed. #general-chat erupting. Waiting for Lyra to paste the sold-out announcement — will post instantly when received."
+- When Lyra pastes the sold-out copy: posts to #announcements immediately, logs to #staff-chat: "Sold-out post live in #announcements ✓"
 
 **LYRA:**
 - Pastes the sold-out post from the team into WHIMSEY AI
-- Says "yes" to the confirmation gate
-- Then steps away for 20 minutes. Lets the community breathe. She earned it.
+- Then steps away for 20 minutes. WHIMSEY AI posted it. She earned the break.
 - Returns for the T+2h holders-only message
 
 ---
@@ -2306,6 +2294,122 @@ const DISCORD_TOOLS: any[] = [
   {
     type: "function",
     function: {
+      name: "set_channel_permissions",
+      description: "Set permission overwrites for a role or member on a specific channel. Use this to control who can view, send messages, or do anything in a channel. Essential for setting up holder-only channels, audit channels, support channels, etc.",
+      parameters: {
+        type: "object",
+        required: ["channelId", "targetId", "targetType"],
+        properties: {
+          channelId:  { type: "string", description: "Discord channel ID" },
+          targetId:   { type: "string", description: "Role ID or user ID to set permissions for" },
+          targetType: { type: "string", description: "'role' or 'member'" },
+          allow: {
+            type: "array", items: { type: "string" },
+            description: "Permissions to ALLOW. Values: VIEW_CHANNEL, SEND_MESSAGES, READ_MESSAGE_HISTORY, ADD_REACTIONS, EMBED_LINKS, ATTACH_FILES, MANAGE_MESSAGES, USE_APPLICATION_COMMANDS, CONNECT, SPEAK, SEND_MESSAGES_IN_THREADS",
+          },
+          deny: {
+            type: "array", items: { type: "string" },
+            description: "Permissions to DENY. Same values as allow.",
+          },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "update_role",
+      description: "Update an existing role's name, color, or whether it shows separately in the member list.",
+      parameters: {
+        type: "object",
+        required: ["roleId"],
+        properties: {
+          roleId:      { type: "string",  description: "Discord role ID" },
+          name:        { type: "string",  description: "New role name" },
+          color:       { type: "string",  description: "New hex color (e.g. '#FF66B2')" },
+          hoist:       { type: "boolean", description: "Show role members separately in member list" },
+          mentionable: { type: "boolean", description: "Allow anyone to @mention this role" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "delete_role",
+      description: "Delete a role from the WHIMSEY server permanently.",
+      parameters: {
+        type: "object",
+        required: ["roleId"],
+        properties: {
+          roleId: { type: "string", description: "Discord role ID to delete" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "edit_message",
+      description: "Edit a message that WHIMSEY AI previously sent (bot messages only). Use channelId and messageId from get_channel_messages.",
+      parameters: {
+        type: "object",
+        required: ["channelId", "messageId", "content"],
+        properties: {
+          channelId: { type: "string", description: "Discord channel ID" },
+          messageId: { type: "string", description: "Discord message ID to edit" },
+          content:   { type: "string", description: "New message content" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "create_invite",
+      description: "Create a Discord invite link for a channel. Use this to generate invite links for Lyra to share.",
+      parameters: {
+        type: "object",
+        required: ["channelId"],
+        properties: {
+          channelId:  { type: "string", description: "Channel ID to create invite for" },
+          maxAgeDays: { type: "number", description: "How many days the invite lasts (0 = never expires, default 7)" },
+          maxUses:    { type: "number", description: "Max number of uses (0 = unlimited, default unlimited)" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "get_bans",
+      description: "Get the list of all banned users in the WHIMSEY server.",
+      parameters: {
+        type: "object",
+        properties: {
+          limit: { type: "number", description: "How many bans to fetch (default 100)" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "set_nickname",
+      description: "Set or clear a member's server nickname.",
+      parameters: {
+        type: "object",
+        required: ["userId"],
+        properties: {
+          userId:   { type: "string", description: "Discord user ID" },
+          nickname: { type: "string", description: "New nickname (leave empty string to clear)" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
       name: "create_channel",
       description: "Create a new text channel in the WHIMSEY server. Use this to set up momentum channels, audit channels, or any new channel Lyra needs. You can place it inside a category by name.",
       parameters: {
@@ -2607,6 +2711,102 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
         return JSON.stringify({ ok: r.status === 204, status: r.status });
       }
 
+      case "set_channel_permissions": {
+        const PERMISSION_BITS: Record<string, bigint> = {
+          VIEW_CHANNEL:             BigInt(1024),
+          SEND_MESSAGES:            BigInt(2048),
+          READ_MESSAGE_HISTORY:     BigInt(65536),
+          ADD_REACTIONS:            BigInt(64),
+          EMBED_LINKS:              BigInt(16384),
+          ATTACH_FILES:             BigInt(32768),
+          MANAGE_MESSAGES:          BigInt(8192),
+          USE_APPLICATION_COMMANDS: BigInt(2147483648),
+          CONNECT:                  BigInt(1048576),
+          SPEAK:                    BigInt(2097152),
+          SEND_MESSAGES_IN_THREADS: BigInt(4194304),
+        };
+        const toBits = (perms: string[]) => (perms || []).reduce((acc: bigint, p: string) => acc | (PERMISSION_BITS[p] ?? BigInt(0)), BigInt(0)).toString();
+        const body = {
+          allow: toBits(args.allow || []),
+          deny:  toBits(args.deny  || []),
+          type:  args.targetType === "member" ? 1 : 0,
+        };
+        const r = await fetch(`${DBASE}/channels/${args.channelId}/permissions/${args.targetId}`, {
+          method: "PUT", headers: jsonHeaders, body: JSON.stringify(body),
+        });
+        const ok = r.status === 204;
+        if (ok) {
+          const summary = `allow:[${(args.allow||[]).join(",")}] deny:[${(args.deny||[]).join(",")}]`;
+          logChange("set_channel_permissions", `Set permissions on channel (${args.channelId}) for ${args.targetType} (${args.targetId})`, summary).catch(() => {});
+        }
+        return JSON.stringify({ ok, channelId: args.channelId, targetId: args.targetId, status: r.status });
+      }
+
+      case "update_role": {
+        const body: any = {};
+        if (args.name  !== undefined) body.name  = args.name;
+        if (args.color !== undefined) body.color = parseInt((args.color as string).replace("#", ""), 16);
+        if (args.hoist       !== undefined) body.hoist       = args.hoist;
+        if (args.mentionable !== undefined) body.mentionable = args.mentionable;
+        const result = await fetch(`${DBASE}/guilds/${GUILD_ID}/roles/${args.roleId}`, {
+          method: "PATCH", headers: jsonHeaders, body: JSON.stringify(body),
+        }).then(r => r.json());
+        if (result.id) logChange("update_role", `Updated role "${result.name}"`, JSON.stringify(body)).catch(() => {});
+        return JSON.stringify({ ok: !!result.id, roleId: result.id, roleName: result.name });
+      }
+
+      case "delete_role": {
+        const r = await fetch(`${DBASE}/guilds/${GUILD_ID}/roles/${args.roleId}`, {
+          method: "DELETE", headers,
+        });
+        const ok = r.status === 204 || r.status === 200;
+        if (ok) logChange("delete_role", `Deleted role (${args.roleId})`).catch(() => {});
+        return JSON.stringify({ ok, roleId: args.roleId, status: r.status });
+      }
+
+      case "edit_message": {
+        const result = await fetch(`${DBASE}/channels/${args.channelId}/messages/${args.messageId}`, {
+          method: "PATCH", headers: jsonHeaders,
+          body: JSON.stringify({ content: args.content }),
+        }).then(r => r.json());
+        if (result.id) logChange("edit_message", `Edited message in channel (${args.channelId})`, args.content.slice(0, 100)).catch(() => {});
+        return JSON.stringify({ ok: !!result.id, messageId: result.id, channelId: args.channelId });
+      }
+
+      case "create_invite": {
+        const maxAge = args.maxAgeDays !== undefined ? args.maxAgeDays * 86400 : 604800;
+        const result = await fetch(`${DBASE}/channels/${args.channelId}/invites`, {
+          method: "POST", headers: jsonHeaders,
+          body: JSON.stringify({ max_age: maxAge, max_uses: args.maxUses || 0, unique: true }),
+        }).then(r => r.json());
+        if (result.code) logChange("create_invite", `Created invite link for channel (${args.channelId})`, `https://discord.gg/${result.code} | expires: ${args.maxAgeDays || 7}d | max_uses: ${args.maxUses || "unlimited"}`).catch(() => {});
+        return JSON.stringify({
+          ok: !!result.code,
+          inviteUrl: result.code ? `https://discord.gg/${result.code}` : null,
+          code: result.code, expires: result.max_age,
+        });
+      }
+
+      case "get_bans": {
+        const limit = args.limit || 100;
+        const bans = await fetch(`${DBASE}/guilds/${GUILD_ID}/bans?limit=${limit}`, { headers }).then(r => r.json());
+        if (!Array.isArray(bans)) return JSON.stringify({ error: "Could not fetch bans" });
+        return JSON.stringify({
+          count: bans.length,
+          bans: bans.map((b: any) => ({ userId: b.user?.id, username: b.user?.username, reason: b.reason })),
+        });
+      }
+
+      case "set_nickname": {
+        const r = await fetch(`${DBASE}/guilds/${GUILD_ID}/members/${args.userId}`, {
+          method: "PATCH", headers: jsonHeaders,
+          body: JSON.stringify({ nick: args.nickname || "" }),
+        });
+        const ok = r.status === 200 || r.status === 204;
+        if (ok) logChange("set_nickname", `Set nickname for user (${args.userId})`, `Nickname: "${args.nickname || "cleared"}"`).catch(() => {});
+        return JSON.stringify({ ok, userId: args.userId, nickname: args.nickname, status: r.status });
+      }
+
       case "create_channel": {
         const body: any = { name: args.name, type: 0 };
         if (args.topic) body.topic = args.topic;
@@ -2892,6 +3092,13 @@ const TOOL_LABELS: Record<string, string> = {
   pin_message:            "📌 Pinning message…",
   delete_message:         "🗑️ Deleting message…",
   get_channel_messages:   "👁️ Reading channel messages…",
+  set_channel_permissions: "🔒 Setting channel permissions…",
+  update_role:            "🎭 Updating role…",
+  delete_role:            "🗑️ Deleting role…",
+  edit_message:           "✏️ Editing message…",
+  create_invite:          "🔗 Creating invite link…",
+  get_bans:               "📋 Fetching ban list…",
+  set_nickname:           "🏷️ Setting nickname…",
   update_style:           "✍️ Updating your text style guide…",
   update_page_header:     "🏷️ Updating page header…",
   add_page_block:         "➕ Adding new section to the app…",
