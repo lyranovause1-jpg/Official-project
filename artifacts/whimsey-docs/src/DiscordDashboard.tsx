@@ -49,18 +49,18 @@ function StatusPill({ ok }: { ok: boolean }) {
 function Stat({ label, value, note }: { label: string; value: string | number; note?: string }) {
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-      <p className="text-2xl font-bold text-gray-900">{value}</p>
-      <p className="text-xs font-semibold text-gray-500 mt-0.5">{label}</p>
-      {note && <p className="text-[10px] text-gray-400 mt-0.5">{note}</p>}
+      <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1">{label}</p>
+      <p className="text-2xl font-bold text-gray-900 leading-none">{value}</p>
+      {note && <p className="text-[11px] text-gray-400 mt-1">{note}</p>}
     </div>
   );
 }
 
 function Section({ title, children, action }: { title: string; children: React.ReactNode; action?: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-      <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-        <h2 className="text-sm font-semibold text-gray-900">{title}</h2>
+    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 bg-gray-50/60">
+        <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{title}</h2>
         {action}
       </div>
       <div className="px-5 py-4">{children}</div>

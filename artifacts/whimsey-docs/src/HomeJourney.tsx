@@ -136,56 +136,60 @@ export default function HomeJourney() {
       <main className="max-w-xl mx-auto px-5 py-10 space-y-8">
 
         {/* ── Greeting ── */}
-        <div>
+        <div className="border-b border-gray-200 pb-8">
+          <p className="text-xs font-semibold text-pink-500 uppercase tracking-widest mb-2">Your WHIMSEY Setup</p>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Hey Lyra 🌷</h1>
           <p className="text-gray-500 text-sm leading-relaxed">
-            Setting up Discord for the first time is genuinely hard. You're not confused because you're doing it wrong — you're confused because it's a lot. That's completely normal.
-          </p>
-          <p className="text-pink-600 text-sm font-medium mt-2">
-            One step at a time. Just focus on what's in front of you.
+            Setting up Discord for the first time is genuinely hard. You're not confused because you're doing it wrong — you're confused because it's a lot. That's completely normal. One step at a time.
           </p>
         </div>
 
         {/* ── Progress ── */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
-          <div className="flex items-end justify-between mb-3">
-            <div>
-              <p className="text-xs text-gray-400 font-medium uppercase tracking-wide mb-0.5">Your progress</p>
-              <p className="text-2xl font-bold text-gray-900">{doneCount} <span className="text-gray-300 font-light">/ {STEPS.length}</span></p>
-              <p className="text-xs text-gray-500">steps complete</p>
+        <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Setup progress</p>
+            <span className="text-xs font-semibold text-pink-600 bg-pink-50 border border-pink-100 px-2 py-0.5 rounded-full">{pct}% complete</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="flex-1">
+              <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-pink-500 rounded-full transition-all duration-700"
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
             </div>
-            <span className="text-3xl font-bold text-pink-500">{pct}%</span>
+            <span className="text-sm font-bold text-gray-900 shrink-0">{doneCount} / {STEPS.length}</span>
           </div>
-          <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-pink-500 to-violet-500 rounded-full transition-all duration-700"
-              style={{ width: `${pct}%` }}
-            />
-          </div>
-          <p className="text-[11px] text-gray-400 mt-2">
-            {status.memberCount > 0 && `${status.memberCount} members · `}
-            {status.channelCount > 0 && `${status.channelCount} channels · `}
-            You're getting there 💗
-          </p>
+          {(status.memberCount > 0 || status.channelCount > 0) && (
+            <div className="flex items-center gap-3 mt-3 pt-3 border-t border-gray-100">
+              {status.memberCount > 0 && <span className="text-[11px] text-gray-400">{status.memberCount} members</span>}
+              {status.memberCount > 0 && status.channelCount > 0 && <span className="text-gray-200">·</span>}
+              {status.channelCount > 0 && <span className="text-[11px] text-gray-400">{status.channelCount} channels</span>}
+            </div>
+          )}
         </div>
 
         {/* ── Focus card ── */}
         {currentStep && (
-          <div className="bg-white rounded-2xl border border-pink-200 shadow-sm overflow-hidden">
-            <div className="bg-gradient-to-r from-pink-500 to-violet-600 px-5 py-2">
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-pink-100">Focus on this next</p>
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="flex items-center gap-2 px-5 py-3 border-b border-gray-100 bg-gray-50">
+              <span className="w-2 h-2 rounded-full bg-pink-500" />
+              <p className="text-xs font-semibold text-gray-700 uppercase tracking-widest">Focus on this next</p>
             </div>
             <div className="p-5">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-xl bg-pink-50 border border-pink-100 flex items-center justify-center text-xl">
+              <div className="flex items-start gap-4 mb-4">
+                <div className="w-9 h-9 rounded-lg bg-pink-50 border border-pink-100 flex items-center justify-center text-lg shrink-0">
                   {currentStep.emoji}
                 </div>
-                <h2 className="text-base font-bold text-gray-900">{currentStep.title}</h2>
+                <div>
+                  <h2 className="text-base font-bold text-gray-900 mb-1">{currentStep.title}</h2>
+                  <p className="text-sm text-gray-500 leading-relaxed">{currentStep.simple}</p>
+                </div>
               </div>
-              <p className="text-sm text-gray-600 leading-relaxed mb-4">{currentStep.simple}</p>
               {currentStep.action && (
                 <Link href={`/ai?q=${encodeURIComponent(currentStep.action)}`}>
-                  <button className="w-full py-2.5 bg-pink-500 hover:bg-pink-600 text-white rounded-xl text-sm font-semibold transition-colors shadow-sm">
+                  <button className="w-full py-2.5 bg-pink-500 hover:bg-pink-600 text-white rounded-xl text-sm font-semibold transition-colors">
                     Get help with this →
                   </button>
                 </Link>

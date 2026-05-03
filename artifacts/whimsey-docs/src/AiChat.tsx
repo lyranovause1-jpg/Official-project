@@ -328,29 +328,24 @@ export default function AiChat() {
       {/* ── Messages ── */}
       <main className="flex-1 overflow-y-auto px-5 py-6">
         {!hasHistory ? (
-          <div className="flex flex-col items-center justify-center h-full text-center gap-5 pb-8 max-w-md mx-auto">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-500 to-violet-600 flex items-center justify-center text-2xl font-bold text-white shadow-lg">
-              W
-            </div>
-            <div>
-              <h1 className="text-lg font-bold text-gray-900 mb-1">Hey, Lyra Nova! 🌷</h1>
+          <div className="flex flex-col justify-center h-full max-w-lg mx-auto pb-8">
+            <div className="mb-6">
+              <p className="text-xs font-semibold text-pink-500 uppercase tracking-widest mb-2">WHIMSEY AI</p>
+              <h1 className="text-xl font-bold text-gray-900 mb-2">Hey, Lyra Nova! 🌷</h1>
               <p className="text-sm text-gray-500 leading-relaxed">
-                I know your entire WHIMSEY server — every role, every bot, every channel.
-                I can also <strong className="text-gray-700">act on your server in real time</strong> — post messages, create roles, check what's missing.
+                I know your entire WHIMSEY server — every role, every bot, every channel. I can also read and act on your server in real time. Just ask.
               </p>
             </div>
-            <div className="flex flex-wrap justify-center gap-1.5 max-w-sm">
-              {["Post to Discord", "Create roles", "Check server", "Bot health", "Audit log", "Edit channels"].map(b => (
-                <span key={b} className="text-[11px] bg-white border border-gray-200 rounded-full px-2.5 py-1 text-gray-500 font-medium shadow-sm">{b}</span>
-              ))}
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
-              {SUGGESTED.map(q => (
-                <button key={q} onClick={() => send(q)}
-                  className="text-left text-xs bg-white border border-gray-200 hover:border-pink-300 hover:bg-pink-50 rounded-xl px-4 py-3 text-gray-700 transition-colors shadow-sm font-medium">
-                  {q}
-                </button>
-              ))}
+            <div className="border-t border-gray-100 pt-5">
+              <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-3">Try asking</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {SUGGESTED.map(q => (
+                  <button key={q} onClick={() => send(q)}
+                    className="text-left text-sm bg-white border border-gray-200 hover:border-pink-300 hover:bg-pink-50/50 rounded-xl px-4 py-3 text-gray-700 transition-colors font-medium leading-snug">
+                    {q}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         ) : (
