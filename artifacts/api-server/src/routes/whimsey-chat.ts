@@ -2139,6 +2139,21 @@ const DISCORD_TOOLS: any[] = [
       },
     },
   },
+  {
+    type: "function",
+    function: {
+      name: "update_style",
+      description: "Update Lyra's saved text style guide for WHIMSEY AI message drafting. Use this when Lyra asks you to change how you write for public channels or ticket replies — for example 'be more casual', 'use fewer emojis', 'write shorter ticket replies', or 'update my style to X'. You can update publicChannel style, ticketChannel style, or both at once. The new style takes effect immediately on all future drafts.",
+      parameters: {
+        type: "object",
+        properties: {
+          publicChannel: { type: "string", description: "New style guide for public channel messages. Include tone, rules, formatting preferences, emoji guidelines, and how to open/close messages. Leave undefined to keep current." },
+          ticketChannel: { type: "string", description: "New style guide for ticket/support channel replies. Include tone, length, formality, step formatting, and closing conventions. Leave undefined to keep current." },
+          summary: { type: "string", description: "A short human-readable summary of what changed, to confirm back to Lyra (e.g. 'Made public posts shorter and removed emoji rules')" },
+        },
+      },
+    },
+  },
 ];
 
 // ── Tool execution ─────────────────────────────────────────────────────────
@@ -2330,6 +2345,27 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
         return JSON.stringify({ channel: channelParam, count: mapped.length, messages: mapped });
       }
 
+      case "update_style": {
+        if (typeof args.publicChannel === "string" && args.publicChannel.trim()) {
+          styleState.publicChannel = args.publicChannel.trim();
+        }
+        if (typeof args.ticketChannel === "string" && args.ticketChannel.trim()) {
+          styleState.ticketChannel = args.ticketChannel.trim();
+        }
+        return JSON.stringify({
+          ok: true,
+          updated: {
+            publicChannel: typeof args.publicChannel === "string",
+            ticketChannel: typeof args.ticketChannel === "string",
+          },
+          summary: args.summary || "Style updated",
+          currentStyle: {
+            publicChannel: styleState.publicChannel.slice(0, 120) + "…",
+            ticketChannel: styleState.ticketChannel.slice(0, 120) + "…",
+          },
+        });
+      }
+
       default:
         return JSON.stringify({ error: `Unknown tool: ${name}` });
     }
@@ -2351,6 +2387,7 @@ const TOOL_LABELS: Record<string, string> = {
   kick_member: "🚪 Kicking member…",
   ban_member: "🔨 Banning member…",
   get_channel_messages: "👁️ Reading channel messages…",
+  update_style: "✍️ Updating your text style guide…",
 };
 
 // ── POST /api/whimsey/chat ────────────────────────────────────────────────

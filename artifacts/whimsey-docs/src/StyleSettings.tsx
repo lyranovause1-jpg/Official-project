@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "wouter";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -29,12 +29,56 @@ const EXAMPLES = {
 type StyleKey = "publicChannel" | "ticketChannel";
 
 export default function StyleSettings() {
-  const [style, setStyle]       = useState<StyleState>({ publicChannel: "", ticketChannel: "" });
-  const [saving, setSaving]     = useState<StyleKey | null>(null);
-  const [saved, setSaved]       = useState<StyleKey | null>(null);
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState<string | null>(null);
+  const [style, setStyle]         = useState<StyleState>({ publicChannel: "", ticketChannel: "" });
+  const [saving, setSaving]       = useState<StyleKey | null>(null);
+  const [saved, setSaved]         = useState<StyleKey | null>(null);
+  const [loading, setLoading]     = useState(true);
+  const [error, setError]         = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<StyleKey>("publicChannel");
+
+  // Preview state
+  const [previewPrompt, setPreviewPrompt] = useState("");
+  const [previewOutput, setPreviewOutput] = useState("");
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const previewRef = useRef<HTMLDivElement | null>(null);
+
+  const runPreview = async () => {
+    if (!previewPrompt.trim()) return;
+    setPreviewLoading(true);
+    setPreviewOutput("");
+    try {
+      const context = activeTab === "publicChannel"
+        ? `You are about to draft a message for a PUBLIC channel. Follow the public channel style guide above exactly.`
+        : `You are about to draft a TICKET reply. Follow the ticket channel style guide above exactly.`;
+      const r = await fetch(`${BASE}/api/whimsey/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: `${context}\n\nDraft this for me now: ${previewPrompt.trim()}` }],
+        }),
+      });
+      if (!r.body) { setPreviewLoading(false); return; }
+      const reader = r.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
+        const lines = buf.split("\n");
+        buf = lines.pop() ?? "";
+        for (const line of lines) {
+          if (!line.startsWith("data:")) continue;
+          try {
+            const d = JSON.parse(line.slice(5).trim());
+            if (d.token) setPreviewOutput(p => p + d.token);
+          } catch { /* ignore */ }
+        }
+      }
+    } catch { /* silent */ }
+    setPreviewLoading(false);
+    setTimeout(() => previewRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }), 100);
+  };
 
   const fetchStyle = useCallback(async () => {
     try {
@@ -246,6 +290,75 @@ export default function StyleSettings() {
             ))}
           </>
         )}
+
+        {/* ── Live Preview ── */}
+        <div className="rounded-2xl bg-white border border-gray-100 overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-50 flex items-center gap-2">
+            <span className="text-base">🔭</span>
+            <div>
+              <p className="text-xs font-bold text-gray-800">Test your style</p>
+              <p className="text-[10px] text-gray-400 mt-0.5">
+                Type a prompt and see WHIMSEY AI draft it using your current {activeTab === "publicChannel" ? "public channel" : "ticket"} style guide
+              </p>
+            </div>
+          </div>
+          <div className="p-5 space-y-3">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={previewPrompt}
+                onChange={e => setPreviewPrompt(e.target.value)}
+                onKeyDown={e => { if (e.key === "Enter" && !previewLoading) runPreview(); }}
+                placeholder={
+                  activeTab === "publicChannel"
+                    ? "e.g. write a mint announcement, welcome post for new members…"
+                    : "e.g. member asking why their wallet isn't verifying, refund question…"
+                }
+                className="flex-1 text-xs bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-violet-300 focus:border-transparent placeholder:text-gray-300"
+              />
+              <button
+                onClick={runPreview}
+                disabled={!previewPrompt.trim() || previewLoading}
+                className="shrink-0 px-4 py-2.5 bg-violet-600 hover:bg-violet-700 disabled:bg-violet-200 text-white text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5"
+              >
+                {previewLoading ? (
+                  <>
+                    <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" className="animate-spin">
+                      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" strokeLinecap="round"/>
+                    </svg>
+                    Drafting…
+                  </>
+                ) : "Preview draft"}
+              </button>
+            </div>
+
+            {/* Output box */}
+            {(previewOutput || previewLoading) && (
+              <div ref={previewRef} className="rounded-xl bg-gray-50 border border-gray-100 p-4">
+                <div className="flex items-center gap-2 mb-2.5">
+                  <span className="text-[10px] font-bold tracking-widest uppercase text-gray-400">
+                    WHIMSEY AI draft
+                  </span>
+                  {previewLoading && (
+                    <span className="text-[10px] text-violet-500 font-medium animate-pulse">writing…</span>
+                  )}
+                  {!previewLoading && previewOutput && (
+                    <button
+                      onClick={() => { setPreviewOutput(""); setPreviewPrompt(""); }}
+                      className="ml-auto text-[10px] text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+                <p className="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">
+                  {previewOutput}
+                  {previewLoading && <span className="inline-block w-0.5 h-4 bg-violet-400 animate-pulse ml-0.5 align-text-bottom" />}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
 
         {/* How it works */}
         <div className="rounded-2xl bg-white border border-gray-100 p-5 space-y-3">
