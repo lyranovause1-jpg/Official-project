@@ -4,6 +4,7 @@ import remarkGfm from "remark-gfm";
 import { Switch, Route, Link } from "wouter";
 import docRaw from "@docs/WHIMSEY_DISCORD_SETUP.md?raw";
 import AiChat from "./AiChat";
+import DiscordDashboard from "./DiscordDashboard";
 
 type Mode = "read" | "do" | "reference" | "mixed" | null;
 type Heading = { id: string; text: string; clean: string; level: number; mode: Mode };
@@ -225,6 +226,14 @@ function DocsPage() {
           className="hidden sm:block w-44 text-xs bg-muted border border-border rounded-lg px-3 py-1.5 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/30"
         />
 
+        {/* Discord Dashboard button */}
+        <Link href="/discord">
+          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-500 text-white text-xs font-semibold shadow-sm hover:shadow-md hover:scale-105 active:scale-95 transition-all shrink-0">
+            <span>🌌</span>
+            <span className="hidden sm:inline">Live Server</span>
+          </button>
+        </Link>
+
         {/* AI Chat button */}
         <Link href="/ai">
           <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-pink-500 to-violet-500 text-white text-xs font-semibold shadow-sm hover:shadow-md hover:scale-105 active:scale-95 transition-all shrink-0">
@@ -316,6 +325,7 @@ export default function App() {
   return (
     <Switch>
       <Route path="/ai" component={AiChat} />
+      <Route path="/discord" component={DiscordDashboard} />
       <Route component={DocsPage} />
     </Switch>
   );
