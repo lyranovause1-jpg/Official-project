@@ -42,3 +42,9 @@ externalPort = 3002
 [[ports]]
 localPort = 22327
 externalPort = 3000
+
+[userenv]
+
+[userenv.shared]
+OWNER_ACCESS_CODE = "LYRA-AW35F5"
+MANAGER_ACCESS_CODE = "ARIA-B3SE97"
