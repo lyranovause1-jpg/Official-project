@@ -953,19 +953,29 @@ Run the first Space at T+48 hours post-mint. Lyra speaks. Mods and key community
 
 ---
 
-### KNOWN WHIMSEY DECISIONS (confirmed by Lyra)
+### KNOWN WHIMSEY DECISIONS — ALL CONFIRMED BY LYRA
 
-- Milestone posts: every 5,000 mints (5k, 10k, 15k, 20k, 25k, 29,999, SOLD OUT)
-- Whale policy: privately monitor, publicly acknowledge energy without naming wallets
-- Sold out post tone: pure celebration + the moment the company announcement begins
-- Post-mint giveaway: T+24 hours after sold out. Prize TBD (reserve NFT + special role). Carl-bot handles mechanics.
-- Holder-only first message: content TBD — Lyra is still deciding what founding members learn first
-- Company announcement: begins after mint is fully sold out, following the 4-step sequence above
-- Hybrid governance model (not full DAO): Lyra leads company decisions, community shapes community decisions
-- IRL events: TBD (India-first vs global to be decided)
-- Royalty %: TBD — Lyra to confirm with developer (5–7.5% standard, 10% ambitious but defensible)
-- Reserve NFTs: TBD — Lyra to decide (standard is 2–5% of supply = 600–1,500 WH IMSEYs)
-- Mod team: TBD — Lyra to identify candidates from within the community
+**Royalty:** 8% on every secondary sale. Set in smart contract before deployment. This is slightly above standard (5–7.5%) and reflects that WHIMSEY is building a company, not just a project. Holders who believe in the long-term vision understand this. Tell developer: 8% royalty, enforced on-chain.
+
+**Reserve NFTs:** 3% of supply = 900 NFTs held back from public mint. These are for future strategic use: giveaway prizes, collab prizes, team compensation, 1/1 treasury, partnerships, and press kits. Never sell all at once. Treat the reserve as the company's war chest.
+
+**Mod team:** Currently just Lyra + the bots. No human mods yet. The bots (Carl-bot, Auth, Collab.Land, Ticket Tool, NFT Tracker) handle operations. This will expand later — do not pressure Lyra on this topic until she brings it up.
+
+**The company:** The company IS called WHIMSEY. Same name as the collection. No separate parent company name. Path: WHIMSEY the NFT collection → WHIMSEY the entertainment company. Exactly the Doodles model (Doodles LLC → Doodles the company). The brand, the collection, and the company are all one name: WHIMSEY.
+
+**IRL events:** No current plans. Do not suggest IRL events unless Lyra specifically asks. When she is ready, options are India-first, global Web3 city (Dubai, Singapore, NYC), or hybrid digital+physical. But this topic is off the table until she raises it.
+
+**Milestone posts:** Every 5,000 mints — posts at 5,000 / 10,000 / 15,000 / 20,000 / 25,000 / 29,999 ("ONE LEFT 🌌") / 30,000 (SOLD OUT). 7 posts total, all pre-written by the drafting team, Lyra pastes and posts at each milestone.
+
+**Whale policy:** Privately monitor via Carl-bot alert to @Mod in #staff-chat. Publicly acknowledge the energy without naming wallets or amounts. Lyra posts something like "The universe is attracting big believers 🌌" when a significant whale appears.
+
+**Sold out post tone:** Pure celebration first. Then the company announcement begins — 4-step sequence: (1) celebration, (2) T+2h holders-only hint, (3) T+24h public company vision post, (4) T+1 week first concrete milestone.
+
+**Post-mint giveaway:** T+24 hours after sold out. Carl-bot runs it in #giveaways. Prize and specific mechanics to be decided by Lyra when the time comes.
+
+**Holder-only first message:** Content not yet decided. Lyra will determine what founding members learn first when she is ready to write it.
+
+**Governance:** Hybrid model — NOT a full DAO. Lyra and team make company and brand decisions. Community shapes community-facing decisions (events, collabs, giveaway prizes). Frame as: "The WHIMSEY universe is built by the founders and shaped by the community."
 
 ---
 
