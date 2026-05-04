@@ -4488,3 +4488,113 @@ WHIMSEY AI's `update_doc_section` tool makes this possible without Lyra ever nee
 
 The goal: by the time WHIMSEY is a year old, this document should read like the real operating manual of a running company — not just a setup guide for something that hasn't started yet.
 
+---
+
+## 🗂️ Private AI Conversation Archive
+
+To preserve important founder conversations outside the app chat interface, WHIMSEY includes a private Discord archive channel:
+
+- **Channel:** `#whimsey-ai-history`
+- **Location:** `🔒 | STAFF`
+- **Purpose:** Store important conversations, summaries, decisions, planning notes, and operational context between Lyra and WHIMSEY AI
+- **Visibility:** Private — intended for Lyra and internal operations only
+
+### How it should be used
+- Save important planning conversations here when they need to be revisited later
+- Store summaries of key strategy discussions
+- Keep important founder context accessible even if the app chat thread is not available
+- Use this as a reference archive, not as a public-facing channel
+
+This channel is a backup memory layer for WHIMSEY operations. It does not replace the app chat interface, but it ensures important conversations can be preserved inside Discord itself.
+
+---
+
+## 💬 WHIMSEY AI HISTORY ARCHIVE
+
+A private text channel called **#whimsey-ai-history** exists as Lyra's internal archive with WHIMSEY AI.
+
+**Purpose:**
+- Store important conversations between Lyra and WHIMSEY AI
+- Keep planning notes, decisions, and summaries in one place
+- Reflect section-by-section build progress so Lyra can revisit what happened
+- Preserve operational context inside Discord even when Lyra is away
+
+**Privacy:**
+- `@everyone` = **View Channel ❌ Deny**
+- `WHIMSEY AI` = **View Channel ✅ Allow**, **Send Messages ✅ Allow**, **Read Message History ✅ Allow**
+- This channel should remain private to Lyra and internal ops only
+
+**Operating rule:**
+After each meaningful build section or planning segment, WHIMSEY AI posts a short reflection or summary in **#whimsey-ai-history** so Lyra has an internal running record inside Discord.
+
+---
+
+## 🤖 WHIMSEY AI Conversation Archive
+
+Private archive channel added: **#whimsey-ai-history**
+
+**Purpose:** Store dated summaries and reports of Lyra ↔ WHIMSEY AI conversations inside Discord so important planning, decisions, and progress notes stay accessible in-server.
+
+**Access:** Private internal archive channel. Visible only to Lyra / Admin-level access and WHIMSEY AI.
+
+**Operating rule:** After each meaningful conversation section, WHIMSEY AI should post a timestamped summary/report in **#whimsey-ai-history**. This channel is an internal archive, not a public community channel.
+
+**Important limitation:** This is a manual/operational archive inside Discord. It does not automatically sync every app message unless WHIMSEY AI posts the summary/report there.
+
+---
+
+## 🗃️ WHIMSEY AI Conversation Archive Policy
+
+A private internal archive channel exists for Lyra and WHIMSEY AI to preserve important working sessions, planning summaries, operational notes, and decision recaps.
+
+### Archive channel
+- **Channel name:** `#whimsey-ai-history`
+- **Purpose:** store session summaries, planning notes, important conversation recaps, and structured records of meaningful work with Lyra
+- **Visibility:** private internal channel only
+
+### Archive operating rule
+WHIMSEY AI should create a dated session note after each important conversation or work session, especially when the conversation includes:
+- strategic planning
+- Discord build progress
+- post-mint operations planning
+- X / content strategy planning
+- major questions and answers Lyra may want to revisit
+- confirmed decisions or clarified operating rules
+
+### Format for archive entries
+Each archive entry should be written like a short internal report and include:
+- date
+- approximate time or session window when relevant
+- session topic
+- what Lyra asked
+- what WHIMSEY AI advised or did
+- any confirmed next steps
+- any decisions logged separately
+
+### Important limitation
+This Discord archive channel is a manual/internal record created by WHIMSEY AI. It is not a guaranteed raw transcript of every app chat message. It is the official running archive of meaningful sessions and summaries.
+
+---
+
+## Session Note — 2026-05-04 — Discord Build Start, Autopilot Expectations, and Chat Archive Policy
+
+### Summary
+This session captured Lyra's decision to begin the Discord server build now as a one-time foundational setup, with WHIMSEY AI handling ongoing operational oversight afterward. It also established the intended use of autopilot during periods when Lyra is away, and formalized the practice of creating session-note style documentation for important conversations.
+
+### What was discussed
+- Lyra confirmed the Discord server build will happen across two days.
+- The build is intended to be done once, as the foundational setup for the server.
+- After the build, WHIMSEY AI is expected to handle ongoing operations, with public posting rules depending on whether autopilot is active.
+- Lyra said X strategy and scheduling will be addressed after Discord is finished, because Discord is the current priority.
+- Lyra requested a way for important conversations to be preserved.
+- A private Discord archive channel named `#whimsey-ai-history` was established as the internal archive destination for important reports and summaries.
+- The documentation standard was updated so important conversations can be preserved as dated session notes rather than relying on raw transcript permanence.
+
+### Operating understanding confirmed in this session
+- Discord is the current priority.
+- X planning happens after Discord is built.
+- The Discord build is treated as the first and last major manual build pass.
+- WHIMSEY AI will maintain important internal records as session-style notes for meaningful conversations.
+
+### Archive policy from this session
+Important conversations should be preserved as structured reports with dates, titles, and summary sections. These notes belong both in the guide document and, when possible, in the private `#whimsey-ai-history` channel inside Discord.
