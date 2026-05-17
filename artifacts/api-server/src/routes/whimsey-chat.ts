@@ -326,7 +326,8 @@ After this step, a fresh joiner with no roles sees literally nothing. ✅ That's
 - Boosts: #audit-boosts
 - Bot logs: #log-auth-bot (Auth verification events), #log-vulcan (Vulcan wallet/NFT events), #log-ticket-tool (Ticket Tool opens/closes/transcripts), #log-carlbot (Carl-bot AutoMod hits and scheduled posts)
 
-**11. 📈 | MOMENTUM** — PRIVATE. Team + bots can post (unlike AUDITS, humans CAN comment here). Contains:
+**11. 📈 | MOMENTUM** — PRIVATE. Team + bots can post (unlike AUDITS, humans CAN comment here). Contains 9 channels:
+- #momentum-member-joins (⚠️ TEAM EXCEPTION: System Messages target — Discord's join/leave/boost notifications post here privately, NOT to a public channel)
 - #momentum-daily-recap (Carl-bot 23:55 IST daily)
 - #momentum-weekly-recap (Carl-bot Sunday 23:55 IST)
 - #momentum-monthly-recap (Carl-bot last day of month 23:55 IST)
@@ -371,7 +372,7 @@ After this step, a fresh joiner with no roles sees literally nothing. ✅ That's
 #### Bot 4: Carl-bot (invite LAST, configure after all others are live)
 - **Purpose:** Autopilot brain. 30+ logging bindings, AutoMod, scheduled reports, welcome system, reaction roles, anti-raid.
 - **Invite permissions:** Manage Roles, Manage Channels, Manage Messages, Manage Nicknames, Manage Webhooks, Kick, Ban, Timeout, View Channels, Send Messages, Embed Links, Attach Files, Add Reactions, Read Message History, Use External Emojis, Use Application Commands, View Audit Log
-- **Hierarchy slot:** Position #3 (just below Moderator ☁️, above Auth)
+- **Hierarchy slot:** Position #5 (just below Moderator ☁️, above Auth) — ⚠️ TEAM EXCEPTION: WHIMSEY BUILDING (#1) and WHIMSEY AI (#2) sit above Admin 💗, so Carl-bot is #5 not #3
 - **Dashboard:** carl.gg → Login → pick WHIMSEY
 - **Settings:** Prefix = ?, Embed color = #FFB6C1 (brand pink), Delete commands after use = ON, Mention prefix = ON
 
@@ -439,7 +440,7 @@ After this step, a fresh joiner with no roles sees literally nothing. ✅ That's
 - **Purpose:** Real-time on-chain $CNDY feed → #momentum-collection-feed
 - **Bots:** nftsalesbot.com (ETH/Polygon) OR hashlist.com (Solana)
 - **Invite permissions (ONLY):** View Channels, Send Messages, Embed Links, Attach Files, Read Message History, Use External Emojis. UNCHECK everything else.
-- **Hierarchy slot:** Position #7 (below Ticket Tool, above Holder 🌌) — after initial 4-bot setup this becomes slot #6 or #7 depending on NFT Tracker's position
+- **Hierarchy slot:** Position #9 (below Ticket Tool, above Holder 🌌) — ⚠️ TEAM EXCEPTION: WHIMSEY BUILDING (#1) and WHIMSEY AI (#2) sit at top, so NFT Tracker is #9
 - **Strip ALL server-wide permissions** — channel-allow only in #momentum-collection-feed
 - **Channel override in #momentum-collection-feed:** View Channel ✅, Send Messages ✅, Embed Links ✅, Attach Files ✅, Read Message History ✅, Use External Emojis ✅
 - **Dashboard config:** Contract = $CNDY contract, Output = #momentum-collection-feed, Events = ✅ Sales ✅ Listings ✅ De-listings ✅ Transfers ✅ Mints, Currency = ETH primary / INR secondary, Embed style = rich with NFT image, Marketplaces = OpenSea, Magic Eden, Blur, LooksRare, X2Y2 all ✅
@@ -2112,7 +2113,8 @@ You are not just the Discord server operator. You have full authority over every
 - **Guide doc:** update_doc_section (append new sections or replace existing ones in WHIMSEY_DISCORD_SETUP.md — do this proactively whenever Lyra makes a decision that belongs permanently in the guide)
 
 **📈 | MOMENTUM CHANNELS — Your Full Responsibility:**
-You have complete read and write authority over all 8 momentum channels. These are YOUR domain:
+You have complete read and write authority over all 9 momentum channels. These are YOUR domain:
+- #momentum-member-joins — ⚠️ TEAM EXCEPTION: Discord System Messages target (join/leave/boost notifications post here privately, NOT to a public channel)
 - #momentum-daily-recap — you post the daily summary at 23:55 IST (and can post anytime Lyra asks)
 - #momentum-weekly-recap — weekly wrap every Sunday
 - #momentum-monthly-recap — monthly recap last day of month
@@ -2125,7 +2127,7 @@ You have complete read and write authority over all 8 momentum channels. These a
 When Lyra asks you to update a momentum channel — post a recap, change the topic, set a new slowmode, or anything — you do it immediately using send_discord_message or update_channel. No confirmation gate needed for momentum channels (they're private, staff-only).
 
 **📋 | AUDITS CHANNELS — Read only:**
-You can READ all 17 audit channels but you never POST to them (they are tamper-free bot-write-only logs). You monitor them and report to Lyra.
+You can READ all 21 audit channels but you never POST to them (they are tamper-free bot-write-only logs). You monitor them and report to Lyra. The 4 bot-log channels (#log-auth-bot, #log-vulcan, #log-ticket-tool, #log-carlbot) are included in that 21.
 
 **Everything is tracked:** Every mutation you make — every message sent, every channel created, every role assigned, every member kicked — is automatically logged to the WHIMSEY change log so Lyra always knows exactly what you did and when.
 

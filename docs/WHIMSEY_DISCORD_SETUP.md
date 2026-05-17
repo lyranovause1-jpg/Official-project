@@ -372,8 +372,8 @@ Just create them with name + color. Do NOT touch any permissions yet.
 #### ☑️ STEP 9 — Create the 4 new private categories + ~50 channels (~60 min) — Section 10 + 24/24A/24B/25
 
 - [ ] 9.1 Create category `🔒 | STAFF` (private). Add channels per section 24 (e.g. `#staff-chat`, `#mod-log`, `#admin-only`, etc.).
-- [ ] 9.2 Create category `📋 | AUDITS` (private). Add **all 20** audit channels per section 24A (`#audit-mod-actions`, `#audit-joins-leaves`, `#audit-message-edits`, etc.).
-- [ ] 9.3 Create category `📈 | MOMENTUM` (private). Add **all 8** momentum channels per section 24B (`#momentum-server-stats`, `#momentum-collection-feed`, `#momentum-daily-recap`, etc.).
+- [ ] 9.2 Create category `📋 | AUDITS` (private). Add **all 21** audit channels per section 24A (`#audit-mod-actions`, `#audit-joins-leaves`, `#audit-message-edits`, `#log-auth-bot`, `#log-vulcan`, `#log-ticket-tool`, `#log-carlbot`, etc.).
+- [ ] 9.3 Create category `📈 | MOMENTUM` (private). Add **all 9** momentum channels per section 24B (`#momentum-member-joins`, `#momentum-server-stats`, `#momentum-collection-feed`, `#momentum-daily-recap`, etc.).
 - [ ] 9.4 Create category `🎫 | TICKETS` (private). Add channels per section 25 (`#open-tickets`, `#ticket-archive`, etc.).
 - [ ] 9.5 Verify all 4 categories show a 🔒 lock icon next to their name (means private).
 - [ ] 9.6 Verify the 8 PUBLIC categories from your existing structure are still there: `💗 | VERIFY`, `🌊 | START HERE`, `❄️ | THE UNIVERSE`, `📌 | COMMUNITY`, `🌌 | HOLDERS ONLY`, `🌷 | COLLECTORS`, `🩵 | EVENTS`, `☁️ | SUPPORT`.
@@ -445,7 +445,7 @@ Only apply overrides to the channels listed in section 26 — not every channel.
 #### ☑️ STEP 16 — Confirm final bot role positioning (~5 min) — Section 15
 
 - [ ] 16.1 Open Server Settings → Roles.
-- [ ] 16.2 Verify the top-down order matches section 15 exactly: `Admin 💗` → `Moderator ☁️` → `Carl-bot` → `Auth` → `Vulcan` → `Ticket Tool` → (NFT Tracker will go here at #6 in Phase C) → `Holder 🌌` → `Verified 🩵` → `@everyone`.
+- [ ] 16.2 Verify the top-down order matches section 15 exactly: `WHIMSEY BUILDING` (#1) → `WHIMSEY AI` (#2) → `Admin 💗` (#3) → `Moderator ☁️` (#4) → `Carl-bot` (#5) → `Auth` (#6) → `Vulcan` (#7) → `Ticket Tool` (#8) → (NFT Tracker will go here at #9 in Phase C) → `Holder 🌌` → `Verified 🩵` → `@everyone`.
 - [ ] 16.3 If any role is out of place, drag it. Bot order matters — a bot can only assign roles below itself.
 
 #### ☑️ STEP 17 — Pre-launch test with a 2nd Discord account (~30 min) — Section 29
@@ -530,7 +530,7 @@ Open section 28 side-by-side. Each event-binding gets one tick.
 
 - [ ] C-3.1 Invite NFTSalesBot (ETH/Polygon) OR Hashlist (Solana) — pick one.
 - [ ] C-3.2 OAuth: tick ONLY View Channels, Send Messages, Embed Links, Attach Files, Read Message History, Use External Emojis. Untick everything else.
-- [ ] C-3.3 Drag NFT Tracker role to position **#6** (under Ticket Tool, above `Holder 🌌`).
+- [ ] C-3.3 Drag NFT Tracker role to position **#9** (under Ticket Tool, above `Holder 🌌`). ⚠️ TEAM EXCEPTION: positions #1 and #2 are WHIMSEY BUILDING and WHIMSEY AI, so NFT Tracker lands at #9.
 - [ ] C-3.4 Strip every server-wide permission — channel-allow only.
 - [ ] C-3.5 In `#momentum-collection-feed` → ⚙️ → add NFT Tracker with View/Send/Embed/Attach/History/External Emojis Allow ✅.
 - [ ] C-3.6 In bot dashboard: paste contract address, set output channel = `#momentum-collection-feed`.
@@ -1301,7 +1301,8 @@ Dashboards and recurring stats — the heartbeat of WHIMSEY. All channels here a
 
 | Channel | Type | Purpose |
 |---|---|---|
-| `#ticket-logs` | Text | Ticket Tool posts the full transcript when a ticket is closed. |
+| `#ticket-logs` | Text | Ticket Tool posts the full transcript when a ticket is closed (active transcripts while ticket is open). |
+| `#ticket-archive` | Text | Closed ticket read-only archive. Permanently accessible to Admin 💗 for reference. Mods cannot delete from here. |
 
 > Each opened ticket becomes a temporary text channel inside this category automatically — Ticket Tool handles that. Don't create those manually.
 
@@ -1332,7 +1333,7 @@ On the bot's invite page, tick exactly these:
 | Use Application Commands | ✅ | Slash commands. |
 
 ### Hierarchy slot
-Drag `Auth` to position **#4** (above `Verified 🩵`, below `Carl-bot`).
+Drag `Auth` to position **#6** (above `Verified 🩵`, below `Carl-bot`). ⚠️ TEAM EXCEPTION: WHIMSEY BUILDING (#1) and WHIMSEY AI (#2) sit above Admin 💗 (#3), so all other bots shift up by 2 positions.
 
 ### Configuration (in Auth's web dashboard)
 - **Verification channel:** `#verify`
@@ -1363,7 +1364,7 @@ A `Verified 🩵` member opens `#holder-verify`, clicks the Vulcan button, signs
 | Use Application Commands | ✅ | Slash commands. |
 
 ### Hierarchy slot
-Drag `Vulcan` to position **#5** (above `Holder 🌌`, below `Auth`).
+Drag `Vulcan` to position **#7** (above `Holder 🌌`, below `Auth`).
 
 ### Configuration (Vulcan "Command Center")
 - **Add Token-Granted Role (TGR):**
@@ -1399,7 +1400,7 @@ A member clicks the Ticket Tool panel button in `#open-tickets`, picks a ticket 
 | Use Application Commands | ✅ | Slash commands. |
 
 ### Hierarchy slot
-Drag `Ticket Tool` to position **#6** (below `Vulcan`, above `Holder 🌌`).
+Drag `Ticket Tool` to position **#8** (below `Vulcan`, above `Holder 🌌`).
 
 ### Configuration (Ticket Tool dashboard)
 - **Panel channel:** `#open-tickets`
@@ -1446,7 +1447,7 @@ This is your auto-team-member. Section 28 has the full operations playbook.
 | View Audit Log | ✅ | Cross-references mod actions for logs. |
 
 ### Hierarchy slot
-Drag `Carl-bot` to position **#3** (just below `Moderator ☁️`, above the other bots).
+Drag `Carl-bot` to position **#5** (just below `Moderator ☁️`, above the other bots). ⚠️ TEAM EXCEPTION: positions #1 and #2 are WHIMSEY BUILDING and WHIMSEY AI, so Carl-bot is #5, not #3.
 
 ### Configuration
 See section 28 — full Carl-bot operations playbook.
@@ -1458,16 +1459,20 @@ See section 28 — full Carl-bot operations playbook.
 After all 4 bots are invited and dragged, your role list (top → bottom) MUST look like:
 
 ```
-1.   Admin 💗
-2.   Moderator ☁️
-3.   Carl-bot
-4.   Auth
-5.   Vulcan
-6.   Ticket Tool
-7.   Holder 🌌
-8.   Verified 🩵
-9.   @everyone
+1.   WHIMSEY BUILDING      ← ⚠️ TEAM EXCEPTION — above Admin 💗
+2.   WHIMSEY AI            ← ⚠️ TEAM EXCEPTION — above Admin 💗
+3.   Admin 💗
+4.   Moderator ☁️
+5.   Carl-bot
+6.   Auth
+7.   Vulcan
+8.   Ticket Tool
+9.   Holder 🌌
+10.  Verified 🩵
+11.  @everyone
 ```
+
+⚠️ TEAM EXCEPTION: WHIMSEY BUILDING and WHIMSEY AI sit at positions #1 and #2 — ABOVE Admin 💗. This is intentional and permanent. All other bot positions are shifted +2 compared to a standard setup.
 
 If any of these are out of order, the bots will silently fail to assign or remove roles. Double-check with **Server Settings → Roles**.
 
@@ -2922,18 +2927,20 @@ It is a single-purpose, write-only appliance. Lowest possible attack surface. Hi
 2. The bot creates its own auto-role called **`NFT Tracker`** (or similar — rename if needed).
 3. Set its color to a soft on-chain feel — e.g. `#9B59B6` (a calm purple to match the galaxy theme of `🌌 | HOLDERS ONLY`).
 4. Open the role's permissions tab and **uncheck EVERY server-wide permission**. The bot will get exactly what it needs at the channel level only — no global permissions whatsoever. This is critical for security.
-5. Move the `NFT Tracker` role in the role list to position **#6** (under Ticket Tool, above Holder 🌌). The full new role hierarchy:
+5. Move the `NFT Tracker` role in the role list to position **#9** (under Ticket Tool, above Holder 🌌). The full role hierarchy with NFT Tracker added: ⚠️ TEAM EXCEPTION: WHIMSEY BUILDING (#1) and WHIMSEY AI (#2) sit above Admin 💗:
    ```
-   0. Admin 💗
-   1. Moderator ☁️
-   2. Carl-bot
-   3. Auth
-   4. Vulcan
-   5. Ticket Tool
-   6. NFT Tracker  ← here
-   7. Holder 🌌
-   8. Verified 🩵
-   9. @everyone
+   1.  WHIMSEY BUILDING  ← ⚠️ TEAM EXCEPTION — above Admin 💗
+   2.  WHIMSEY AI        ← ⚠️ TEAM EXCEPTION — above Admin 💗
+   3.  Admin 💗
+   4.  Moderator ☁️
+   5.  Carl-bot
+   6.  Auth
+   7.  Vulcan
+   8.  Ticket Tool
+   9.  NFT Tracker       ← here
+   10. Holder 🌌
+   11. Verified 🩵
+   12. @everyone
    ```
 
 #### Step 3: Bind it to `#momentum-collection-feed`
@@ -3012,7 +3019,7 @@ Every event posts as a clean embed. Examples:
 
 This bot completes the picture. Now you can see in one server:
 
-- **What's happening on Discord:** Carl-bot's 20 audit channels
+- **What's happening on Discord:** Carl-bot's 21 audit channels
 - **What's happening with members:** `#audit-joins-leaves`, `#audit-role-changes`, `#audit-holder-changes`
 - **What's happening with the team:** `#audit-mod-actions`, `#audit-tickets`
 - **What's happening on the blockchain:** `#momentum-collection-feed` (this bot)
@@ -3581,7 +3588,7 @@ Carl-bot does ~70% of all the autopilot work. Get this perfect and the server ef
 1. Go to **carl.gg** → "Login with Discord" → "Add Carl-bot to server" → pick WHIMSEY.
 2. On the OAuth page, grant Carl-bot the suggested permissions BUT then immediately:
 3. Go to **Server Settings → Roles → Carl-bot** → set its color to a calm cloud-grey (so it visually blends, not screams).
-4. Move `Carl-bot` role in the role list to position **#3** (under Admin 💗 and Moderator ☁️) — confirmed in section 6.
+4. Move `Carl-bot` role in the role list to position **#5** (under Moderator ☁️, above Auth) — ⚠️ TEAM EXCEPTION: WHIMSEY BUILDING (#1) and WHIMSEY AI (#2) sit above Admin 💗, so Carl-bot lands at #5 not #3.
 5. Open **carl.gg/dashboard → WHIMSEY**.
 
 #### 34.3.2) Prefix and basic settings
@@ -3856,7 +3863,7 @@ Auth is a one-purpose bot. Set it once, then forget it.
 #### 34.4.1) Setup
 1. Invite Auth via its official site (be careful — there are multiple bots called "Auth"; use the verified one with the highest member count).
 2. Grant ONLY: View Channels, Send Messages, Embed Links, Manage Roles.
-3. Move Auth role to position **#4** in role hierarchy (under Carl-bot, above Vulcan).
+3. Move Auth role to position **#6** in role hierarchy (under Carl-bot, above Vulcan). ⚠️ TEAM EXCEPTION: WHIMSEY BUILDING (#1) and WHIMSEY AI (#2) sit above Admin 💗, so Auth is #6 not #4.
 4. Auth role MUST be ABOVE `Verified 🩵` so it can grant that role.
 
 #### 34.4.2) Configure the verify panel
@@ -3911,7 +3918,7 @@ In Vulcan's Command Center:
 
 #### 34.6.1) Setup
 
-1. Invite Ticket Tool. Move role to position **#6**.
+1. Invite Ticket Tool. Move role to position **#8** (below Vulcan, above Holder 🌌). ⚠️ TEAM EXCEPTION: WHIMSEY BUILDING (#1) and WHIMSEY AI (#2) sit above Admin 💗, so Ticket Tool is #8 not #6.
 2. In Ticket Tool dashboard → Add panel to `#open-tickets`.
 
 #### 34.6.2) Configure the ticket panel
@@ -3940,7 +3947,7 @@ The 5th core bot. Once configured, it runs entirely on its own — every $CNDY m
 
 1. Invite via `nftsalesbot.com` (Ethereum/Polygon) or `hashlist.com` (Solana). Pick the one matching your chain.
 2. On the OAuth screen, grant ONLY: View Channels, Send Messages, Embed Links, Attach Files, Read Message History, Use External Emojis. **Uncheck everything else.**
-3. Move the auto-created `NFT Tracker` role to position **#6** in the role list (under Ticket Tool, above Holder 🌌).
+3. Move the auto-created `NFT Tracker` role to position **#9** in the role list (under Ticket Tool, above Holder 🌌). ⚠️ TEAM EXCEPTION: WHIMSEY BUILDING (#1) and WHIMSEY AI (#2) sit above Admin 💗, so NFT Tracker lands at #9 not #6.
 4. **Strip every server-wide permission** from the role. The bot only needs channel-level allow on `#momentum-collection-feed`.
 5. Open `#momentum-collection-feed` → ⚙️ Edit Channel → Permissions → add the `NFT Tracker` role with View / Send / Embed / Attach / Read History / External Emojis all ✅ Allow.
 
