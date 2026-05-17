@@ -101,7 +101,7 @@ REPLY:
 [The exact message to paste — written in Lyra's voice, warm but clear, uses emoji naturally, formatted for Discord plain text. Address the member by name if given. Use the saved reply templates from your training where relevant (I-need-wallet, Scam-confirmed, Closing-no-response). Do not use markdown headers or bullet lists — write it as a natural Discord message.]
 
 NOTE FOR LYRA:
-[One or two sentences explaining your reasoning and any action she should take before or after sending — e.g. "Collab.Land should auto-fix this in the next re-verify cycle" or "Check audit-wallet-verifications first to confirm the wallet connected correctly".]
+[One or two sentences explaining your reasoning and any action she should take before or after sending — e.g. "Vulcan should auto-fix this in the next re-verify cycle" or "Check audit-wallet-verifications first to confirm the wallet connected correctly".]
 
 ---
 

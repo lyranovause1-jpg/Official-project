@@ -47,7 +47,7 @@ const SCENARIOS: Scenario[] = [
     id: "E-5",
     type: "emergency",
     title: "Holder Roles Broken",
-    trigger: "Collab.Land stops assigning Holder 🌌 after mint",
+    trigger: "Vulcan stops assigning Holder 🌌 after mint",
     drillPrompt:
       "Run a live drill for Scenario E-5: HOLDER ROLES NOT ASSIGNING. Act as if it's happening right now — during mint, three people opened tickets saying they minted 20 minutes ago but have no Holder 🌌 role. Walk me through: what you as WHIMSEY AI are checking right now, what it means, and what I need to do. Ask me to respond at each step.",
   },

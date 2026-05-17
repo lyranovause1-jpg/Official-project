@@ -187,7 +187,7 @@ const SEEDED_DECISIONS: Decision[] = [
   {
     id: "seed_006", category: "server", date: "2025-10-01T00:00:00.000Z",
     title: "Required bots — 5 total",
-    decision: "Auth (verification gate before server access), Collab.Land (wallet/NFT verification → Holder 🌌 role), Ticket Tool (support tickets), Carl-bot (automation, moderation, scheduled reports), NFT Tracker (live $CNDY sales feed — Phase C only, after mint).",
+    decision: "Auth (verification gate before server access), Vulcan (wallet/NFT verification → Holder 🌌 role), Ticket Tool (support tickets), Carl-bot (automation, moderation, scheduled reports), NFT Tracker (live $CNDY sales feed — Phase C only, after mint).",
   },
   {
     id: "seed_007", category: "moderation", date: "2025-10-01T00:00:00.000Z",
@@ -232,8 +232,8 @@ const SEEDED_DECISIONS: Decision[] = [
   },
   {
     id: "seed_015", category: "community", date: "2025-10-01T00:00:00.000Z",
-    title: "Collab.Land wallet verification",
-    decision: "Holder 🌌 role is granted automatically by Collab.Land when a member connects a wallet holding $CNDY. Verification batches every 15 minutes. Members told to wait 15 min if verification seems slow — this is normal.",
+    title: "Vulcan wallet verification",
+    decision: "Holder 🌌 role is granted automatically by Vulcan when a member connects a wallet holding $CNDY. Verification batches every 15 minutes. Members told to wait 15 min if verification seems slow — this is normal.",
   },
 ];
 
@@ -510,7 +510,7 @@ router.get("/discord/bots", async (req, res) => {
       joinedAt: null,
     }));
 
-    const EXPECTED = ["Carl-bot", "Auth", "Collab.Land", "Ticket Tool", "WHIMSEY AI"];
+    const EXPECTED = ["Carl-bot", "Auth", "Vulcan", "Ticket Tool", "WHIMSEY AI"];
     const presentNames = bots.map((b: any) => b.name.toLowerCase());
     const missing = EXPECTED.filter(
       name => !presentNames.some((p: string) => p.includes(name.toLowerCase()))

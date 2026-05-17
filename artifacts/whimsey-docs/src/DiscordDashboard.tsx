@@ -15,12 +15,12 @@ interface Invite { code: string; uses: number; maxUses: number; channel: string;
 
 type Tab = "overview" | "channels" | "roles" | "bots" | "audit" | "invites" | "post";
 
-const REQUIRED_BOTS = ["Carl-bot", "Auth", "Collab.Land", "Ticket Tool", "WHIMSEY AI"];
+const REQUIRED_BOTS = ["Carl-bot", "Auth", "Vulcan", "Ticket Tool", "WHIMSEY AI"];
 
 const ROLE_SETUP_TODO = [
   { name: "Admin 💗",     color: "#FF66B2", desc: "You (Lyra). Full administrator access." },
   { name: "Moderator ☁️", color: "#A8D8FF", desc: "Your team. No admin toggle." },
-  { name: "Holder 🌌",   color: "#7B2FBE", desc: "NFT holders. Assigned by Collab.Land." },
+  { name: "Holder 🌌",   color: "#7B2FBE", desc: "NFT holders. Assigned by Vulcan." },
   { name: "Verified 🩵", color: "#5865F2", desc: "Verified humans. Assigned by Auth." },
 ];
 

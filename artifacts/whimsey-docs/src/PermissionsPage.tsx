@@ -45,7 +45,7 @@ const ENTITIES: Entity[] = [
       { text: "Raise or lower server verification level" },
       { text: "Check live server status, member count, bot list" },
       { text: "Read audit log" },
-      { text: "Diagnose bot issues (Collab.Land, Auth, Carl-bot)" },
+      { text: "Diagnose bot issues (Vulcan, Auth, Carl-bot)" },
       { text: "Read support tickets and respond in them directly" },
       { text: "Trigger Carl-bot commands in #mod-commands" },
       { text: "Draft public post text (shows confirmation gate before sending)" },
@@ -110,7 +110,7 @@ const ENTITIES: Entity[] = [
     ],
   },
   {
-    name: "Collab.Land",
+    name: "Vulcan",
     icon: "🌌",
     color: "indigo",
     badgeColor: "bg-indigo-50 text-indigo-700 border-indigo-100",
@@ -125,7 +125,7 @@ const ENTITIES: Entity[] = [
       { text: "Log role grants/removals to #audit-holder-changes" },
     ],
     needsOk: [
-      { text: "Initial dashboard configuration at collab.land (one-time)" },
+      { text: "Initial dashboard configuration at vulcan.xyz (one-time)" },
       { text: "Updating the $CNDY contract address after deployment" },
       { text: "Changing the re-verify interval or minimum NFT count" },
     ],
@@ -335,7 +335,7 @@ export default function PermissionsPage() {
               <span className="font-semibold text-gray-800">Auth</span> — fully autonomous. Every person who joins gets verified without you touching anything.
             </p>
             <p>
-              <span className="font-semibold text-gray-800">Collab.Land</span> — fully autonomous. Holder roles assign and revoke automatically as NFTs move between wallets.
+              <span className="font-semibold text-gray-800">Vulcan</span> — fully autonomous. Holder roles assign and revoke automatically as NFTs move between wallets.
             </p>
             <p>
               <span className="font-semibold text-gray-800">Ticket Tool</span> — fully autonomous for creating and managing tickets. You only need to show up inside the ticket to actually help.
