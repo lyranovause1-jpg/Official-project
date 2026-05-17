@@ -3,7 +3,7 @@ import { loadState, saveState, getChangelog } from "../lib/persistence";
 
 const router = Router();
 
-export const GUILD_ID = "1495034928801382411";
+export const GUILD_ID = "1503416839873495050";
 export const DISCORD_BASE = "https://discord.com/api/v10";
 
 // ── Dynamic Content Engine ────────────────────────────────────────────────
