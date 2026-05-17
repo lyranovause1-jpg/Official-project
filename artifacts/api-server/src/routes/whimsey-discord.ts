@@ -816,11 +816,15 @@ router.get("/discord/messages", async (req, res) => {
 
 // ── GET /api/discord/feed — unified private channel message feed ──────────────
 router.get("/discord/feed", async (req, res) => {
+  if (!process.env.DISCORD_BOT_TOKEN?.trim()) {
+    res.json({ ok: false, disconnected: true, channelCount: 0, channels: [], total: 0, messages: [] });
+    return;
+  }
   const limit = Math.min(parseInt(req.query.limit as string || "30", 10), 50);
   try {
     const raw = await dget(`/guilds/${GUILD_ID}/channels`);
     if (!Array.isArray(raw)) {
-      res.status(500).json({ ok: false, error: "Could not fetch channels" });
+      res.json({ ok: false, disconnected: true, channelCount: 0, channels: [], total: 0, messages: [] });
       return;
     }
 

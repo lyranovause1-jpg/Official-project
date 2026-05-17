@@ -30,6 +30,7 @@ interface FeedChannel {
 
 interface FeedData {
   ok: boolean;
+  disconnected?: boolean;
   channelCount: number;
   channels: FeedChannel[];
   total: number;
@@ -96,6 +97,7 @@ export default function PrivateFeed() {
   const [data, setData]               = useState<FeedData | null>(null);
   const [loading, setLoading]         = useState(true);
   const [error, setError]             = useState<string | null>(null);
+  const [disconnected, setDisconnected] = useState(false);
   const [countdown, setCountdown]     = useState(REFRESH_INTERVAL);
   const [filter, setFilter]           = useState<string>("all");
   const [search, setSearch]           = useState("");
@@ -118,8 +120,10 @@ export default function PrivateFeed() {
   const fetchFeed = useCallback(async () => {
     try {
       setError(null);
+      setDisconnected(false);
       const r = await fetch(`${BASE}/api/discord/feed?limit=40`);
       const d: FeedData = await r.json();
+      if (d.disconnected) { setDisconnected(true); return; }
       if (!d.ok) { setError("Failed to load feed"); return; }
       setData(d);
       setLastRefresh(new Date());
@@ -328,8 +332,19 @@ export default function PrivateFeed() {
           </div>
         )}
 
+        {/* Disconnected — no bot token yet */}
+        {!loading && disconnected && (
+          <div className="rounded-2xl bg-white border border-gray-100 p-10 text-center">
+            <p className="text-3xl mb-3">🔌</p>
+            <p className="text-sm font-semibold text-gray-800">Discord not connected yet</p>
+            <p className="text-xs text-gray-400 mt-2 max-w-xs mx-auto">
+              Once you add your Discord bot token, private channel messages will appear here in real time.
+            </p>
+          </div>
+        )}
+
         {/* Error */}
-        {!loading && error && (
+        {!loading && !disconnected && error && (
           <div className="rounded-2xl bg-red-50 border border-red-100 p-4 text-center">
             <p className="text-sm text-red-600 font-medium">{error}</p>
             <button onClick={handleRefresh} className="mt-2 text-xs text-red-500 hover:text-red-700 underline">
@@ -339,7 +354,7 @@ export default function PrivateFeed() {
         )}
 
         {/* Empty */}
-        {!loading && !error && filtered.length === 0 && (
+        {!loading && !error && !disconnected && filtered.length === 0 && (
           <div className="rounded-2xl bg-white border border-gray-100 p-8 text-center">
             <p className="text-2xl mb-2">🔇</p>
             <p className="text-sm font-semibold text-gray-700">No messages found</p>
