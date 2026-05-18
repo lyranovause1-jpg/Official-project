@@ -328,20 +328,25 @@ function DocsPage() {
 
 /* ── Root with routing ───────────────────────────────────────────────── */
 
+/* ── Page transition wrapper ─────────────────────────────────────────── */
+function PageWrap({ children }: { children: React.ReactNode }) {
+  return <div className="page-enter">{children}</div>;
+}
+
 export default function App() {
   return (
     <>
       <AutopilotBanner />
       <Switch>
-        <Route path="/ai" component={AiChat} />
-        <Route path="/discord" component={DiscordDashboard} />
-        <Route path="/guide" component={DocsPage} />
-        <Route path="/simulator" component={ScenarioSimulator} />
-        <Route path="/permissions" component={PermissionsPage} />
-        <Route path="/tickets" component={TicketAssistant} />
-        <Route path="/updates" component={PrivateFeed} />
-        <Route path="/style" component={StyleSettings} />
-        <Route component={HomeJourney} />
+        <Route path="/ai">{() => <PageWrap><AiChat /></PageWrap>}</Route>
+        <Route path="/discord">{() => <PageWrap><DiscordDashboard /></PageWrap>}</Route>
+        <Route path="/guide">{() => <PageWrap><DocsPage /></PageWrap>}</Route>
+        <Route path="/simulator">{() => <PageWrap><ScenarioSimulator /></PageWrap>}</Route>
+        <Route path="/permissions">{() => <PageWrap><PermissionsPage /></PageWrap>}</Route>
+        <Route path="/tickets">{() => <PageWrap><TicketAssistant /></PageWrap>}</Route>
+        <Route path="/updates">{() => <PageWrap><PrivateFeed /></PageWrap>}</Route>
+        <Route path="/style">{() => <PageWrap><StyleSettings /></PageWrap>}</Route>
+        <Route>{() => <PageWrap><HomeJourney /></PageWrap>}</Route>
       </Switch>
     </>
   );

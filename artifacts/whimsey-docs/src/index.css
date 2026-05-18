@@ -38,4 +38,36 @@
 @layer base {
   * { @apply border-border; }
   body { @apply font-sans antialiased bg-background text-foreground; }
+  html { scroll-behavior: smooth; }
+
+  /* Remove tap highlight on mobile */
+  button, a { -webkit-tap-highlight-color: transparent; }
+
+  /* Global button click feedback */
+  button:not(:disabled) {
+    transition: transform 0.1s ease, filter 0.1s ease, box-shadow 0.15s ease, opacity 0.1s ease;
+  }
+  button:not(:disabled):active {
+    transform: scale(0.95);
+    filter: brightness(0.9);
+  }
+
+  /* Smooth scroll inside overflow containers */
+  [class*="overflow-y-auto"], [class*="overflow-auto"] {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Page transition */
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page-enter {
+  animation: page-in 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Link transitions */
+a {
+  transition: color 0.15s ease, opacity 0.15s ease;
 }

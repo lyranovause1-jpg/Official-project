@@ -61,14 +61,43 @@ function MessageBubble({ msg }: { msg: Message }) {
   );
 }
 
+/* ── Conversation persistence ───────────────────────────────────────── */
+const CHAT_KEY = "whimsey_ai_chat";
+const MAX_CHAT = 60;
+
+function loadChat(): Message[] {
+  try {
+    const raw = localStorage.getItem(CHAT_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch { return []; }
+}
+
+function saveChat(msgs: Message[]) {
+  try {
+    localStorage.setItem(CHAT_KEY, JSON.stringify(msgs.slice(-MAX_CHAT)));
+  } catch { /* storage full */ }
+}
+
 export default function App() {
-  const [messages, setMessages]     = useState<Message[]>([]);
+  const [messages, setMessages]     = useState<Message[]>(loadChat);
   const [input, setInput]           = useState("");
   const [streaming, setStreaming]   = useState(false);
   const [showSuggested, setShowSuggested] = useState(true);
   const bottomRef  = useRef<HTMLDivElement>(null);
   const inputRef   = useRef<HTMLTextAreaElement>(null);
   const abortRef   = useRef<AbortController | null>(null);
+
+  // Persist conversation history to localStorage on every change
+  useEffect(() => {
+    if (messages.length > 0) saveChat(messages);
+  }, [messages]);
+
+  // Hide suggested prompts if history was loaded
+  useEffect(() => {
+    if (messages.length > 0) setShowSuggested(false);
+  }, []);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -164,7 +193,7 @@ export default function App() {
   const lastIsStreaming = streaming && messages[messages.length - 1]?.role === "assistant" && messages[messages.length - 1]?.content === "";
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-b from-pink-50 via-white to-violet-50">
+    <div className="flex flex-col h-screen bg-gradient-to-b from-pink-50 via-white to-violet-50 page-enter">
 
       {/* ── Header ── */}
       <header className="shrink-0 bg-white/80 backdrop-blur border-b border-pink-100 px-4 py-3 flex items-center gap-3 shadow-sm">
