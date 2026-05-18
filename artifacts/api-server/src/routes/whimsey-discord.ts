@@ -310,32 +310,36 @@ export function discordAuth() {
   return { Authorization: "Bot " + process.env.DISCORD_BOT_TOKEN?.trim() };
 }
 
-export async function dget(path: string) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function dget(path: string): Promise<any> {
   const r = await fetch(DISCORD_BASE + path, { headers: discordAuth() });
-  return r.json();
+  return r.json() as Promise<any>;
 }
 
-export async function dpost(path: string, body: unknown) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function dpost(path: string, body: unknown): Promise<any> {
   const r = await fetch(DISCORD_BASE + path, {
     method: "POST",
     headers: { ...discordAuth(), "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  return r.json();
+  return r.json() as Promise<any>;
 }
 
-export async function dpatch(path: string, body: unknown) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function dpatch(path: string, body: unknown): Promise<any> {
   const r = await fetch(DISCORD_BASE + path, {
     method: "PATCH",
     headers: { ...discordAuth(), "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  return r.json();
+  return r.json() as Promise<any>;
 }
 
-export async function ddel(path: string) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function ddel(path: string): Promise<any> {
   const r = await fetch(DISCORD_BASE + path, { method: "DELETE", headers: discordAuth() });
-  return r.status === 204 ? { success: true } : r.json();
+  return r.status === 204 ? { success: true } : r.json() as Promise<any>;
 }
 
 // ── GET /api/discord/status ──────────────────────────────────────────────────

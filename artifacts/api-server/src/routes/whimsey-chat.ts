@@ -2726,10 +2726,10 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
     switch (name) {
       case "get_server_status": {
         const [guild, channels, roles, integrations] = await Promise.all([
-          fetch(`${DBASE}/guilds/${GUILD_ID}?with_counts=true`, { headers }).then(r => r.json()),
-          fetch(`${DBASE}/guilds/${GUILD_ID}/channels`, { headers }).then(r => r.json()),
-          fetch(`${DBASE}/guilds/${GUILD_ID}/roles`, { headers }).then(r => r.json()),
-          fetch(`${DBASE}/guilds/${GUILD_ID}/integrations`, { headers }).then(r => r.json()),
+          fetch(`${DBASE}/guilds/${GUILD_ID}?with_counts=true`, { headers }).then(r => r.json() as any),
+          fetch(`${DBASE}/guilds/${GUILD_ID}/channels`, { headers }).then(r => r.json() as any),
+          fetch(`${DBASE}/guilds/${GUILD_ID}/roles`, { headers }).then(r => r.json() as any),
+          fetch(`${DBASE}/guilds/${GUILD_ID}/integrations`, { headers }).then(r => r.json() as any),
         ]);
         const cats = Array.isArray(channels) ? channels.filter((c: any) => c.type === 4).map((c: any) => c.name) : [];
         const chans = Array.isArray(channels) ? channels.filter((c: any) => c.type === 0).map((c: any) => c.name) : [];
@@ -2753,7 +2753,7 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
       }
 
       case "get_bots": {
-        const integrations = await fetch(`${DBASE}/guilds/${GUILD_ID}/integrations`, { headers }).then(r => r.json());
+        const integrations = await fetch(`${DBASE}/guilds/${GUILD_ID}/integrations`, { headers }).then(r => r.json() as any);
         const present = Array.isArray(integrations) ? integrations.map((i: any) => ({ name: i.name, id: i.account?.id, enabled: i.enabled })) : [];
         const expected = ["Carl-bot", "Auth", "Vulcan", "Ticket Tool", "NFT Tracker", "WHIMSEY AI"];
         const missing = expected.filter(e => !present.some((p: any) => p.name.toLowerCase().includes(e.toLowerCase())));
@@ -2762,7 +2762,7 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
 
       case "get_audit_log": {
         const limit = args.limit || 10;
-        const logs = await fetch(`${DBASE}/guilds/${GUILD_ID}/audit-logs?limit=${limit}`, { headers }).then(r => r.json());
+        const logs = await fetch(`${DBASE}/guilds/${GUILD_ID}/audit-logs?limit=${limit}`, { headers }).then(r => r.json() as any);
         const userMap: Record<string, string> = {};
         if (Array.isArray(logs.users)) for (const u of logs.users) userMap[u.id] = u.username;
         const actionNames: Record<number, string> = {
@@ -2781,7 +2781,7 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
       }
 
       case "get_channels": {
-        const channels = await fetch(`${DBASE}/guilds/${GUILD_ID}/channels`, { headers }).then(r => r.json());
+        const channels = await fetch(`${DBASE}/guilds/${GUILD_ID}/channels`, { headers }).then(r => r.json() as any);
         if (!Array.isArray(channels)) return JSON.stringify({ error: "Failed to fetch channels" });
         const catMap: Record<string, string> = {};
         channels.filter((c: any) => c.type === 4).forEach((c: any) => { catMap[c.id] = c.name; });
@@ -2793,7 +2793,7 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
       }
 
       case "get_roles": {
-        const roles = await fetch(`${DBASE}/guilds/${GUILD_ID}/roles`, { headers }).then(r => r.json());
+        const roles = await fetch(`${DBASE}/guilds/${GUILD_ID}/roles`, { headers }).then(r => r.json() as any);
         if (!Array.isArray(roles)) return JSON.stringify({ error: "Failed to fetch roles" });
         const list = roles.sort((a: any, b: any) => b.position - a.position).map((r: any) => ({
           id: r.id, name: r.name,
@@ -2804,13 +2804,13 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
       }
 
       case "get_invites": {
-        const invites = await fetch(`${DBASE}/guilds/${GUILD_ID}/invites`, { headers }).then(r => r.json());
+        const invites = await fetch(`${DBASE}/guilds/${GUILD_ID}/invites`, { headers }).then(r => r.json() as any);
         if (!Array.isArray(invites)) return JSON.stringify({ error: "Failed to fetch invites" });
         return JSON.stringify({ invites: invites.map((i: any) => ({ code: i.code, uses: i.uses, channel: i.channel?.name })) });
       }
 
       case "send_discord_message": {
-        const channels = await fetch(`${DBASE}/guilds/${GUILD_ID}/channels`, { headers }).then(r => r.json());
+        const channels = await fetch(`${DBASE}/guilds/${GUILD_ID}/channels`, { headers }).then(r => r.json() as any);
         if (!Array.isArray(channels)) return JSON.stringify({ ok: false, error: "Could not fetch channels" });
         const channel = channels.find((c: any) =>
           c.name.toLowerCase() === (args.channelName || "").toLowerCase().replace(/^#/, "")
@@ -2819,7 +2819,7 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
         const result = await fetch(`${DBASE}/channels/${channel.id}/messages`, {
           method: "POST", headers: jsonHeaders,
           body: JSON.stringify({ content: args.content }),
-        }).then(r => r.json());
+        }).then(r => r.json() as any);
         if (result.id) logChange("send_discord_message", `Posted to #${args.channelName}`, args.content.slice(0, 150)).catch(() => {});
         return JSON.stringify({ ok: !!result.id, messageId: result.id, channel: args.channelName, preview: args.content.slice(0, 80) });
       }
@@ -2831,7 +2831,7 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
         if (args.name !== undefined) body.name = args.name;
         const result = await fetch(`${DBASE}/channels/${args.channelId}`, {
           method: "PATCH", headers: jsonHeaders, body: JSON.stringify(body),
-        }).then(r => r.json());
+        }).then(r => r.json() as any);
         if (result.id) {
           const changes = [
             args.slowmode !== undefined && `slowmode → ${args.slowmode}s`,
@@ -2851,7 +2851,7 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
             name: args.name, color: colorInt,
             hoist: args.hoist ?? false, mentionable: args.mentionable ?? false,
           }),
-        }).then(r => r.json());
+        }).then(r => r.json() as any);
         if (result.id) logChange("create_role", `Created role "${args.name}"${args.color ? ` (${args.color})` : ""}`, `roleId: ${result.id}`).catch(() => {});
         return JSON.stringify({ ok: !!result.id, roleId: result.id, roleName: result.name, color: args.color });
       }
@@ -2915,7 +2915,7 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
         if (args.mentionable !== undefined) body.mentionable = args.mentionable;
         const result = await fetch(`${DBASE}/guilds/${GUILD_ID}/roles/${args.roleId}`, {
           method: "PATCH", headers: jsonHeaders, body: JSON.stringify(body),
-        }).then(r => r.json());
+        }).then(r => r.json() as any);
         if (result.id) logChange("update_role", `Updated role "${result.name}"`, JSON.stringify(body)).catch(() => {});
         return JSON.stringify({ ok: !!result.id, roleId: result.id, roleName: result.name });
       }
@@ -2933,7 +2933,7 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
         const result = await fetch(`${DBASE}/channels/${args.channelId}/messages/${args.messageId}`, {
           method: "PATCH", headers: jsonHeaders,
           body: JSON.stringify({ content: args.content }),
-        }).then(r => r.json());
+        }).then(r => r.json() as any);
         if (result.id) logChange("edit_message", `Edited message in channel (${args.channelId})`, args.content.slice(0, 100)).catch(() => {});
         return JSON.stringify({ ok: !!result.id, messageId: result.id, channelId: args.channelId });
       }
@@ -2943,7 +2943,7 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
         const result = await fetch(`${DBASE}/channels/${args.channelId}/invites`, {
           method: "POST", headers: jsonHeaders,
           body: JSON.stringify({ max_age: maxAge, max_uses: args.maxUses || 0, unique: true }),
-        }).then(r => r.json());
+        }).then(r => r.json() as any);
         if (result.code) logChange("create_invite", `Created invite link for channel (${args.channelId})`, `https://discord.gg/${result.code} | expires: ${args.maxAgeDays || 7}d | max_uses: ${args.maxUses || "unlimited"}`).catch(() => {});
         return JSON.stringify({
           ok: !!result.code,
@@ -2954,7 +2954,7 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
 
       case "get_bans": {
         const limit = args.limit || 100;
-        const bans = await fetch(`${DBASE}/guilds/${GUILD_ID}/bans?limit=${limit}`, { headers }).then(r => r.json());
+        const bans = await fetch(`${DBASE}/guilds/${GUILD_ID}/bans?limit=${limit}`, { headers }).then(r => r.json() as any);
         if (!Array.isArray(bans)) return JSON.stringify({ error: "Could not fetch bans" });
         return JSON.stringify({
           count: bans.length,
@@ -2978,7 +2978,7 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
         if (args.slowmode !== undefined) body.rate_limit_per_user = args.slowmode;
         // Resolve category name → ID
         if (args.categoryName) {
-          const allChannels = await fetch(`${DBASE}/guilds/${GUILD_ID}/channels`, { headers }).then(r => r.json());
+          const allChannels = await fetch(`${DBASE}/guilds/${GUILD_ID}/channels`, { headers }).then(r => r.json() as any);
           if (Array.isArray(allChannels)) {
             const cat = allChannels.find((c: any) => c.type === 4 && c.name.toLowerCase().includes((args.categoryName || "").toLowerCase()));
             if (cat) body.parent_id = cat.id;
@@ -2987,7 +2987,7 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
         if (args.categoryId) body.parent_id = args.categoryId;
         const result = await fetch(`${DBASE}/guilds/${GUILD_ID}/channels`, {
           method: "POST", headers: jsonHeaders, body: JSON.stringify(body),
-        }).then(r => r.json());
+        }).then(r => r.json() as any);
         if (result.id) logChange("create_channel", `Created channel #${result.name}${body.parent_id ? ` in category` : ""}`, `channelId: ${result.id} | topic: ${args.topic || "none"}`).catch(() => {});
         return JSON.stringify({ ok: !!result.id, channelId: result.id, channelName: result.name, parentId: result.parent_id });
       }
@@ -2997,7 +2997,7 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
         let channelId = args.channelId;
         let channelName = args.channelId;
         if (args.channelName) {
-          const allChannels = await fetch(`${DBASE}/guilds/${GUILD_ID}/channels`, { headers }).then(r => r.json());
+          const allChannels = await fetch(`${DBASE}/guilds/${GUILD_ID}/channels`, { headers }).then(r => r.json() as any);
           if (Array.isArray(allChannels)) {
             const match = allChannels.find((c: any) => c.name.toLowerCase() === (args.channelName || "").toLowerCase().replace(/^#/, ""));
             if (match) { channelId = match.id; channelName = match.name; }
@@ -3051,7 +3051,7 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
 
       case "get_members": {
         const limit = Math.min(args.limit || 50, 100);
-        const members = await fetch(`${DBASE}/guilds/${GUILD_ID}/members?limit=${limit}`, { headers }).then(r => r.json());
+        const members = await fetch(`${DBASE}/guilds/${GUILD_ID}/members?limit=${limit}`, { headers }).then(r => r.json() as any);
         if (!Array.isArray(members)) return JSON.stringify({ error: "Could not fetch members" });
         return JSON.stringify({
           count: members.length,
@@ -3091,7 +3091,7 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
         // Resolve channel name → ID if needed
         let channelId = channelParam;
         if (!/^\d{17,20}$/.test(channelParam)) {
-          const channels = await fetch(`${DBASE}/guilds/${GUILD_ID}/channels`, { headers }).then(r => r.json());
+          const channels = await fetch(`${DBASE}/guilds/${GUILD_ID}/channels`, { headers }).then(r => r.json() as any);
           if (!Array.isArray(channels)) return JSON.stringify({ error: "Could not resolve channel list" });
           const match = channels.find((c: any) =>
             c.name.toLowerCase() === channelParam.toLowerCase().replace(/^#/, "")
@@ -3103,7 +3103,7 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
           channelId = match.id;
         }
 
-        const messages = await fetch(`${DBASE}/channels/${channelId}/messages?limit=${limit}`, { headers }).then(r => r.json());
+        const messages = await fetch(`${DBASE}/channels/${channelId}/messages?limit=${limit}`, { headers }).then(r => r.json() as any);
         if (!Array.isArray(messages)) {
           return JSON.stringify({ error: "Cannot read channel — missing permissions or channel not accessible", raw: messages });
         }

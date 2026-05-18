@@ -188,6 +188,7 @@ export default function AiChat() {
       const t = setTimeout(() => send(autoQ), 300);
       return () => clearTimeout(t);
     }
+    return undefined;
   }, [autoQ]);
 
   async function send(text: string) {
