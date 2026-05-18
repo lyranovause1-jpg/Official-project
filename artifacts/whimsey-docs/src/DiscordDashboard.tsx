@@ -15,7 +15,7 @@ interface Invite { code: string; uses: number; maxUses: number; channel: string;
 
 type Tab = "overview" | "channels" | "roles" | "bots" | "audit" | "invites" | "post";
 
-const REQUIRED_BOTS = ["Carl-bot", "Auth", "Vulcan", "Ticket Tool", "WHIMSEY AI"];
+const REQUIRED_BOTS = ["Carl-bot", "Auth", "Vulcan", "Ticket Tool", "NFT Tracker"];
 
 const ROLE_SETUP_TODO = [
   { name: "Admin 💗",     color: "#FF66B2", desc: "You (Lyra). Full administrator access." },

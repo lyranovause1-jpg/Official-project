@@ -175,19 +175,19 @@ const SEEDED_DECISIONS: Decision[] = [
   },
   {
     id: "seed_004", category: "server", date: "2025-10-01T00:00:00.000Z",
-    title: "Role hierarchy — 4 community roles",
-    decision: "Admin 💗 (top), Moderator ☁️, Holder 🌌, Verified 🩵 (bottom). Bot roles sit between Admin and Moderator. @everyone is locked to zero permissions.",
+    title: "Role hierarchy — full 12-position order",
+    decision: "⚠️ TEAM EXCEPTION: WHIMSEY BUILDING (#1) and WHIMSEY AI (#2) sit ABOVE Admin 💗 (#3). Full order: WHIMSEY BUILDING #1, WHIMSEY AI #2, Admin 💗 #3, Moderator ☁️ #4, Carl-bot #5, Auth #6, Vulcan #7, Ticket Tool #8, NFT Tracker #9, Holder 🌌 #10, Verified 🩵 #11, @everyone #12. @everyone locked to zero permissions.",
   },
   {
     id: "seed_005", category: "server", date: "2025-10-01T00:00:00.000Z",
     title: "Server structure — 12 categories",
-    decision: "🎟 ACCESS, 💗 VERIFY, 📣 ANNOUNCEMENT, 💬 COMMUNITY, 🌌 HOLDERS, 🎉 EVENTS, ☁️ STAFF, 🎫 TICKETS, 📋 AUDITS, 📈 MOMENTUM, 🩵 COLLAB, 💎 1-OF-1.",
-    context: "4 new private categories (STAFF, AUDITS, MOMENTUM, TICKETS) added to the existing 8.",
+    decision: "💗 | VERIFY, 🌊 | START HERE, ❄️ | THE UNIVERSE, 📌 | COMMUNITY, 🌌 | HOLDERS ONLY, 🌷 | COLLECTORS, 🩵 | EVENTS, ☁️ | SUPPORT, 🔒 | STAFF, 📋 | AUDITS, 📈 | MOMENTUM, 🎫 | TICKETS.",
+    context: "4 private categories (🔒 STAFF, 📋 AUDITS, 📈 MOMENTUM, 🎫 TICKETS) added alongside 8 public-facing ones. Exact names and emoji match what was created in Discord.",
   },
   {
     id: "seed_006", category: "server", date: "2025-10-01T00:00:00.000Z",
-    title: "Required bots — 5 total",
-    decision: "Auth (verification gate before server access), Vulcan (wallet/NFT verification → Holder 🌌 role), Ticket Tool (support tickets), Carl-bot (automation, moderation, scheduled reports), NFT Tracker (live $CNDY sales feed — Phase C only, after mint).",
+    title: "Required bots — 5 total (invite in this order)",
+    decision: "Auth #6 (human verification → Verified 🩵), Vulcan #7 (wallet/NFT check → Holder 🌌), Ticket Tool #8 (private support tickets), Carl-bot #5 (autopilot brain — invite LAST), NFT Tracker #9 (live $CNDY on-chain feed — Phase C, invite with placeholder contract before mint). WHIMSEY AI is the app's own bot — already present.",
   },
   {
     id: "seed_007", category: "moderation", date: "2025-10-01T00:00:00.000Z",
@@ -510,7 +510,7 @@ router.get("/discord/bots", async (req, res) => {
       joinedAt: null,
     }));
 
-    const EXPECTED = ["Carl-bot", "Auth", "Vulcan", "Ticket Tool", "WHIMSEY AI"];
+    const EXPECTED = ["Carl-bot", "Auth", "Vulcan", "Ticket Tool", "NFT Tracker"];
     const presentNames = bots.map((b: any) => b.name.toLowerCase());
     const missing = EXPECTED.filter(
       name => !presentNames.some((p: string) => p.includes(name.toLowerCase()))
