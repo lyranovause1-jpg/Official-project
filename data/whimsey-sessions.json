@@ -1,0 +1,14 @@
+{
+  "8c1a413a-5fab-4eb4-a979-96b97ad247f2": {
+    "sessions": [
+      {
+        "id": "f3a979f9-ddfd-4489-98eb-37f13848870a",
+        "name": "Session 1",
+        "messages": [],
+        "createdAt": 1779187810875,
+        "updatedAt": 1779187810875
+      }
+    ],
+    "count": 1
+  }
+}
