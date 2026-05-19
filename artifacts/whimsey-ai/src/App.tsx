@@ -1,10 +1,10 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 /* ── Types ───────────────────────────────────────────────────────────── */
 type Role = "user" | "assistant";
-interface Message { role: Role; content: string; id: string; }
+interface Message { role: Role; content: string; id: string; ts: number; }
 interface Session {
   id: string;
   name: string;
@@ -13,10 +13,96 @@ interface Session {
   updatedAt: number;
 }
 
-/* ── Config ──────────────────────────────────────────────────────────── */
-const BASE = import.meta.env.BASE_URL;
-const API  = `${BASE.replace(/\/$/, "").replace(/^\/whimsey-ai/, "")}/api/whimsey/chat`;
+/* ── API config ──────────────────────────────────────────────────────── */
+const BASE      = import.meta.env.BASE_URL;
+const API_ROOT  = BASE.replace(/\/$/, "").replace(/^\/whimsey-ai/, "");
+const CHAT_API  = `${API_ROOT}/api/whimsey/chat`;
+const sessionsUrl = (id: string) => `${API_ROOT}/api/sessions/${id}`;
 
+/* ── Storage keys ────────────────────────────────────────────────────── */
+const SK = {
+  sessions: "wh_sessions_v3",
+  activeId: "wh_active_id_v3",
+  count:    "wh_session_count_v3",
+  deviceId: "wh_device_id",
+};
+
+/* ── Device ID (only this one item lives in localStorage permanently) ─ */
+function getDeviceId(): string {
+  let id = localStorage.getItem(SK.deviceId);
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem(SK.deviceId, id);
+  }
+  return id;
+}
+const DEVICE_ID = getDeviceId();
+
+/* ── localStorage helpers ────────────────────────────────────────────── */
+function lsGet<T>(key: string, fallback: T): T {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+  catch { return fallback; }
+}
+function lsSet(key: string, val: unknown): void {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
+}
+
+/* ── Session helpers ─────────────────────────────────────────────────── */
+function getCount(): number   { return lsGet<number>(SK.count, 0); }
+function bumpCount(): number  { const n = getCount() + 1; lsSet(SK.count, n); return n; }
+function loadSessions(): Session[] { return lsGet<Session[]>(SK.sessions, []); }
+function persistSessions(s: Session[]): void { lsSet(SK.sessions, s); }
+function loadActiveId(): string | null { return localStorage.getItem(SK.activeId); }
+function persistActiveId(id: string): void { localStorage.setItem(SK.activeId, id); }
+
+function makeSession(): Session {
+  return {
+    id: crypto.randomUUID(),
+    name: `Session ${bumpCount()}`,
+    messages: [],
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  };
+}
+
+/* ── Bootstrap (from localStorage) ──────────────────────────────────── */
+function bootstrap(): { sessions: Session[]; activeId: string; messages: Message[] } {
+  let sessions = loadSessions();
+  const savedId = loadActiveId();
+  const activeExists = !!savedId && sessions.some(s => s.id === savedId);
+
+  if (!activeExists) {
+    if (sessions.length === 0) lsSet(SK.count, 0);
+    const fresh = makeSession();
+    sessions = [...sessions, fresh];
+    persistSessions(sessions);
+    persistActiveId(fresh.id);
+    return { sessions, activeId: fresh.id, messages: [] };
+  }
+  const active = sessions.find(s => s.id === savedId)!;
+  return { sessions, activeId: savedId!, messages: active.messages };
+}
+
+/* ── Server sync ─────────────────────────────────────────────────────── */
+async function serverLoad(): Promise<{ sessions: Session[]; count: number } | null> {
+  try {
+    const res = await fetch(sessionsUrl(DEVICE_ID));
+    if (!res.ok) return null;
+    return await res.json();
+  } catch { return null; }
+}
+async function serverPush(sessions: Session[], count: number): Promise<boolean> {
+  try {
+    const res = await fetch(sessionsUrl(DEVICE_ID), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessions, count }),
+    });
+    return res.ok;
+  } catch { return false; }
+}
+
+/* ── Suggested prompts ───────────────────────────────────────────────── */
 const SUGGESTED = [
   "How do I configure the Moderator ☁️ permissions?",
   "What's the exact role order after all bots are invited?",
@@ -28,75 +114,24 @@ const SUGGESTED = [
   "How do I test my server before going public?",
 ];
 
-/* ── Storage ─────────────────────────────────────────────────────────── */
-const SK = {
-  sessions: "whimsey_sessions_v2",
-  activeId: "whimsey_active_id_v2",
-  count:    "whimsey_session_count_v2",
-};
-
-function loadSessions(): Session[] {
-  try {
-    const raw = localStorage.getItem(SK.sessions);
-    if (!raw) return [];
-    const p = JSON.parse(raw);
-    return Array.isArray(p) ? p : [];
-  } catch { return []; }
+/* ── Formatting ──────────────────────────────────────────────────────── */
+function fmtDate(ts: number): string {
+  return new Date(ts).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+}
+function fmtTime(ts: number): string {
+  return new Date(ts).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+}
+function fmtFull(ts: number): string {
+  return `${fmtDate(ts)} at ${fmtTime(ts)}`;
+}
+function fmtMsgTime(ts: number): string {
+  const d = new Date(ts);
+  const now = new Date();
+  const isToday = d.toDateString() === now.toDateString();
+  return isToday ? fmtTime(ts) : `${fmtDate(ts)} · ${fmtTime(ts)}`;
 }
 
-function persistSessions(sessions: Session[]): void {
-  try { localStorage.setItem(SK.sessions, JSON.stringify(sessions)); } catch {}
-}
-
-function getCount(): number {
-  return parseInt(localStorage.getItem(SK.count) || "0", 10);
-}
-
-function bumpCount(): number {
-  const n = getCount() + 1;
-  localStorage.setItem(SK.count, String(n));
-  return n;
-}
-
-function loadActiveId(): string | null {
-  return localStorage.getItem(SK.activeId);
-}
-
-function persistActiveId(id: string): void {
-  localStorage.setItem(SK.activeId, id);
-}
-
-function makeSession(): Session {
-  const n = bumpCount();
-  return {
-    id: crypto.randomUUID(),
-    name: `Session ${n}`,
-    messages: [],
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-  };
-}
-
-/* ── Bootstrap ───────────────────────────────────────────────────────── */
-function bootstrap(): { sessions: Session[]; activeId: string; messages: Message[] } {
-  let sessions = loadSessions();
-  const savedId = loadActiveId();
-  const activeExists = !!savedId && sessions.some(s => s.id === savedId);
-
-  if (!activeExists) {
-    if (sessions.length === 0) localStorage.setItem(SK.count, "0");
-    const fresh = makeSession();
-    sessions = [...sessions, fresh];
-    persistSessions(sessions);
-    persistActiveId(fresh.id);
-    return { sessions, activeId: fresh.id, messages: [] };
-  }
-
-  const active = sessions.find(s => s.id === savedId)!;
-  return { sessions, activeId: savedId!, messages: active.messages };
-}
-
-/* ── UI Sub-components ───────────────────────────────────────────────── */
+/* ── UI: TypingDots ──────────────────────────────────────────────────── */
 function TypingDots() {
   return (
     <div className="flex items-center gap-1 px-1 py-0.5">
@@ -108,73 +143,99 @@ function TypingDots() {
   );
 }
 
+/* ── UI: MessageBubble ───────────────────────────────────────────────── */
 function MessageBubble({ msg }: { msg: Message }) {
   const isUser = msg.role === "user";
   return (
-    <div className={`flex gap-3 ${isUser ? "flex-row-reverse" : "flex-row"} items-end mb-4`}>
+    <div className={`flex gap-3 ${isUser ? "flex-row-reverse" : "flex-row"} items-end mb-5`}>
       <div className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shadow-sm ${
         isUser ? "bg-pink-500 text-white" : "bg-gradient-to-br from-violet-500 to-pink-500 text-white"
       }`}>
         {isUser ? "You" : "💗"}
       </div>
-      <div className={`max-w-[78%] rounded-2xl px-4 py-3 shadow-sm text-sm leading-relaxed ${
-        isUser
-          ? "bg-pink-500 text-white rounded-br-sm"
-          : "bg-white text-gray-800 rounded-bl-sm border border-pink-100"
-      }`}>
-        {isUser ? (
-          <p className="whitespace-pre-wrap">{msg.content}</p>
-        ) : (
-          <div className="prose prose-sm prose-pink max-w-none prose-p:my-1 prose-li:my-0 prose-headings:my-2 prose-headings:text-pink-700 prose-code:bg-pink-50 prose-code:text-pink-800 prose-code:px-1 prose-code:rounded prose-pre:bg-pink-50 prose-pre:border prose-pre:border-pink-100 prose-strong:text-gray-900 prose-a:text-pink-600">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
-          </div>
+      <div className={`flex flex-col gap-1 max-w-[78%] ${isUser ? "items-end" : "items-start"}`}>
+        <div className={`rounded-2xl px-4 py-3 shadow-sm text-sm leading-relaxed ${
+          isUser
+            ? "bg-pink-500 text-white rounded-br-sm"
+            : "bg-white text-gray-800 rounded-bl-sm border border-pink-100"
+        }`}>
+          {isUser ? (
+            <p className="whitespace-pre-wrap">{msg.content}</p>
+          ) : (
+            <div className="prose prose-sm prose-pink max-w-none prose-p:my-1 prose-li:my-0 prose-headings:my-2 prose-headings:text-pink-700 prose-code:bg-pink-50 prose-code:text-pink-800 prose-code:px-1 prose-code:rounded prose-pre:bg-pink-50 prose-pre:border prose-pre:border-pink-100 prose-strong:text-gray-900 prose-a:text-pink-600">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+            </div>
+          )}
+        </div>
+        {msg.ts && (
+          <span className="text-[10px] text-gray-300 px-1">{fmtMsgTime(msg.ts)}</span>
         )}
       </div>
     </div>
   );
 }
 
-function fmt(ts: number): string {
-  const d = new Date(ts);
-  return d.toLocaleDateString(undefined, { month: "short", day: "numeric" }) +
-    " · " + d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+/* ── UI: SaveButton ──────────────────────────────────────────────────── */
+type SaveStatus = "idle" | "saving" | "saved" | "error";
+function SaveButton({ status, onClick }: { status: SaveStatus; onClick: () => void }) {
+  const cfg = {
+    idle:   { label: "Save Session",  icon: "💾", cls: "border-pink-200 text-pink-500 hover:bg-pink-50 hover:border-pink-400" },
+    saving: { label: "Saving…",       icon: "⏳", cls: "border-pink-200 text-pink-400 opacity-70 cursor-not-allowed" },
+    saved:  { label: "All Saved! ✓",  icon: "✅", cls: "border-emerald-200 text-emerald-600 bg-emerald-50" },
+    error:  { label: "Retry Save",    icon: "⚠️", cls: "border-orange-200 text-orange-500 hover:bg-orange-50" },
+  }[status];
+  return (
+    <button
+      onClick={onClick}
+      disabled={status === "saving"}
+      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium transition-all ${cfg.cls}`}
+    >
+      <span>{cfg.icon}</span>
+      <span>{cfg.label}</span>
+    </button>
+  );
 }
 
+/* ── UI: SessionSidebar ──────────────────────────────────────────────── */
 interface SidebarProps {
   sessions: Session[];
   activeId: string;
+  saveStatus: SaveStatus;
   onSwitch: (id: string) => void;
   onNew: () => void;
+  onSave: () => void;
   onClose: () => void;
 }
-
-function SessionSidebar({ sessions, activeId, onSwitch, onNew, onClose }: SidebarProps) {
+function SessionSidebar({ sessions, activeId, saveStatus, onSwitch, onNew, onSave, onClose }: SidebarProps) {
   const sorted = [...sessions].sort((a, b) => b.updatedAt - a.updatedAt);
   return (
-    <div className="flex flex-col w-72 shrink-0 bg-white/95 backdrop-blur border-r border-pink-100 h-full shadow-xl z-10">
+    <div className="flex flex-col w-72 shrink-0 bg-white/98 backdrop-blur border-r border-pink-100 h-full shadow-xl z-20">
+
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3.5 border-b border-pink-100 bg-gradient-to-r from-pink-50 to-violet-50">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-pink-100 bg-gradient-to-r from-pink-50 to-violet-50">
         <div className="flex items-center gap-2">
           <span className="text-base">🗂️</span>
           <span className="font-bold text-gray-800 text-sm">Session History</span>
+          <span className="text-[10px] bg-pink-100 text-pink-500 px-1.5 py-0.5 rounded-full font-semibold">
+            {sessions.length}
+          </span>
         </div>
-        <button
-          onClick={onClose}
-          className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-white transition-all text-sm"
-        >✕</button>
+        <button onClick={onClose}
+          className="w-6 h-6 rounded-md flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-white transition-all text-xs">
+          ✕
+        </button>
       </div>
 
       {/* New session button */}
-      <div className="px-3 py-3 border-b border-pink-50">
-        <button
-          onClick={onNew}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 to-violet-500 text-white text-sm font-semibold shadow-sm hover:shadow-md hover:from-pink-600 hover:to-violet-600 transition-all"
-        >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+      <div className="px-3 py-2.5 border-b border-pink-50 flex gap-2">
+        <button onClick={onNew}
+          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-violet-500 text-white text-xs font-semibold shadow-sm hover:shadow-md hover:from-pink-600 hover:to-violet-600 transition-all">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
           </svg>
           New Session
         </button>
+        <SaveButton status={saveStatus} onClick={onSave} />
       </div>
 
       {/* Session list */}
@@ -184,18 +245,17 @@ function SessionSidebar({ sessions, activeId, onSwitch, onNew, onClose }: Sideba
         )}
         {sorted.map((session) => {
           const isActive = session.id === activeId;
-          const lastMsg = session.messages.filter(m => m.role === "user").slice(-1)[0];
-          const preview = lastMsg ? lastMsg.content.slice(0, 55) + (lastMsg.content.length > 55 ? "…" : "") : "Empty session";
+          const lastUserMsg = session.messages.filter(m => m.role === "user").slice(-1)[0];
+          const preview = lastUserMsg
+            ? lastUserMsg.content.slice(0, 60) + (lastUserMsg.content.length > 60 ? "…" : "")
+            : "No messages yet";
           return (
-            <button
-              key={session.id}
-              onClick={() => onSwitch(session.id)}
+            <button key={session.id} onClick={() => onSwitch(session.id)}
               className={`w-full text-left px-3 py-3 rounded-xl border transition-all ${
                 isActive
                   ? "bg-pink-50 border-pink-200 shadow-sm"
                   : "border-transparent hover:bg-gray-50 hover:border-gray-100"
-              }`}
-            >
+              }`}>
               <div className="flex items-center justify-between mb-1">
                 <span className={`text-[13px] font-semibold ${isActive ? "text-pink-600" : "text-gray-700"}`}>
                   {session.name}
@@ -206,23 +266,26 @@ function SessionSidebar({ sessions, activeId, onSwitch, onNew, onClose }: Sideba
                   </span>
                 )}
               </div>
-              <p className="text-[11px] text-gray-400 leading-snug line-clamp-2 mb-1.5">{preview}</p>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] text-gray-300">
-                  {session.messages.length} msg{session.messages.length !== 1 ? "s" : ""}
-                </span>
-                <span className="text-[10px] text-gray-300">·</span>
-                <span className="text-[10px] text-gray-300">{fmt(session.updatedAt)}</span>
+              <p className="text-[11px] text-gray-400 leading-snug line-clamp-2 mb-2">{preview}</p>
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-1.5 text-[10px] text-gray-300">
+                  <span>🕐</span>
+                  <span>Started: {fmtFull(session.createdAt)}</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-[10px] text-gray-300">
+                  <span>💬</span>
+                  <span>{session.messages.length} message{session.messages.length !== 1 ? "s" : ""} · Last: {fmtFull(session.updatedAt)}</span>
+                </div>
               </div>
             </button>
           );
         })}
       </div>
 
-      {/* Footer note */}
-      <div className="px-4 py-2.5 border-t border-pink-50 bg-pink-50/50">
-        <p className="text-[10px] text-gray-400 text-center">
-          WHIMSEY AI remembers everything across all sessions 💗
+      {/* Footer */}
+      <div className="px-4 py-3 border-t border-pink-50 bg-gradient-to-r from-pink-50/50 to-violet-50/50">
+        <p className="text-[10px] text-gray-400 text-center leading-relaxed">
+          Sessions saved to database — safe across browsers, devices & project moves 💗
         </p>
       </div>
     </div>
@@ -240,89 +303,181 @@ export default function App() {
   const [streaming, setStreaming] = useState(false);
   const [showSuggested, setShowSuggested] = useState(init.messages.length === 0);
   const [showHistory, setShowHistory]     = useState(false);
+  const [saveStatus, setSaveStatus]       = useState<SaveStatus>("idle");
+  const [serverSynced, setServerSynced]   = useState(false);
 
-  const bottomRef  = useRef<HTMLDivElement>(null);
-  const inputRef   = useRef<HTMLTextAreaElement>(null);
-  const abortRef   = useRef<AbortController | null>(null);
+  const bottomRef   = useRef<HTMLDivElement>(null);
+  const inputRef    = useRef<HTMLTextAreaElement>(null);
+  const abortRef    = useRef<AbortController | null>(null);
+  const saveTimer   = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Refs to avoid stale closures in effects / async functions
-  const messagesRef = useRef(messages);
-  const activeIdRef = useRef(activeId);
-  const sessionsRef = useRef(sessions);
-  useEffect(() => { messagesRef.current = messages; },   [messages]);
-  useEffect(() => { activeIdRef.current = activeId; },   [activeId]);
-  useEffect(() => { sessionsRef.current = sessions; },   [sessions]);
+  // Refs for stale-closure safety
+  const messagesRef  = useRef(messages);
+  const activeIdRef  = useRef(activeId);
+  const sessionsRef  = useRef(sessions);
+  useEffect(() => { messagesRef.current = messages;   }, [messages]);
+  useEffect(() => { activeIdRef.current = activeId;   }, [activeId]);
+  useEffect(() => { sessionsRef.current = sessions;   }, [sessions]);
 
-  // Auto-scroll on new messages
+  /* ── Auto-scroll ── */
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, streaming]);
 
-  // Sync current messages to sessions storage when streaming ends
+  /* ── Sync messages → sessions when streaming ends ── */
   useEffect(() => {
-    if (!streaming) {
+    if (!streaming && messagesRef.current.length > 0) {
+      const msgs = messagesRef.current;
       setSessions(prev => {
         const updated = prev.map(s =>
           s.id === activeIdRef.current
-            ? { ...s, messages: messagesRef.current, updatedAt: Date.now() }
+            ? { ...s, messages: msgs, updatedAt: Date.now() }
             : s
         );
         persistSessions(updated);
         return updated;
       });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [streaming]);
 
-  /* ── Session management ── */
-  function flushCurrentSession() {
+  /* ── Push to server (debounced 2 s after last change) ── */
+  const pushDebounced = useCallback((snapshotSessions: Session[]) => {
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(async () => {
+      setSaveStatus("saving");
+      const ok = await serverPush(snapshotSessions, getCount());
+      setSaveStatus(ok ? "saved" : "error");
+      setTimeout(() => setSaveStatus("idle"), 2500);
+    }, 2000);
+  }, []);
+
+  /* ── Auto-push when sessions change ── */
+  useEffect(() => {
+    if (serverSynced) pushDebounced(sessions);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessions]);
+
+  /* ── Load from server on mount; merge with localStorage ── */
+  useEffect(() => {
+    serverLoad().then(data => {
+      setServerSynced(true);
+      if (!data || data.sessions.length === 0) {
+        // Nothing on server — push local data up
+        if (sessionsRef.current.length > 0) {
+          serverPush(sessionsRef.current, getCount());
+        }
+        return;
+      }
+      // Merge: server wins for sessions it knows about
+      const localSessions = sessionsRef.current;
+      const merged = new Map<string, Session>();
+
+      localSessions.forEach(s => merged.set(s.id, s));
+      data.sessions.forEach((serverSession: Session) => {
+        const local = merged.get(serverSession.id);
+        // Server wins if it has more messages or is newer
+        if (!local || serverSession.updatedAt >= local.updatedAt || serverSession.messages.length >= local.messages.length) {
+          merged.set(serverSession.id, serverSession);
+        }
+      });
+
+      const mergedArr = Array.from(merged.values()).sort((a, b) => a.createdAt - b.createdAt);
+
+      // Restore count
+      if (data.count && data.count > getCount()) {
+        lsSet(SK.count, data.count);
+      }
+
+      setSessions(mergedArr);
+      persistSessions(mergedArr);
+
+      // Re-load active session messages from merged data
+      const activeSession = mergedArr.find(s => s.id === activeIdRef.current);
+      if (activeSession) {
+        setMessages(activeSession.messages);
+        setShowSuggested(activeSession.messages.length === 0);
+      } else if (mergedArr.length > 0) {
+        const latest = mergedArr[mergedArr.length - 1];
+        setActiveId(latest.id);
+        persistActiveId(latest.id);
+        setMessages(latest.messages);
+        setShowSuggested(latest.messages.length === 0);
+      }
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /* ── Manual save ── */
+  const manualSave = useCallback(async () => {
+    if (saveStatus === "saving") return;
+    // Flush current messages to sessions first
     const msgs = messagesRef.current;
-    setSessions(prev => {
-      const updated = prev.map(s =>
+    let latestSessions = sessionsRef.current;
+    if (msgs.length > 0) {
+      latestSessions = latestSessions.map(s =>
         s.id === activeIdRef.current
           ? { ...s, messages: msgs, updatedAt: Date.now() }
           : s
       );
-      persistSessions(updated);
-      return updated;
-    });
+      setSessions(latestSessions);
+      persistSessions(latestSessions);
+    }
+    setSaveStatus("saving");
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    const ok = await serverPush(latestSessions, getCount());
+    setSaveStatus(ok ? "saved" : "error");
+    setTimeout(() => setSaveStatus("idle"), 3000);
+  }, [saveStatus]);
+
+  /* ── Flush current session to sessions array ── */
+  function flushCurrent(): Session[] {
+    const msgs = messagesRef.current;
+    const updated = sessionsRef.current.map(s =>
+      s.id === activeIdRef.current
+        ? { ...s, messages: msgs, updatedAt: Date.now() }
+        : s
+    );
+    setSessions(updated);
+    persistSessions(updated);
+    return updated;
   }
 
+  /* ── Switch session ── */
   function switchSession(id: string) {
     if (id === activeIdRef.current) { setShowHistory(false); return; }
-    flushCurrentSession();
+    flushCurrent();
     abortRef.current?.abort();
     setStreaming(false);
 
     const target = sessionsRef.current.find(s => s.id === id);
     if (!target) return;
-
     setActiveId(id);
     persistActiveId(id);
     setMessages(target.messages);
     setInput("");
     setShowSuggested(target.messages.length === 0);
     setShowHistory(false);
-    setTimeout(() => inputRef.current?.focus(), 100);
+    setTimeout(() => inputRef.current?.focus(), 80);
   }
 
+  /* ── New session ── */
   function startNewSession() {
-    flushCurrentSession();
+    const flushed = flushCurrent();
     abortRef.current?.abort();
     setStreaming(false);
 
     const fresh = makeSession();
-    setSessions(prev => {
-      const updated = [...prev, fresh];
-      persistSessions(updated);
-      return updated;
-    });
+    const all = [...flushed, fresh];
+    setSessions(all);
+    persistSessions(all);
     setActiveId(fresh.id);
     persistActiveId(fresh.id);
     setMessages([]);
     setInput("");
     setShowSuggested(true);
     setShowHistory(false);
-    setTimeout(() => inputRef.current?.focus(), 100);
+    setTimeout(() => inputRef.current?.focus(), 80);
   }
 
   /* ── Send message ── */
@@ -330,14 +485,15 @@ export default function App() {
     if (!text.trim() || streaming) return;
     setShowSuggested(false);
 
-    const userMsg: Message = { role: "user",      content: text.trim(), id: crypto.randomUUID() };
-    const assistantMsg: Message = { role: "assistant", content: "",         id: crypto.randomUUID() };
+    const now = Date.now();
+    const userMsg: Message    = { role: "user",      content: text.trim(), id: crypto.randomUUID(), ts: now };
+    const assistantMsg: Message = { role: "assistant", content: "",          id: crypto.randomUUID(), ts: now };
 
     setMessages(prev => [...prev, userMsg, assistantMsg]);
     setInput("");
     setStreaming(true);
 
-    // Full context: all previous sessions + current session + new user message (max 200 msgs)
+    // Full cross-session context (last 200 msgs total)
     const MAX_CTX = 200;
     const prevMsgs = sessionsRef.current
       .filter(s => s.id !== activeIdRef.current)
@@ -351,26 +507,23 @@ export default function App() {
 
     try {
       abortRef.current = new AbortController();
-      const res = await fetch(API, {
+      const res = await fetch(CHAT_API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: history }),
         signal: abortRef.current.signal,
       });
-
       if (!res.ok || !res.body) throw new Error("Request failed");
 
       const reader  = res.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";
-
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         buffer += decoder.decode(value, { stream: true });
         const lines = buffer.split("\n");
         buffer = lines.pop() ?? "";
-
         for (const line of lines) {
           if (!line.startsWith("data: ")) continue;
           try {
@@ -392,17 +545,14 @@ export default function App() {
                 return copy;
               });
             }
-          } catch { /* ignore parse errors */ }
+          } catch { /* ignore */ }
         }
       }
     } catch (err: unknown) {
       if ((err as Error).name !== "AbortError") {
         setMessages(prev => {
           const copy = [...prev];
-          copy[copy.length - 1] = {
-            ...copy[copy.length - 1],
-            content: "Something went wrong. Please try again. 💗",
-          };
+          copy[copy.length - 1] = { ...copy[copy.length - 1], content: "Something went wrong. Please try again. 💗" };
           return copy;
         });
       }
@@ -426,13 +576,15 @@ export default function App() {
   return (
     <div className="flex h-screen bg-gradient-to-b from-pink-50 via-white to-violet-50 page-enter overflow-hidden">
 
-      {/* ── History Sidebar ── */}
+      {/* ── Session Sidebar ── */}
       {showHistory && (
         <SessionSidebar
           sessions={sessions}
           activeId={activeId}
+          saveStatus={saveStatus}
           onSwitch={switchSession}
           onNew={startNewSession}
+          onSave={manualSave}
           onClose={() => setShowHistory(false)}
         />
       )}
@@ -441,8 +593,9 @@ export default function App() {
       <div className="flex flex-col flex-1 min-w-0 h-full">
 
         {/* Header */}
-        <header className="shrink-0 bg-white/90 backdrop-blur-md border-b border-pink-100 px-3 py-3 flex items-center gap-2.5 shadow-sm">
-          {/* History toggle */}
+        <header className="shrink-0 bg-white/90 backdrop-blur-md border-b border-pink-100 px-3 py-2.5 flex items-center gap-2.5 shadow-sm">
+
+          {/* Sidebar toggle */}
           <button
             onClick={() => setShowHistory(v => !v)}
             title="Session history"
@@ -464,7 +617,7 @@ export default function App() {
             💗
           </div>
 
-          {/* Name + session badge */}
+          {/* Name + session */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <p className="text-sm font-bold text-gray-900 leading-tight">WHIMSEY AI</p>
@@ -479,7 +632,10 @@ export default function App() {
             </p>
           </div>
 
-          {/* Online dot */}
+          {/* Save button */}
+          <SaveButton status={saveStatus} onClick={manualSave} />
+
+          {/* Online */}
           <div className="shrink-0 flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span className="text-[11px] text-gray-400 font-medium hidden sm:block">Online</span>
@@ -492,7 +648,7 @@ export default function App() {
             className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-pink-500 to-violet-500 text-white text-xs font-semibold shadow-sm hover:shadow-md hover:from-pink-600 hover:to-violet-600 transition-all"
           >
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
             New
           </button>
@@ -511,21 +667,17 @@ export default function App() {
                   I know your server inside-out — every role, every bot, every permission toggle.
                   Ask me anything about setting it up! ❄️
                 </p>
-                {activeSession && sessions.filter(s => s.messages.length > 0).length > 0 && (
+                {activeSession && sessions.some(s => s.messages.length > 0) && (
                   <p className="text-[11px] text-pink-400 mt-2">
-                    Continuing in {activeSession.name} · I remember everything from your past conversations 💗
+                    {activeSession.name} · I remember everything from all your past conversations 💗
                   </p>
                 )}
               </div>
-
               {showSuggested && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-xl mt-2">
                   {SUGGESTED.map((q) => (
-                    <button
-                      key={q}
-                      onClick={() => send(q)}
-                      className="text-left text-xs bg-white border border-pink-100 hover:border-pink-300 hover:bg-pink-50 rounded-xl px-3 py-2.5 text-gray-700 transition-colors shadow-sm"
-                    >
+                    <button key={q} onClick={() => send(q)}
+                      className="text-left text-xs bg-white border border-pink-100 hover:border-pink-300 hover:bg-pink-50 rounded-xl px-3 py-2.5 text-gray-700 transition-colors shadow-sm">
                       {q}
                     </button>
                   ))}
@@ -550,16 +702,13 @@ export default function App() {
           )}
         </main>
 
-        {/* Suggested quick-reply pills */}
+        {/* Quick-reply pills */}
         {messages.length > 0 && !streaming && (
           <div className="shrink-0 px-4 pb-2">
             <div className="max-w-2xl mx-auto flex gap-2 flex-wrap">
               {SUGGESTED.slice(0, 3).map((q) => (
-                <button
-                  key={q}
-                  onClick={() => send(q)}
-                  className="text-[11px] bg-white border border-pink-100 hover:border-pink-300 hover:bg-pink-50 rounded-full px-3 py-1 text-gray-600 transition-colors shadow-sm truncate max-w-[200px]"
-                >
+                <button key={q} onClick={() => send(q)}
+                  className="text-[11px] bg-white border border-pink-100 hover:border-pink-300 hover:bg-pink-50 rounded-full px-3 py-1 text-gray-600 transition-colors shadow-sm truncate max-w-[200px]">
                   {q}
                 </button>
               ))}
@@ -567,7 +716,7 @@ export default function App() {
           </div>
         )}
 
-        {/* Input area */}
+        {/* Input */}
         <div className="shrink-0 bg-white/90 backdrop-blur-md border-t border-pink-100 px-4 py-3">
           <div className="max-w-2xl mx-auto flex gap-2 items-end">
             <textarea
@@ -592,12 +741,12 @@ export default function App() {
               aria-label="Send"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 2L11 13" /><path d="M22 2L15 22 11 13 2 9l20-7z" />
+                <path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/>
               </svg>
             </button>
           </div>
           <p className="text-center text-[10px] text-gray-300 mt-1.5">
-            Enter to send · Shift+Enter for new line · Powered by Replit AI
+            Enter to send · Shift+Enter for new line · All sessions saved to database 💗
           </p>
         </div>
       </div>
