@@ -153,14 +153,14 @@ export default function StyleSettings() {
             </p>
             <h1 className="text-base font-bold" style={{ color: "#1A0F2E" }}>✍️ Style Settings</h1>
           </div>
-          <Link href="/ai">
+          <a href="/whimsey-ai/">
             <button
               className="text-xs font-bold text-white px-3 py-2 rounded-xl shadow-sm hover:opacity-90 transition-opacity"
               style={{ background: "linear-gradient(135deg, #E91E8C, #7C3AED)" }}
             >
               Ask AI 💗
             </button>
-          </Link>
+          </a>
         </div>
       </header>
 

@@ -175,11 +175,11 @@ export default function DiscordDashboard() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Link href="/ai">
+          <a href="/whimsey-ai/">
             <button className="px-3 py-1.5 text-xs font-semibold bg-pink-500 hover:bg-pink-600 text-white rounded-lg transition-colors shadow-sm">
               Ask AI 💗
             </button>
-          </Link>
+          </a>
           <button
             onClick={fetchAll}
             disabled={loading}
@@ -265,11 +265,11 @@ export default function DiscordDashboard() {
               {missingBots.length > 0 ? (
                 <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between gap-3">
                   <p className="text-xs text-amber-700 font-medium">{missingBots.length} bot(s) still needed before mint day.</p>
-                  <Link href="/ai?q=Which bots do I still need to invite and how do I do it?">
+                  <a href={`/whimsey-ai/?q=${encodeURIComponent("Which bots do I still need to invite and how do I do it?")}`}>
                     <button className="shrink-0 text-xs font-semibold text-pink-600 hover:text-pink-700 transition-colors">
                       Get help →
                     </button>
-                  </Link>
+                  </a>
                 </div>
               ) : (
                 <div className="mt-4 pt-4 border-t border-gray-100">
@@ -537,11 +537,11 @@ export default function DiscordDashboard() {
             </div>
             <div className="mt-5 pt-5 border-t border-gray-100 text-center">
               <p className="text-xs text-gray-400 mb-2">Or let the AI write and post it for you</p>
-              <Link href="/ai">
+              <a href="/whimsey-ai/">
                 <button className="text-xs font-semibold text-pink-600 hover:text-pink-700 transition-colors">
                   Open AI Chat →
                 </button>
-              </Link>
+              </a>
             </div>
           </Section>
         )}

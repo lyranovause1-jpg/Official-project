@@ -222,14 +222,14 @@ export default function HomeJourney() {
                 </div>
               </div>
               {currentStep.action && (
-                <Link href={`/ai?q=${encodeURIComponent(currentStep.action)}`}>
+                <a href={`/whimsey-ai/?q=${encodeURIComponent(currentStep.action)}`}>
                   <button
                     className="w-full py-3 rounded-xl text-sm font-bold text-white transition-all hover:opacity-95 shadow-sm"
                     style={{ background: "linear-gradient(135deg, #E91E8C 0%, #7C3AED 100%)" }}
                   >
                     Get help with this →
                   </button>
-                </Link>
+                </a>
               )}
             </div>
           </div>
@@ -302,11 +302,11 @@ export default function HomeJourney() {
                       {step.simple}
                     </p>
                     {isCurrent && step.action && (
-                      <Link href={`/ai?q=${encodeURIComponent(step.action)}`}>
+                      <a href={`/whimsey-ai/?q=${encodeURIComponent(step.action)}`}>
                         <button className="mt-2 text-xs font-semibold transition-colors" style={{ color: "#E91E8C" }}>
                           Ask AI to help →
                         </button>
-                      </Link>
+                      </a>
                     )}
                   </div>
                 </div>
@@ -322,7 +322,7 @@ export default function HomeJourney() {
           </p>
           <div className="grid grid-cols-1 gap-2">
             {quickQuestions.map(q => (
-              <Link key={q} href={`/ai?q=${encodeURIComponent(q)}`}>
+              <a key={q} href={`/whimsey-ai/?q=${encodeURIComponent(q)}`}>
                 <button
                   className="w-full text-left text-sm bg-white rounded-xl px-4 py-3 transition-all hover:shadow-sm"
                   style={{
@@ -332,7 +332,7 @@ export default function HomeJourney() {
                 >
                   <span className="mr-2">→</span>{q}
                 </button>
-              </Link>
+              </a>
             ))}
           </div>
         </div>
@@ -356,14 +356,14 @@ export default function HomeJourney() {
           <p className="text-xs leading-relaxed mb-4 max-w-xs mx-auto" style={{ color: "#6E6183" }}>
             The AI knows your entire server and can explain anything in plain words — or just do it for you.
           </p>
-          <Link href="/ai">
+          <a href="/whimsey-ai/">
             <button
               className="w-full py-3 rounded-xl text-sm font-bold text-white shadow-sm transition-all hover:opacity-95"
               style={{ background: "linear-gradient(135deg, #E91E8C 0%, #7C3AED 100%)" }}
             >
               Talk to WHIMSEY AI 💗
             </button>
-          </Link>
+          </a>
           <p className="text-[11px] mt-2" style={{ color: "#9F7AEA" }}>No dumb questions here.</p>
         </div>
 

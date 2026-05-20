@@ -93,7 +93,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
         {/* Ask AI CTA + Footer */}
         <div className="px-3 pb-5 shrink-0 space-y-3" style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "16px" }}>
-          <Link href="/ai">
+          <a href="/whimsey-ai/">
             <button
               onClick={() => setMobileOpen(false)}
               className="w-full py-3 rounded-xl text-sm font-bold text-white shadow-lg transition-all hover:shadow-pink-500/25 hover:scale-[1.02] active:scale-95"
@@ -101,7 +101,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             >
               💗 Ask WHIMSEY AI
             </button>
-          </Link>
+          </a>
           <p className="text-center text-[10px]" style={{ color: "rgba(167,139,250,0.25)" }}>
             Your personal Discord expert
           </p>

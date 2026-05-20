@@ -161,14 +161,14 @@ Member's message: "${description.trim()}"`;
           </p>
           <h1 className="text-base font-bold" style={{ color: "#1A0F2E" }}>Ticket Assistant</h1>
         </div>
-        <Link href="/ai">
+        <a href="/whimsey-ai/">
           <button
             className="px-3 py-2 rounded-xl text-xs font-bold text-white shadow-sm transition-all hover:opacity-95"
             style={{ background: "linear-gradient(135deg, #E91E8C, #7C3AED)" }}
           >
             💗 Ask AI
           </button>
-        </Link>
+        </a>
       </header>
 
       <main className="max-w-2xl mx-auto px-5 py-8 space-y-6">

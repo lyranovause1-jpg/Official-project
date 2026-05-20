@@ -3,7 +3,6 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Switch, Route, Link } from "wouter";
 import docRaw from "@docs/WHIMSEY_DISCORD_SETUP.md?raw";
-import AiChat from "./AiChat";
 import DiscordDashboard from "./DiscordDashboard";
 import HomeJourney from "./HomeJourney";
 import ScenarioSimulator from "./ScenarioSimulator";
@@ -212,12 +211,12 @@ function DocsPage() {
             <span className="hidden sm:inline">Live Server</span>
           </button>
         </Link>
-        <Link href="/ai">
+        <a href="/whimsey-ai/">
           <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-pink-500 to-violet-500 text-white text-xs font-semibold shadow-sm hover:shadow-md hover:scale-105 active:scale-95 transition-all shrink-0">
             <span>💗</span>
             <span className="hidden sm:inline">Ask AI</span>
           </button>
-        </Link>
+        </a>
       </header>
       <div className="flex flex-1 overflow-hidden relative">
         {sidebarOpen && (
@@ -243,11 +242,11 @@ function DocsPage() {
           <div className="mx-2 mt-2 mb-1 rounded-xl bg-gradient-to-br from-pink-50 to-violet-50 border border-pink-100 p-3">
             <p className="text-[11px] font-semibold text-pink-700 mb-1">💗 WHIMSEY AI</p>
             <p className="text-[10px] text-gray-500 mb-2 leading-relaxed">Stuck on a step? Ask your personal Discord setup expert.</p>
-            <Link href="/ai">
+            <a href="/whimsey-ai/">
               <button className="w-full text-[11px] bg-gradient-to-r from-pink-500 to-violet-500 text-white rounded-lg py-1.5 font-semibold hover:opacity-90 transition-opacity">
                 Open AI Chat →
               </button>
-            </Link>
+            </a>
           </div>
           <nav className="flex-1 overflow-y-auto p-2">
             <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold px-2 py-2">
@@ -297,7 +296,7 @@ export default function App() {
     <AppLayout>
       <AutopilotBanner />
       <Switch>
-        <Route path="/ai">{() => <PageWrap><AiChat /></PageWrap>}</Route>
+        <Route path="/ai">{() => { window.location.replace("/whimsey-ai/" + window.location.search); return <></>; }}</Route>
         <Route path="/discord">{() => <PageWrap><DiscordDashboard /></PageWrap>}</Route>
         <Route path="/guide">{() => <PageWrap><DocsPage /></PageWrap>}</Route>
         <Route path="/simulator">{() => <PageWrap><ScenarioSimulator /></PageWrap>}</Route>
