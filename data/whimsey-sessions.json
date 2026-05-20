@@ -22,5 +22,17 @@
       }
     ],
     "count": 1
+  },
+  "d5a7382e-a00b-4f77-aead-969adb44e8f6": {
+    "sessions": [
+      {
+        "id": "79633ae7-e4a7-4525-95d6-dceef7c8767b",
+        "name": "Session 1",
+        "messages": [],
+        "createdAt": 1779259301477,
+        "updatedAt": 1779259301477
+      }
+    ],
+    "count": 1
   }
 }
