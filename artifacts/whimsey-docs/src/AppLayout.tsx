@@ -112,26 +112,46 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
 
         {/* Mobile topbar */}
-        <div
-          className="lg:hidden flex items-center gap-3 px-4 py-3 shrink-0"
-          style={{ background: "#FFFFFF", borderBottom: "1px solid rgba(124,58,237,0.1)" }}
-        >
-          <button
-            onClick={() => setMobileOpen(true)}
-            className="p-2 rounded-xl transition-colors"
-            style={{ background: "#F4F2FC" }}
-          >
-            <svg width="18" height="18" fill="none" stroke="#1A0F2E" strokeWidth="2" viewBox="0 0 24 24">
-              <path d="M3 12h18M3 6h18M3 18h18" strokeLinecap="round" />
-            </svg>
-          </button>
-          <div
-            className="w-7 h-7 rounded-lg flex items-center justify-center shadow-sm"
-            style={{ background: "linear-gradient(135deg, #FF66B2, #7C3AED)" }}
-          >
-            <span className="text-white text-xs font-black">W</span>
+        <div className="lg:hidden shrink-0" style={{ background: "#FFFFFF", borderBottom: "1px solid rgba(124,58,237,0.1)" }}>
+          {/* Logo row */}
+          <div className="flex items-center gap-3 px-4 pt-3 pb-2">
+            <div
+              className="w-7 h-7 rounded-lg flex items-center justify-center shadow-sm shrink-0"
+              style={{ background: "linear-gradient(135deg, #FF66B2, #7C3AED)" }}
+            >
+              <span className="text-white text-xs font-black">W</span>
+            </div>
+            <span className="text-sm font-bold flex-1" style={{ color: "#1A0F2E" }}>WHIMSEY</span>
+            <a
+              href="/whimsey-ai/"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-white text-xs font-bold shadow-sm"
+              style={{ background: "linear-gradient(135deg, #FF66B2, #7C3AED)" }}
+            >
+              💗 Ask AI
+            </a>
           </div>
-          <span className="text-sm font-bold" style={{ color: "#1A0F2E" }}>WHIMSEY</span>
+          {/* Scrollable nav strip */}
+          <div className="flex gap-1 overflow-x-auto px-3 pb-2.5 scrollbar-hide">
+            {NAV_ITEMS.map(item => {
+              const isActive = item.href === "/" ? location === "/" : location.startsWith(item.href);
+              return (
+                <Link key={item.href} href={item.href}>
+                  <button
+                    className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all"
+                    style={{
+                      background: isActive ? "rgba(255,102,178,0.12)" : "rgba(244,242,252,0.8)",
+                      color: isActive ? "#E91E8C" : "#6E6183",
+                      border: isActive ? "1px solid rgba(233,30,140,0.2)" : "1px solid transparent",
+                    }}
+                  >
+                    <span>{item.emoji}</span>
+                    <span>{item.label}</span>
+                    {item.live && <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />}
+                  </button>
+                </Link>
+              );
+            })}
+          </div>
         </div>
 
         {/* Page content */}

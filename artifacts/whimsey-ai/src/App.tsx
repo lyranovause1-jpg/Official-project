@@ -595,6 +595,18 @@ export default function App() {
         {/* Header */}
         <header className="shrink-0 bg-white/90 backdrop-blur-md border-b border-pink-100 px-3 py-2.5 flex items-center gap-2.5 shadow-sm">
 
+          {/* Back to Setup Guide */}
+          <a
+            href="/"
+            className="shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-pink-100 text-pink-500 hover:bg-pink-50 hover:border-pink-200 transition-all text-xs font-semibold"
+            title="Back to Setup Guide"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5M12 5l-7 7 7 7"/>
+            </svg>
+            <span className="hidden sm:inline">Setup Guide</span>
+          </a>
+
           {/* Sidebar toggle */}
           <button
             onClick={() => setShowHistory(v => !v)}
