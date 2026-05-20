@@ -10,5 +10,17 @@
       }
     ],
     "count": 1
+  },
+  "0cf79f97-3544-4159-8e16-10878a32c395": {
+    "sessions": [
+      {
+        "id": "6c1788d3-2b0b-4360-8823-c038c6b401ef",
+        "name": "Session 1",
+        "messages": [],
+        "createdAt": 1779258465898,
+        "updatedAt": 1779258465898
+      }
+    ],
+    "count": 1
   }
 }

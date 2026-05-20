@@ -73,7 +73,7 @@ export default function StyleSettings() {
           if (!line.startsWith("data:")) continue;
           try {
             const d = JSON.parse(line.slice(5).trim());
-            if (d.token) setPreviewOutput(p => p + d.token);
+            if (d.content) setPreviewOutput(p => p + d.content);
           } catch { /* ignore */ }
         }
       }
