@@ -284,36 +284,41 @@ export default function AiChat() {
   const hasHistory = messages.length > 0;
 
   return (
-    <div className="flex flex-col h-screen bg-[#fafafa]">
+    <div className="flex flex-col h-full" style={{ background: "#F4F2FC" }}>
 
       {showClear && <ClearModal onConfirm={clearHistory} onCancel={() => setShowClear(false)} />}
 
       {/* ── Header ── */}
-      <header className="shrink-0 bg-white border-b border-gray-200 px-5 py-3 flex items-center gap-3">
-        <Link href="/">
-          <button className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-700" aria-label="Back">
-            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path d="M19 12H5M12 5l-7 7 7 7" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-        </Link>
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-500 to-violet-600 flex items-center justify-center text-xs font-bold text-white shadow-sm">
-          W
+      <header
+        className="shrink-0 bg-white px-5 py-4 flex items-center gap-3"
+        style={{ borderBottom: "1px solid rgba(124,58,237,0.1)" }}
+      >
+        <div
+          className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold text-white shadow-sm shrink-0"
+          style={{ background: "linear-gradient(135deg, #FF66B2 0%, #7C3AED 100%)" }}
+        >
+          💗
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-gray-900 leading-tight">WHIMSEY AI</p>
-          <p className="text-[11px] text-gray-400">Live Discord access · $CNDY · 30,000 NFTs</p>
+          <p className="text-sm font-bold leading-tight" style={{ color: "#1A0F2E" }}>WHIMSEY AI</p>
+          <p className="text-[11px]" style={{ color: "#9F7AEA" }}>Live Discord access · $CNDY · 30,000 NFTs</p>
         </div>
         <div className="flex items-center gap-2">
           {savedLabel && (
             <span className="text-[10px] font-medium text-emerald-500">{savedLabel}</span>
           )}
-          <div className="flex items-center gap-1.5 px-2 py-1 bg-emerald-50 rounded-lg border border-emerald-100">
+          <div
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl"
+            style={{ background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.2)" }}
+          >
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[11px] text-emerald-700 font-medium">Live</span>
+            <span className="text-[11px] font-semibold text-emerald-700">Live</span>
           </div>
           <Link href="/discord">
-            <button className="px-2.5 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors border border-gray-200">
+            <button
+              className="px-2.5 py-1.5 text-xs font-medium rounded-xl transition-colors"
+              style={{ background: "#F4F2FC", color: "#6E6183", border: "1px solid rgba(124,58,237,0.12)" }}
+            >
               Server
             </button>
           </Link>
@@ -321,7 +326,8 @@ export default function AiChat() {
             <button
               onClick={() => setShowClear(true)}
               title="New conversation"
-              className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-700"
+              className="p-1.5 rounded-xl transition-colors"
+              style={{ background: "#F4F2FC", color: "#9F7AEA" }}
             >
               <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path d="M12 5v14M5 12h14" strokeLinecap="round" strokeLinejoin="round" />

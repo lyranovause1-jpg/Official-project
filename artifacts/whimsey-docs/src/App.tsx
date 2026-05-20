@@ -12,11 +12,10 @@ import TicketAssistant from "./TicketAssistant";
 import AutopilotBanner from "./AutopilotBanner";
 import PrivateFeed from "./PrivateFeed";
 import StyleSettings from "./StyleSettings";
+import AppLayout from "./AppLayout";
 
 type Mode = "read" | "do" | "reference" | "mixed" | null;
 type Heading = { id: string; text: string; clean: string; level: number; mode: Mode };
-
-/* ── Mode detection ──────────────────────────────────────────────────── */
 
 function detectMode(raw: string): Mode {
   const t = raw.toLowerCase();
@@ -37,8 +36,6 @@ function cleanTitle(raw: string): string {
     .trim();
 }
 
-/* ── Badge config ────────────────────────────────────────────────────── */
-
 const BADGE: Record<
   NonNullable<Mode>,
   { label: string; badge: string; border: string; sidebar: string; dot: string }
@@ -49,14 +46,8 @@ const BADGE: Record<
   mixed:     { label: "✅ DO / 📚 REF", badge: "bg-amber-100 text-amber-700 border border-amber-200",  border: "border-l-4 border-amber-300",   sidebar: "text-amber-700",  dot: "bg-amber-400" },
 };
 
-/* ── Helpers ─────────────────────────────────────────────────────────── */
-
 function slugify(text: string) {
-  return text
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-");
+  return text.toLowerCase().replace(/[^\w\s-]/g, "").trim().replace(/\s+/g, "-");
 }
 
 function extractHeadings(markdown: string): Heading[] {
@@ -74,8 +65,6 @@ function extractHeadings(markdown: string): Heading[] {
   return headings;
 }
 
-/* ── Section badge component ─────────────────────────────────────────── */
-
 function ModeBadge({ mode }: { mode: NonNullable<Mode> }) {
   const cfg = BADGE[mode];
   return (
@@ -85,14 +74,11 @@ function ModeBadge({ mode }: { mode: NonNullable<Mode> }) {
   );
 }
 
-/* ── Heading wrappers ────────────────────────────────────────────────── */
-
 function H2({ raw, children }: { raw: string; children: React.ReactNode }) {
   const mode  = detectMode(raw);
   const clean = mode ? cleanTitle(raw) : raw;
   const id    = slugify(raw);
   const cfg   = mode ? BADGE[mode] : null;
-
   return (
     <div className={`mt-10 mb-1 rounded-r-xl ${cfg ? cfg.border + " pl-4 pr-3 py-3 bg-white" : ""}`}>
       <h2 id={id} className="text-xl font-bold text-foreground scroll-mt-20 flex flex-wrap items-center gap-1">
@@ -112,8 +98,6 @@ function H3({ children }: { children: React.ReactNode }) {
     </h3>
   );
 }
-
-/* ── Docs page ───────────────────────────────────────────────────────── */
 
 function DocsPage() {
   const [search, setSearch]           = useState("");
@@ -156,12 +140,10 @@ function DocsPage() {
     },
     h2: ({ children }) => <H2 raw={String(children)}>{children}</H2>,
     h3: ({ children }) => <H3>{children}</H3>,
-
     p:  ({ children }) => <p  className="text-sm leading-relaxed text-foreground/90 mb-3">{children}</p>,
     ul: ({ children }) => <ul className="list-disc list-outside pl-5 mb-3 space-y-1 text-sm text-foreground/90">{children}</ul>,
     ol: ({ children }) => <ol className="list-decimal list-outside pl-5 mb-3 space-y-1 text-sm text-foreground/90">{children}</ol>,
     li: ({ children }) => <li className="leading-relaxed">{children}</li>,
-
     code: ({ children, className }) => {
       const isBlock = className?.includes("language-");
       if (isBlock) {
@@ -173,13 +155,11 @@ function DocsPage() {
       }
       return <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono text-primary">{children}</code>;
     },
-
     blockquote: ({ children }) => (
       <blockquote className="border-l-4 border-primary/40 pl-4 italic text-muted-foreground text-sm my-3 bg-muted/40 py-2 pr-3 rounded-r-lg">
         {children}
       </blockquote>
     ),
-
     table:  ({ children }) => (
       <div className="overflow-x-auto mb-4">
         <table className="w-full text-sm border-collapse border border-border rounded-lg overflow-hidden">{children}</table>
@@ -187,7 +167,6 @@ function DocsPage() {
     ),
     th: ({ children }) => <th className="bg-muted px-3 py-2 text-left font-semibold text-foreground border border-border text-xs">{children}</th>,
     td: ({ children }) => <td className="px-3 py-2 border border-border text-foreground/90 text-xs">{children}</td>,
-
     hr:     () => <hr className="border-border my-6" />,
     strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
     a:      ({ children, href }) => (
@@ -199,8 +178,6 @@ function DocsPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
-
-      {/* ── Top bar ── */}
       <header className="sticky top-0 z-50 bg-card/90 backdrop-blur border-b border-border px-4 py-3 flex items-center gap-3">
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -214,8 +191,6 @@ function DocsPage() {
         <span className="text-sm font-semibold text-foreground truncate flex-1 min-w-0">
           💗 WHIMSEY Discord Setup Guide
         </span>
-
-        {/* Legend pills */}
         <div className="hidden lg:flex items-center gap-1.5">
           {(["read", "do", "reference"] as const).map((m) => (
             <span key={m} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${BADGE[m].badge}`}>
@@ -224,7 +199,6 @@ function DocsPage() {
             </span>
           ))}
         </div>
-
         <input
           type="search"
           placeholder="Search sections…"
@@ -232,16 +206,12 @@ function DocsPage() {
           onChange={(e) => { setSearch(e.target.value); setSidebarOpen(true); }}
           className="hidden sm:block w-44 text-xs bg-muted border border-border rounded-lg px-3 py-1.5 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/30"
         />
-
-        {/* Discord Dashboard button */}
         <Link href="/discord">
           <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-500 text-white text-xs font-semibold shadow-sm hover:shadow-md hover:scale-105 active:scale-95 transition-all shrink-0">
             <span>🌌</span>
             <span className="hidden sm:inline">Live Server</span>
           </button>
         </Link>
-
-        {/* AI Chat button */}
         <Link href="/ai">
           <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-pink-500 to-violet-500 text-white text-xs font-semibold shadow-sm hover:shadow-md hover:scale-105 active:scale-95 transition-all shrink-0">
             <span>💗</span>
@@ -249,13 +219,10 @@ function DocsPage() {
           </button>
         </Link>
       </header>
-
       <div className="flex flex-1 overflow-hidden relative">
         {sidebarOpen && (
           <div className="fixed inset-0 bg-black/30 z-30 sm:hidden" onClick={() => setSidebarOpen(false)} />
         )}
-
-        {/* ── Sidebar ── */}
         <aside
           className={`
             fixed sm:sticky top-[53px] h-[calc(100vh-53px)] z-40
@@ -273,8 +240,6 @@ function DocsPage() {
               className="w-full text-xs bg-muted border border-border rounded-lg px-3 py-1.5 text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/30"
             />
           </div>
-
-          {/* AI promo box in sidebar */}
           <div className="mx-2 mt-2 mb-1 rounded-xl bg-gradient-to-br from-pink-50 to-violet-50 border border-pink-100 p-3">
             <p className="text-[11px] font-semibold text-pink-700 mb-1">💗 WHIMSEY AI</p>
             <p className="text-[10px] text-gray-500 mb-2 leading-relaxed">Stuck on a step? Ask your personal Discord setup expert.</p>
@@ -284,7 +249,6 @@ function DocsPage() {
               </button>
             </Link>
           </div>
-
           <nav className="flex-1 overflow-y-auto p-2">
             <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold px-2 py-2">
               {search ? `${filtered.length} results` : "Contents"}
@@ -311,8 +275,6 @@ function DocsPage() {
             })}
           </nav>
         </aside>
-
-        {/* ── Main content ── */}
         <main
           ref={contentRef}
           className="flex-1 overflow-y-auto px-4 py-6 sm:px-8 lg:px-12 max-w-4xl mx-auto w-full"
@@ -326,16 +288,13 @@ function DocsPage() {
   );
 }
 
-/* ── Root with routing ───────────────────────────────────────────────── */
-
-/* ── Page transition wrapper ─────────────────────────────────────────── */
 function PageWrap({ children }: { children: React.ReactNode }) {
   return <div className="page-enter">{children}</div>;
 }
 
 export default function App() {
   return (
-    <>
+    <AppLayout>
       <AutopilotBanner />
       <Switch>
         <Route path="/ai">{() => <PageWrap><AiChat /></PageWrap>}</Route>
@@ -348,6 +307,6 @@ export default function App() {
         <Route path="/style">{() => <PageWrap><StyleSettings /></PageWrap>}</Route>
         <Route>{() => <PageWrap><HomeJourney /></PageWrap>}</Route>
       </Switch>
-    </>
+    </AppLayout>
   );
 }

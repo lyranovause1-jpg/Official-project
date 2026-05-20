@@ -194,25 +194,22 @@ export default function PrivateFeed() {
   const firstNewIdx = filtered.findIndex(isNew);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen flex flex-col" style={{ background: "#F4F2FC" }}>
 
-      {/* ── Header ─────────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-40 bg-white border-b border-gray-200 px-4 py-3">
+      {/* ── Header ── */}
+      <header
+        className="sticky top-0 z-40 bg-white px-4 py-3"
+        style={{ borderBottom: "1px solid rgba(124,58,237,0.1)" }}
+      >
         <div className="max-w-4xl mx-auto flex items-center gap-3">
-          <Link href="/">
-            <button className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
-              <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-          </Link>
-
           <div className="flex-1 min-w-0">
-            <h1 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-              <span>📡</span>
-              Private Channel Feed
+            <p className="text-[10px] font-bold tracking-[0.15em] uppercase mb-0.5" style={{ color: "#E91E8C" }}>
+              WHIMSEY
+            </p>
+            <h1 className="text-base font-bold flex items-center gap-2" style={{ color: "#1A0F2E" }}>
+              📡 Private Channel Feed
               {data && (
-                <span className="text-xs font-normal text-gray-400 ml-1">
+                <span className="text-xs font-normal" style={{ color: "#9F7AEA" }}>
                   {data.channelCount} channels · {data.total} messages
                 </span>
               )}
@@ -220,14 +217,15 @@ export default function PrivateFeed() {
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
-            <div className="hidden sm:flex items-center gap-1.5 text-xs text-gray-400">
+            <div className="hidden sm:flex items-center gap-1.5 text-xs" style={{ color: "#9F7AEA" }}>
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               {countdown}s
             </div>
             <button
               onClick={handleRefresh}
               disabled={loading}
-              className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-40"
+              className="p-1.5 rounded-xl transition-colors disabled:opacity-40"
+              style={{ background: "#F4F2FC", color: "#9F7AEA" }}
               title="Refresh now"
             >
               <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"

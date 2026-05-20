@@ -152,26 +152,25 @@ export default function DiscordDashboard() {
   }, {});
 
   return (
-    <div className="min-h-screen bg-[#fafafa]">
+    <div className="min-h-screen" style={{ background: "#F4F2FC" }}>
 
       {/* ── Header ── */}
-      <header className="sticky top-0 z-20 bg-white border-b border-gray-200 px-5 py-3 flex items-center gap-3">
-        <Link href="/">
-          <button className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-700" aria-label="Back">
-            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path d="M19 12H5M12 5l-7 7 7 7" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-        </Link>
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-xs font-bold text-white shadow-sm">
+      <header
+        className="sticky top-0 z-20 bg-white px-5 py-4 flex items-center gap-3"
+        style={{ borderBottom: "1px solid rgba(124,58,237,0.1)" }}
+      >
+        <div
+          className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-white shadow-sm shrink-0"
+          style={{ background: "linear-gradient(135deg, #7C3AED, #4F46E5)" }}
+        >
           {server?.icon
-            ? <img src={server.icon} className="w-8 h-8 rounded-full" alt="" />
-            : "W"
+            ? <img src={server.icon} className="w-9 h-9 rounded-xl" alt="" />
+            : "🌌"
           }
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-gray-900 leading-tight">{server?.name || "WHIMSEY"}</p>
-          <p className="text-[11px] text-gray-400">
+          <p className="text-sm font-bold leading-tight" style={{ color: "#1A0F2E" }}>{server?.name || "WHIMSEY"}</p>
+          <p className="text-[11px]" style={{ color: "#9F7AEA" }}>
             {lastRefresh ? `Updated ${lastRefresh.toLocaleTimeString()}` : "Loading…"}
           </p>
         </div>

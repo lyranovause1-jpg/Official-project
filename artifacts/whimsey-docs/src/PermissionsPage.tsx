@@ -234,38 +234,27 @@ function EntityCard({ entity }: { entity: Entity }) {
 export default function PermissionsPage() {
   const content = useContent(); void content;
   return (
-    <div className="min-h-screen bg-[#fafafa]">
+    <div className="min-h-screen" style={{ background: "#F4F2FC" }}>
 
-      {/* ── Nav ── */}
-      <header className="sticky top-0 z-20 bg-white border-b border-gray-100 px-5 py-3 flex items-center gap-3">
-        <div className="flex items-center gap-2.5 flex-1">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-pink-500 to-violet-600 flex items-center justify-center shadow-sm">
-            <span className="text-white text-xs font-bold">W</span>
-          </div>
-          <span className="text-sm font-semibold text-gray-900 tracking-tight">WHIMSEY</span>
+      {/* ── Page header ── */}
+      <header
+        className="sticky top-0 z-20 bg-white px-6 py-4 flex items-center justify-between"
+        style={{ borderBottom: "1px solid rgba(124,58,237,0.1)" }}
+      >
+        <div>
+          <p className="text-[10px] font-bold tracking-[0.15em] uppercase mb-0.5" style={{ color: "#E91E8C" }}>
+            WHIMSEY
+          </p>
+          <h1 className="text-base font-bold" style={{ color: "#1A0F2E" }}>Bot Permissions</h1>
         </div>
-        <nav className="flex items-center gap-2">
-          <Link href="/">
-            <button className="px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-              Home
-            </button>
-          </Link>
-          <Link href="/simulator">
-            <button className="px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-              Drills
-            </button>
-          </Link>
-          <Link href="/tickets">
-            <button className="px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-              Tickets
-            </button>
-          </Link>
-          <Link href="/ai">
-            <button className="px-3 py-1.5 text-xs font-semibold bg-pink-500 hover:bg-pink-600 text-white rounded-lg transition-colors shadow-sm">
-              💗 Ask AI
-            </button>
-          </Link>
-        </nav>
+        <Link href="/ai">
+          <button
+            className="px-3 py-2 rounded-xl text-xs font-bold text-white shadow-sm transition-all hover:opacity-95"
+            style={{ background: "linear-gradient(135deg, #E91E8C, #7C3AED)" }}
+          >
+            💗 Ask AI
+          </button>
+        </Link>
       </header>
 
       <main className="max-w-4xl mx-auto px-5 py-8 space-y-6">
