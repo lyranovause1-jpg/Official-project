@@ -176,7 +176,7 @@ function DocsPage() {
   };
 
   return (
-    <div className="h-full bg-background text-foreground flex flex-col">
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
       <header className="sticky top-0 z-50 bg-card/90 backdrop-blur border-b border-border px-4 py-3 flex items-center gap-3">
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -218,13 +218,13 @@ function DocsPage() {
           </button>
         </a>
       </header>
-      <div className="flex flex-1 overflow-hidden relative min-h-0">
+      <div className="flex flex-1 relative">
         {sidebarOpen && (
           <div className="fixed inset-0 bg-black/30 z-30 sm:hidden" onClick={() => setSidebarOpen(false)} />
         )}
         <aside
           className={`
-            fixed sm:relative sm:top-auto top-[53px] h-[calc(100vh-53px)] sm:h-full z-40 sm:z-auto
+            fixed sm:sticky top-[53px] h-[calc(100vh-53px)] z-40 sm:z-auto
             w-64 shrink-0 bg-card border-r border-border flex flex-col
             transition-transform duration-200
             ${sidebarOpen ? "translate-x-0" : "-translate-x-full sm:translate-x-0"}
@@ -276,7 +276,7 @@ function DocsPage() {
         </aside>
         <main
           ref={contentRef}
-          className="flex-1 overflow-y-auto px-4 py-6 sm:px-8 lg:px-12 max-w-4xl mx-auto w-full"
+          className="flex-1 px-4 py-6 sm:px-8 lg:px-12 max-w-4xl mx-auto w-full"
         >
           <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
             {docRaw}
