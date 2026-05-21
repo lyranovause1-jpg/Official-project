@@ -29,7 +29,7 @@ export interface Decision {
 
 export const contentState = {
   pageHeaders: {
-    home:        { greeting: "Hey Lyra 🌷", subtitle: "Setting up Discord for the first time is genuinely hard. You're not confused because you're doing it wrong — you're confused because it's a lot. That's completely normal. One step at a time." },
+    home:        { greeting: "Hey Lyra", subtitle: "Setting up Discord for the first time is genuinely hard. You're not confused because you're doing it wrong — you're confused because it's a lot. That's completely normal. One step at a time." },
     discord:     { title: "🌌 Live Server Dashboard", subtitle: "Everything happening in your Discord right now." },
     style:       { title: "✍️ Text Style Settings", subtitle: "Define how WHIMSEY AI drafts messages — saved as permanent defaults" },
     ai:          { title: "💗 WHIMSEY AI", subtitle: "Ask me anything about your server." },

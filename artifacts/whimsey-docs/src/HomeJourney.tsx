@@ -85,7 +85,7 @@ export default function HomeJourney() {
   });
   const [showGuide, setShowGuide] = useState(false);
 
-  const greeting       = content?.pageHeaders?.home?.greeting  ?? "Hey Lyra 🌷";
+  const greeting       = content?.pageHeaders?.home?.greeting  ?? "Hey Lyra";
   const subtitle       = content?.pageHeaders?.home?.subtitle  ?? "Setting up Discord for the first time is genuinely hard. You're not confused because you're doing it wrong — you're confused because it's a lot. That's completely normal. One step at a time.";
   const quickQuestions = content?.quickQuestions ?? QUICK_QUESTIONS;
 
@@ -138,19 +138,19 @@ export default function HomeJourney() {
             <div className="flex items-center gap-3 mt-4 flex-wrap">
               {status.memberCount > 0 && (
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl" style={{ background: "rgba(255,255,255,0.08)" }}>
-                  <span className="text-sm">👥</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-white/50 shrink-0" />
                   <span className="text-xs font-semibold text-white">{status.memberCount} members</span>
                 </div>
               )}
               {status.channelCount > 0 && (
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl" style={{ background: "rgba(255,255,255,0.08)" }}>
-                  <span className="text-sm">📢</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-white/50 shrink-0" />
                   <span className="text-xs font-semibold text-white">{status.channelCount} channels</span>
                 </div>
               )}
               {status.roleCount > 0 && (
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl" style={{ background: "rgba(255,255,255,0.08)" }}>
-                  <span className="text-sm">🏷️</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-white/50 shrink-0" />
                   <span className="text-xs font-semibold text-white">{status.roleCount} roles</span>
                 </div>
               )}
@@ -211,10 +211,10 @@ export default function HomeJourney() {
             <div className="bg-white p-5">
               <div className="flex items-start gap-4 mb-4">
                 <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0 shadow-sm"
-                  style={{ background: "rgba(232,30,140,0.08)", border: "1px solid rgba(232,30,140,0.15)" }}
+                  className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black shrink-0 shadow-sm"
+                  style={{ background: "rgba(232,30,140,0.08)", border: "1px solid rgba(232,30,140,0.15)", color: "#E91E8C" }}
                 >
-                  {currentStep.emoji}
+                  {currentIdx + 1}
                 </div>
                 <div>
                   <h2 className="text-base font-bold mb-1" style={{ color: "#1A0F2E" }}>{currentStep.title}</h2>
@@ -351,7 +351,6 @@ export default function HomeJourney() {
           className="rounded-2xl p-6 text-center shadow-sm"
           style={{ background: "#FFFFFF", border: "1px solid rgba(124,58,237,0.1)" }}
         >
-          <p className="text-2xl mb-2">🌷</p>
           <p className="text-sm font-bold mb-1" style={{ color: "#1A0F2E" }}>Confused? Stuck? Just ask.</p>
           <p className="text-xs leading-relaxed mb-4 max-w-xs mx-auto" style={{ color: "#6E6183" }}>
             The AI knows your entire server and can explain anything in plain words — or just do it for you.
@@ -361,7 +360,7 @@ export default function HomeJourney() {
               className="w-full py-3 rounded-xl text-sm font-bold text-white shadow-sm transition-all hover:opacity-95"
               style={{ background: "linear-gradient(135deg, #E91E8C 0%, #7C3AED 100%)" }}
             >
-              Talk to WHIMSEY AI 💗
+              Talk to WHIMSEY AI
             </button>
           </a>
           <p className="text-[11px] mt-2" style={{ color: "#9F7AEA" }}>No dumb questions here.</p>
@@ -385,7 +384,6 @@ export default function HomeJourney() {
       {showGuide && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center px-0 sm:px-4">
           <div className="bg-white w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl p-6 shadow-2xl" style={{ border: "1px solid rgba(124,58,237,0.1)" }}>
-            <p className="text-2xl text-center mb-3">📖</p>
             <h2 className="text-base font-bold text-center mb-1" style={{ color: "#1A0F2E" }}>The Full Technical Guide</h2>
             <p className="text-sm text-center mt-1 mb-5 leading-relaxed" style={{ color: "#6E6183" }}>
               4,000+ lines of detail. Complete — but a lot. Only open it if you need to look something specific up.

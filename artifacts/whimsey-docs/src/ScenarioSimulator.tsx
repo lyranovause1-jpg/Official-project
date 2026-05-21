@@ -169,7 +169,7 @@ export default function ScenarioSimulator() {
             className="px-3 py-2 rounded-xl text-xs font-bold text-white shadow-sm transition-all hover:opacity-95"
             style={{ background: "linear-gradient(135deg, #E91E8C, #7C3AED)" }}
           >
-            💗 Ask AI
+            Ask AI
           </button>
         </a>
       </header>
@@ -224,8 +224,7 @@ export default function ScenarioSimulator() {
         </section>
 
         {/* ── Footer tip ── */}
-        <div className="rounded-2xl bg-gradient-to-br from-pink-50 to-violet-50 border border-pink-100 p-5 flex gap-4">
-          <span className="text-2xl shrink-0">💗</span>
+        <div className="rounded-2xl bg-gradient-to-br from-pink-50 to-violet-50 border border-pink-100 p-5">
           <div>
             <p className="text-sm font-semibold text-gray-800 mb-1">How drills work</p>
             <p className="text-xs text-gray-500 leading-relaxed">

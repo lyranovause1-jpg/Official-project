@@ -166,7 +166,7 @@ Member's message: "${description.trim()}"`;
             className="px-3 py-2 rounded-xl text-xs font-bold text-white shadow-sm transition-all hover:opacity-95"
             style={{ background: "linear-gradient(135deg, #E91E8C, #7C3AED)" }}
           >
-            💗 Ask AI
+            Ask AI
           </button>
         </a>
       </header>
@@ -217,7 +217,6 @@ Member's message: "${description.trim()}"`;
                   onClick={() => { setCategory(c); setStep("describe"); }}
                   className="text-left p-4 bg-white border border-gray-200 rounded-2xl hover:border-pink-300 hover:shadow-sm transition-all group"
                 >
-                  <div className="text-xl mb-2">{c.emoji}</div>
                   <p className="text-sm font-semibold text-gray-900 group-hover:text-pink-600 transition-colors">{c.label}</p>
                   <p className="text-[11px] text-gray-400 mt-1 leading-relaxed">{c.hint}</p>
                 </button>
@@ -241,7 +240,7 @@ Member's message: "${description.trim()}"`;
                 Change
               </button>
               <span className="inline-flex items-center gap-1.5 text-xs font-semibold bg-pink-50 text-pink-700 border border-pink-100 rounded-full px-2.5 py-1">
-                {cat.emoji} {cat.label}
+                {cat.label}
               </span>
             </div>
 
@@ -290,7 +289,7 @@ Member's message: "${description.trim()}"`;
             {/* Context chip */}
             <div className="flex items-center justify-between">
               <span className="inline-flex items-center gap-1.5 text-xs font-semibold bg-pink-50 text-pink-700 border border-pink-100 rounded-full px-2.5 py-1">
-                {cat?.emoji} {cat?.label}
+                {cat?.label}
                 {memberName && <span className="text-pink-400 font-normal">· {memberName}</span>}
               </span>
               <button onClick={reset} className="text-xs text-gray-400 hover:text-gray-600 transition-colors">

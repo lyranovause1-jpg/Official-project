@@ -172,7 +172,7 @@ function EntityCard({ entity }: { entity: Entity }) {
     <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
       {/* Header */}
       <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-3">
-        <span className="text-xl">{entity.icon}</span>
+        <span className={`w-2 h-2 rounded-full shrink-0 ${entity.dotColor}`} />
         <div>
           <h2 className="text-sm font-bold text-gray-900">{entity.name}</h2>
         </div>
@@ -252,7 +252,7 @@ export default function PermissionsPage() {
             className="px-3 py-2 rounded-xl text-xs font-bold text-white shadow-sm transition-all hover:opacity-95"
             style={{ background: "linear-gradient(135deg, #E91E8C, #7C3AED)" }}
           >
-            💗 Ask AI
+            Ask AI
           </button>
         </a>
       </header>

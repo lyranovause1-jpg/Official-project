@@ -2317,7 +2317,7 @@ const DISCORD_TOOLS: any[] = [
           page: { type: "string", description: "Page slug: home, discord, style, ai, tickets, permissions, updates, simulator" },
           title:    { type: "string", description: "New page title (shown in the header bar)" },
           subtitle: { type: "string", description: "New subtitle/description shown under the title" },
-          greeting: { type: "string", description: "New greeting text (home page only, e.g. 'Hey Lyra 🌷')" },
+          greeting: { type: "string", description: "New greeting text (home page only, e.g. 'Hey Lyra')" },
         },
       },
     },
