@@ -15,6 +15,7 @@ interface Session {
 
 /* ── API config ──────────────────────────────────────────────────────── */
 const BASE      = import.meta.env.BASE_URL;
+const AVATAR    = `${BASE}avatar.png`;
 const API_ROOT  = BASE.replace(/\/$/, "").replace(/^\/whimsey-ai/, "");
 const CHAT_API  = `${API_ROOT}/api/whimsey/chat`;
 const sessionsUrl = (id: string) => `${API_ROOT}/api/sessions/${id}`;
@@ -151,7 +152,7 @@ function MessageBubble({ msg }: { msg: Message }) {
       <div className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shadow-sm ${
         isUser ? "bg-pink-500 text-white" : "bg-gradient-to-br from-violet-500 to-pink-500 text-white"
       }`}>
-        {isUser ? "You" : "💗"}
+        {isUser ? <span className="text-[10px] font-bold">You</span> : <img src={AVATAR} alt="W" className="w-full h-full object-cover" />}
       </div>
       <div className={`flex flex-col gap-1 max-w-[78%] ${isUser ? "items-end" : "items-start"}`}>
         <div className={`rounded-2xl px-4 py-3 shadow-sm text-sm leading-relaxed ${
@@ -214,7 +215,6 @@ function SessionSidebar({ sessions, activeId, saveStatus, onSwitch, onNew, onSav
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-pink-100 bg-gradient-to-r from-pink-50 to-violet-50">
         <div className="flex items-center gap-2">
-          <span className="text-base">🗂️</span>
           <span className="font-bold text-gray-800 text-sm">Session History</span>
           <span className="text-[10px] bg-pink-100 text-pink-500 px-1.5 py-0.5 rounded-full font-semibold">
             {sessions.length}
@@ -269,11 +269,9 @@ function SessionSidebar({ sessions, activeId, saveStatus, onSwitch, onNew, onSav
               <p className="text-[11px] text-gray-400 leading-snug line-clamp-2 mb-2">{preview}</p>
               <div className="space-y-0.5">
                 <div className="flex items-center gap-1.5 text-[10px] text-gray-300">
-                  <span>🕐</span>
                   <span>Started: {fmtFull(session.createdAt)}</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-[10px] text-gray-300">
-                  <span>💬</span>
                   <span>{session.messages.length} message{session.messages.length !== 1 ? "s" : ""} · Last: {fmtFull(session.updatedAt)}</span>
                 </div>
               </div>
@@ -285,7 +283,7 @@ function SessionSidebar({ sessions, activeId, saveStatus, onSwitch, onNew, onSav
       {/* Footer */}
       <div className="px-4 py-3 border-t border-pink-50 bg-gradient-to-r from-pink-50/50 to-violet-50/50">
         <p className="text-[10px] text-gray-400 text-center leading-relaxed">
-          Sessions saved to database — safe across browsers, devices & project moves 💗
+          Sessions saved to database — synced across browsers and devices.
         </p>
       </div>
     </div>
@@ -552,7 +550,7 @@ export default function App() {
       if ((err as Error).name !== "AbortError") {
         setMessages(prev => {
           const copy = [...prev];
-          copy[copy.length - 1] = { ...copy[copy.length - 1], content: "Something went wrong. Please try again. 💗" };
+          copy[copy.length - 1] = { ...copy[copy.length - 1], content: "Something went wrong. Please try again." };
           return copy;
         });
       }
@@ -625,8 +623,8 @@ export default function App() {
           </button>
 
           {/* Avatar */}
-          <div className="shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-violet-500 flex items-center justify-center text-base shadow">
-            💗
+          <div className="shrink-0 w-8 h-8 rounded-full overflow-hidden shadow border border-pink-100">
+            <img src={AVATAR} alt="WHIMSEY" className="w-full h-full object-cover" />
           </div>
 
           {/* Name + session */}
@@ -667,21 +665,21 @@ export default function App() {
         </header>
 
         {/* Messages */}
-        <main className="flex-1 overflow-y-auto px-4 py-6">
+        <main className="flex-1 overflow-y-auto scroll-smooth px-4 py-6">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center gap-4 pb-8">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-pink-400 to-violet-500 flex items-center justify-center text-4xl shadow-lg">
-                💗
+              <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg border-2 border-pink-100">
+                <img src={AVATAR} alt="WHIMSEY" className="w-full h-full object-cover" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-800 mb-1">Hey there, WHIMSEY creator! 🌷</h1>
+                <h1 className="text-xl font-bold text-gray-800 mb-1">Hey there, WHIMSEY creator!</h1>
                 <p className="text-sm text-gray-500 max-w-xs leading-relaxed">
                   I know your server inside-out — every role, every bot, every permission toggle.
-                  Ask me anything about setting it up! ❄️
+                  Ask me anything about setting it up.
                 </p>
                 {activeSession && sessions.some(s => s.messages.length > 0) && (
                   <p className="text-[11px] text-pink-400 mt-2">
-                    {activeSession.name} · I remember everything from all your past conversations 💗
+                    {activeSession.name} · I remember everything from all your past conversations.
                   </p>
                 )}
               </div>
@@ -701,8 +699,8 @@ export default function App() {
               {messages.map((msg) => <MessageBubble key={msg.id} msg={msg} />)}
               {lastIsStreaming && (
                 <div className="flex gap-3 items-end mb-4">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center text-sm font-bold shadow-sm shrink-0">
-                    💗
+                  <div className="w-8 h-8 rounded-full overflow-hidden shadow-sm shrink-0 border border-pink-100">
+                    <img src={AVATAR} alt="WHIMSEY" className="w-full h-full object-cover" />
                   </div>
                   <div className="bg-white border border-pink-100 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm">
                     <TypingDots />
@@ -741,7 +739,7 @@ export default function App() {
                 e.target.style.height = Math.min(e.target.scrollHeight, 160) + "px";
               }}
               onKeyDown={handleKeyDown}
-              placeholder="Ask anything about your WHIMSEY Discord setup… 💗"
+              placeholder="Ask anything about your WHIMSEY Discord setup…"
               disabled={streaming}
               className="flex-1 resize-none rounded-2xl border border-pink-200 bg-pink-50/50 px-4 py-2.5 text-sm text-gray-800 placeholder:text-pink-300 outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 disabled:opacity-60 transition-all overflow-hidden leading-relaxed"
               style={{ minHeight: "42px" }}
@@ -758,7 +756,7 @@ export default function App() {
             </button>
           </div>
           <p className="text-center text-[10px] text-gray-300 mt-1.5">
-            Enter to send · Shift+Enter for new line · All sessions saved to database 💗
+            Enter to send · Shift+Enter for new line · All sessions saved to database
           </p>
         </div>
       </div>

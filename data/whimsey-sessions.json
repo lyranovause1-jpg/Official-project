@@ -58,5 +58,54 @@
       }
     ],
     "count": 1
+  },
+  "442cc494-d7ac-4b7e-9bf4-1e180f3fbd20": {
+    "sessions": [
+      {
+        "id": "2194be7b-897e-45dd-a9b7-2e6490c2b65d",
+        "name": "Session 1",
+        "messages": [],
+        "createdAt": 1779262772069,
+        "updatedAt": 1779262772069
+      }
+    ],
+    "count": 1
+  },
+  "621edfb8-17f9-42b9-9889-1cfc2bb51e96": {
+    "sessions": [
+      {
+        "id": "33ae22ef-1713-4874-9eb4-e6af14a83953",
+        "name": "Session 1",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Hey!",
+            "id": "24a7cb7f-8bf5-425b-9efe-1454449827cd",
+            "ts": 1779262836039
+          },
+          {
+            "role": "assistant",
+            "content": "Hey Lyra 🌷\n\nYou’re here, and that counts.\n\nWhat do you want to work on right now — your Discord server, WHIMSEY planning, or something completely different?",
+            "id": "46d13276-2ee2-4692-ad44-9351cd5d4573",
+            "ts": 1779262836039
+          }
+        ],
+        "createdAt": 1779262801154,
+        "updatedAt": 1779262844017
+      }
+    ],
+    "count": 1
+  },
+  "0aca4565-90c8-4e27-bc47-f343ca0b5ad3": {
+    "sessions": [
+      {
+        "id": "16cd3aee-93c0-49bb-86f8-b0db1e55d734",
+        "name": "Session 1",
+        "messages": [],
+        "createdAt": 1779341780240,
+        "updatedAt": 1779341780240
+      }
+    ],
+    "count": 1
   }
 }

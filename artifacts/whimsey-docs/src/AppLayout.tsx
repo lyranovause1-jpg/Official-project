@@ -99,7 +99,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               className="w-full py-3 rounded-xl text-sm font-bold text-white shadow-lg transition-all hover:shadow-pink-500/25 hover:scale-[1.02] active:scale-95"
               style={{ background: "linear-gradient(135deg, #FF66B2 0%, #7C3AED 100%)" }}
             >
-              💗 Ask WHIMSEY AI
+              Ask WHIMSEY AI
             </button>
           </a>
           <p className="text-center text-[10px]" style={{ color: "rgba(167,139,250,0.25)" }}>
@@ -127,7 +127,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-white text-xs font-bold shadow-sm"
               style={{ background: "linear-gradient(135deg, #FF66B2, #7C3AED)" }}
             >
-              💗 Ask AI
+              Ask AI
             </a>
           </div>
           {/* Scrollable nav strip */}
@@ -155,7 +155,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto scroll-smooth">
           {children}
         </main>
       </div>
