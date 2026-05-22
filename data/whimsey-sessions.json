@@ -137,10 +137,34 @@
             "content": "Something went wrong. Please try again.",
             "id": "b8b885dd-1d95-4b54-9d61-5ce9faa4a222",
             "ts": 1779432481630
+          },
+          {
+            "role": "user",
+            "content": "What's the exact role order after all bots are invited?",
+            "id": "a0d2a911-f0d3-441e-a121-48bde462d77e",
+            "ts": 1779432608473
+          },
+          {
+            "role": "assistant",
+            "content": "✨ Hi! I'm WHIMSEY — your AI assistant. My brain is all set up and ready, but I'm not connected to a live AI model yet. Once the real model is plugged in, I'll be fully operational! 💗",
+            "id": "f1e2b766-9e3e-4128-aacb-92e3d9d29105",
+            "ts": 1779432608473
           }
         ],
         "createdAt": 1779432260455,
-        "updatedAt": 1779432548111
+        "updatedAt": 1779432608603
+      }
+    ],
+    "count": 1
+  },
+  "da01165a-d617-4e14-838a-7599a6e60c79": {
+    "sessions": [
+      {
+        "id": "ad0924d2-1add-4aca-b40c-5bfd18a80262",
+        "name": "Session 1",
+        "messages": [],
+        "createdAt": 1779435799902,
+        "updatedAt": 1779435799902
       }
     ],
     "count": 1
