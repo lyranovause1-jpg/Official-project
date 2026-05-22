@@ -129,6 +129,28 @@ router.get("/changelog", async (_req, res) => {
   res.json({ ok: true, entries });
 });
 
+// GET /memory/stats — memory system statistics
+router.get("/memory/stats", async (_req, res) => {
+  const { getMemoryStats } = await import("../lib/persistence");
+  const stats = await getMemoryStats();
+  res.json({ ok: true, stats });
+});
+
+// GET /memory — query memory entries
+router.get("/memory", async (req: any, res: any) => {
+  const { recallMemories } = await import("../lib/persistence");
+  const { category, search, minImportance, limit, memoryType, subject } = req.query as Record<string, string>;
+  const memories = await recallMemories({
+    category:      category || undefined,
+    memoryType:    memoryType || undefined,
+    subject:       subject || undefined,
+    search:        search || undefined,
+    minImportance: minImportance ? parseInt(minImportance) : undefined,
+    limit:         limit ? Math.min(parseInt(limit), 200) : 100,
+  });
+  res.json({ ok: true, count: memories.length, memories });
+});
+
 // ── Text Style Defaults ───────────────────────────────────────────────────
 export const styleState = {
   publicChannel: `Warm, dreamy, and confident — like a founder who genuinely cares about her community.

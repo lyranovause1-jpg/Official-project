@@ -168,5 +168,17 @@
       }
     ],
     "count": 1
+  },
+  "597e184a-db35-4ce4-8d99-2d9fd03649d2": {
+    "sessions": [
+      {
+        "id": "962993d4-69b2-4125-aab4-1af6773d0fc1",
+        "name": "Session 1",
+        "messages": [],
+        "createdAt": 1779439372090,
+        "updatedAt": 1779439372090
+      }
+    ],
+    "count": 1
   }
 }

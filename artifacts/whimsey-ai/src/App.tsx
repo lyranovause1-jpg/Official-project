@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import MemoryVault from "./components/MemoryVault";
 
 /* ── Types ───────────────────────────────────────────────────────────── */
 type Role = "user" | "assistant";
@@ -303,6 +304,7 @@ export default function App() {
   const [showHistory, setShowHistory]     = useState(false);
   const [saveStatus, setSaveStatus]       = useState<SaveStatus>("idle");
   const [serverSynced, setServerSynced]   = useState(false);
+  const [view, setView]                   = useState<"chat" | "vault">("chat");
 
   const bottomRef   = useRef<HTMLDivElement>(null);
   const inputRef    = useRef<HTMLTextAreaElement>(null);
@@ -572,10 +574,10 @@ export default function App() {
   const activeSession = sessions.find(s => s.id === activeId);
 
   return (
-    <div className="flex h-screen bg-gradient-to-b from-pink-50 via-white to-violet-50 page-enter overflow-hidden">
+    <div className="flex h-screen overflow-hidden" style={{ background: view === "vault" ? "#06060e" : undefined }}>
 
-      {/* ── Session Sidebar ── */}
-      {showHistory && (
+      {/* ── Session Sidebar (chat only) ── */}
+      {view === "chat" && showHistory && (
         <SessionSidebar
           sessions={sessions}
           activeId={activeId}
@@ -587,11 +589,14 @@ export default function App() {
         />
       )}
 
-      {/* ── Chat Column ── */}
-      <div className="flex flex-col flex-1 min-w-0 h-full">
+      {/* ── Main Column ── */}
+      <div className="flex flex-col flex-1 min-w-0 h-full" style={{ background: view === "vault" ? "#06060e" : "linear-gradient(to bottom, #fdf2f8, white, #f5f3ff)" }}>
 
         {/* Header */}
-        <header className="shrink-0 bg-white/90 backdrop-blur-md border-b border-pink-100 px-3 py-2.5 flex items-center gap-2.5 shadow-sm">
+        <header className="shrink-0 backdrop-blur-md border-b px-3 py-2.5 flex items-center gap-2.5 shadow-sm" style={{
+          background: view === "vault" ? "rgba(6,6,14,0.95)" : "rgba(255,255,255,0.9)",
+          borderColor: view === "vault" ? "rgba(255,31,90,0.25)" : "rgb(252,231,243)",
+        }}>
 
           {/* Back to Setup Guide */}
           <a
@@ -642,30 +647,70 @@ export default function App() {
             </p>
           </div>
 
-          {/* Save button */}
-          <SaveButton status={saveStatus} onClick={manualSave} />
+          {/* Save button (chat only) */}
+          {view === "chat" && <SaveButton status={saveStatus} onClick={manualSave} />}
 
           {/* Online */}
           <div className="shrink-0 flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[11px] text-gray-400 font-medium hidden sm:block">Online</span>
+            <span className="text-[11px] font-medium hidden sm:block" style={{ color: view === "vault" ? "rgba(255,255,255,0.35)" : "#9ca3af" }}>Online</span>
           </div>
 
-          {/* New session */}
+          {/* Memory Vault toggle */}
           <button
-            onClick={startNewSession}
-            title="Start new session"
-            className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-pink-500 to-violet-500 text-white text-xs font-semibold shadow-sm hover:shadow-md hover:from-pink-600 hover:to-violet-600 transition-all"
+            onClick={() => setView(v => v === "chat" ? "vault" : "chat")}
+            title={view === "vault" ? "Back to chat" : "Open Memory Vault"}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "5px",
+              padding: "6px 10px",
+              borderRadius: "10px",
+              border: view === "vault"
+                ? "1px solid rgba(255,31,90,0.5)"
+                : "1px solid rgba(252,231,243,1)",
+              background: view === "vault"
+                ? "rgba(255,31,90,0.15)"
+                : "transparent",
+              color: view === "vault" ? "#ff1f5a" : "#ec4899",
+              fontSize: "11px",
+              fontWeight: 700,
+              letterSpacing: view === "vault" ? "1px" : "0",
+              cursor: "pointer",
+              transition: "all 0.2s",
+              boxShadow: view === "vault" ? "0 0 12px rgba(255,31,90,0.3)" : "none",
+              fontFamily: view === "vault" ? "'Courier New', monospace" : "inherit",
+              flexShrink: 0,
+            }}
           >
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-            </svg>
-            New
+            <span style={{ fontSize: "13px" }}>🔐</span>
+            <span className="hidden sm:inline">{view === "vault" ? "CHAT" : "Memory Vault"}</span>
           </button>
+
+          {/* New session (chat only) */}
+          {view === "chat" && (
+            <button
+              onClick={startNewSession}
+              title="Start new session"
+              className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-pink-500 to-violet-500 text-white text-xs font-semibold shadow-sm hover:shadow-md hover:from-pink-600 hover:to-violet-600 transition-all"
+            >
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              New
+            </button>
+          )}
         </header>
 
+        {/* ── Memory Vault ── */}
+        {view === "vault" && (
+          <div className="flex-1 overflow-hidden">
+            <MemoryVault />
+          </div>
+        )}
+
         {/* Messages */}
-        <main className="flex-1 overflow-y-auto scroll-smooth px-4 py-6">
+        {view === "chat" && <main className="flex-1 overflow-y-auto scroll-smooth px-4 py-6">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center gap-4 pb-8">
               <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg border-2 border-pink-100">
@@ -710,10 +755,10 @@ export default function App() {
               <div ref={bottomRef} />
             </div>
           )}
-        </main>
+        </main>}
 
-        {/* Quick-reply pills */}
-        {messages.length > 0 && !streaming && (
+        {/* Quick-reply pills (chat only) */}
+        {view === "chat" && messages.length > 0 && !streaming && (
           <div className="shrink-0 px-4 pb-2">
             <div className="max-w-2xl mx-auto flex gap-2 flex-wrap">
               {SUGGESTED.slice(0, 3).map((q) => (
@@ -726,39 +771,41 @@ export default function App() {
           </div>
         )}
 
-        {/* Input */}
-        <div className="shrink-0 bg-white/90 backdrop-blur-md border-t border-pink-100 px-4 py-3">
-          <div className="max-w-2xl mx-auto flex gap-2 items-end">
-            <textarea
-              ref={inputRef}
-              rows={1}
-              value={input}
-              onChange={(e) => {
-                setInput(e.target.value);
-                e.target.style.height = "auto";
-                e.target.style.height = Math.min(e.target.scrollHeight, 160) + "px";
-              }}
-              onKeyDown={handleKeyDown}
-              placeholder="Ask anything about your WHIMSEY Discord setup…"
-              disabled={streaming}
-              className="flex-1 resize-none rounded-2xl border border-pink-200 bg-pink-50/50 px-4 py-2.5 text-sm text-gray-800 placeholder:text-pink-300 outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 disabled:opacity-60 transition-all overflow-hidden leading-relaxed"
-              style={{ minHeight: "42px" }}
-            />
-            <button
-              onClick={() => send(input)}
-              disabled={!input.trim() || streaming}
-              className="shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-violet-500 text-white flex items-center justify-center shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:scale-100"
-              aria-label="Send"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/>
-              </svg>
-            </button>
+        {/* Input (chat only) */}
+        {view === "chat" && (
+          <div className="shrink-0 bg-white/90 backdrop-blur-md border-t border-pink-100 px-4 py-3">
+            <div className="max-w-2xl mx-auto flex gap-2 items-end">
+              <textarea
+                ref={inputRef}
+                rows={1}
+                value={input}
+                onChange={(e) => {
+                  setInput(e.target.value);
+                  e.target.style.height = "auto";
+                  e.target.style.height = Math.min(e.target.scrollHeight, 160) + "px";
+                }}
+                onKeyDown={handleKeyDown}
+                placeholder="Ask anything about your WHIMSEY Discord setup…"
+                disabled={streaming}
+                className="flex-1 resize-none rounded-2xl border border-pink-200 bg-pink-50/50 px-4 py-2.5 text-sm text-gray-800 placeholder:text-pink-300 outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 disabled:opacity-60 transition-all overflow-hidden leading-relaxed"
+                style={{ minHeight: "42px" }}
+              />
+              <button
+                onClick={() => send(input)}
+                disabled={!input.trim() || streaming}
+                className="shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-violet-500 text-white flex items-center justify-center shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:scale-100"
+                aria-label="Send"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/>
+                </svg>
+              </button>
+            </div>
+            <p className="text-center text-[10px] text-gray-300 mt-1.5">
+              Enter to send · Shift+Enter for new line · All sessions saved to database
+            </p>
           </div>
-          <p className="text-center text-[10px] text-gray-300 mt-1.5">
-            Enter to send · Shift+Enter for new line · All sessions saved to database
-          </p>
-        </div>
+        )}
       </div>
     </div>
   );
