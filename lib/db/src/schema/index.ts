@@ -21,3 +21,4 @@ export * from "./conversations";
 export * from "./messages";
 export * from "./whimsey_content";
 export * from "./whimsey_changelog";
+export * from "./whimsey_memory";

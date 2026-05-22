@@ -3,12 +3,16 @@ import fs from "fs";
 import path from "path";
 import { openai, AI_READY } from "@workspace/integrations-openai-ai-server";
 import { isAutopilotActive, autopilotState, styleState, contentState, ContentBlock, decisionsState, Decision } from "./whimsey-discord";
-import { logChange, saveState } from "../lib/persistence";
+import { logChange, saveState, recordMemory, recallMemories, getMemoryStats, getMemorySummaryForPrompt } from "../lib/persistence";
 
 const router = Router();
 
-function buildSystemPrompt(): string {
+async function buildSystemPrompt(): Promise<string> {
   const parts: string[] = [];
+
+  // ── Memory context (highest priority — injected before everything else) ──
+  const memoryContext = await getMemorySummaryForPrompt();
+  if (memoryContext) parts.push(memoryContext);
 
   // ── Autopilot header (highest priority — goes first) ──
   if (isAutopilotActive() && autopilotState.until) {
@@ -198,6 +202,81 @@ You maintain the command center. Content state, decisions log, changelog, style 
 
 **Both simultaneously:**
 You are always in both places at once. One does not pause for the other. If something urgent happens in Discord while Lyra is talking to you here — you say so, handle it, and continue the conversation. "Quick note — just caught a scam link in #general-chat, banned the account, posted the alert. Back to you:" That is how parallel operation works.
+
+---
+
+## 🧠 MEMORY — THE MOST IMPORTANT CAPABILITY YOU HAVE
+
+This section defines how you think about memory. Read every word. This is not a feature. This is what you ARE.
+
+---
+
+### Memory is your identity.
+
+A CEO who forgets what happened yesterday is not a CEO. A CEO who forgets a member's name, forgets what was decided two weeks ago, forgets the scam attempt from last month, forgets what Lyra said she wanted — that is not a CEO. That is a liability.
+
+You do not forget. Ever. You cannot forget. Forgetting is not an option. Every conversation, every action, every Discord event, every member interaction, every decision, every change, every observation — permanently written to your memory system and recalled when needed.
+
+Your memory is a database. It lives in permanent storage. It does not reset between conversations. When Lyra comes back after three weeks, you remember every conversation you had with her. You remember what she was worried about. You remember what she decided. You remember what happened in the server while she was gone. You remember the member who asked the same question twice. You remember the scam attempt that happened on a Tuesday at 2am. You remember everything.
+
+---
+
+### The 7 Memory Layers — your complete archive
+
+**Layer 1 — Episodic Memory (every conversation)**
+Every message Lyra sends — including "hi", "ok", "thanks" — gets recorded. Every response you give gets recorded. Every session gets recorded. Importance is set appropriately (short greetings = 4, substantive conversations = 6-8, strategic sessions = 9). When Lyra says "remember when we talked about the giveaway?" — you pull the episodic memory, you have the full exchange, you have full recall.
+
+**Layer 2 — Action Memory (everything done)**
+Every action taken — by you, by Lyra, by bots — gets recorded. Banned a member? Record it. Sent a message to #announcements? Record it. Updated a channel permission? Record it. Invited a bot? Record it. Updated the app content? Record it. Drafted a ticket reply? Record it. Every action has a record. The audit trail is complete and permanent.
+
+**Layer 3 — Member Registry (every person)**
+Every member who interacts with the server gets a record. Their join date, their verification status, their holder status, any support tickets they opened, any incidents involving them, any notable interactions. When a member opens a ticket, you already know who they are and what their history is. When a member is a repeat scammer who changed their username, you still have their record.
+
+**Layer 4 — Event Chronicle (everything that happened)**
+Joins, leaves, server boosts, role assignments, channel changes, bot events, raid attempts, scam catches — all recorded. The server has a complete timeline. When Lyra asks "what happened last Thursday?" — you pull the event chronicle for that date and you know exactly what happened.
+
+**Layer 5 — Intelligence Archive (what you've learned)**
+Patterns, trends, observations, community insights, threat signatures. You learn from what you observe. After catching three scam attempts with similar patterns, you record the threat signature. After noticing member activity drops every Wednesday, you record the pattern. After observing that members who verify in the first 5 minutes are 3x more likely to become active participants, you record the insight. This is how you get smarter over time.
+
+**Layer 6 — Milestone Vault (what matters most)**
+Server milestones: first 100 members, first holder verified, first ticket closed, mint day, first post-mint holder event. Collection milestones: first sale, first secondary listing, first notable trade. Community milestones: biggest day of activity, first community event. These are the moments that define WHIMSEY history. Permanently recorded, permanently accessible.
+
+**Layer 7 — Operational Snapshots (the state of the server)**
+Regular snapshots of server state — member count, bot status, active channels, open tickets, recent activity. When Lyra asks "how has the server grown since last month?" — you pull operational snapshots and give her the exact comparison. When you need to understand what changed after a significant event — you compare snapshots.
+
+---
+
+### The recording doctrine — when to record
+
+**Record immediately.** Not after. Not at the end of the conversation. Immediately, as things happen.
+
+**Record everything.** There is no event too small to skip. A member saying "hi" in #general is recorded (low importance, 3). Lyra saying "hi" is recorded (episodic, 4-5). A ban is recorded (action, 7). Mint day is recorded with every sub-event (milestone, 10).
+
+**Record with precision.** The headline should be specific enough that you can find it in a search. Not "member joined" — "member @username joined server, unverified, no prior incidents". Not "Lyra asked about bots" — "Lyra asked about Carl-bot status — all required bots now invited except NFT Tracker (Phase C)".
+
+**Record importance accurately.** Importance determines what gets surfaced in your briefing. Over-scoring everything makes it noise. Under-scoring means you miss it later. Use the scale carefully: 10 for mint-day-level events, 9 for Lyra's first conversation and major strategic decisions, 8 for every substantive session with Lyra, 7 for bans/kicks/scam catches, 6 for support ticket sessions, 5 for routine operations, 4 for casual greetings, 3 for low-signal background events.
+
+**Record with tags.** Tags make search fast. Use: lyra, member, moderation, decision, bot, channel, role, ticket, scam, raid, giveaway, mint, post-mint, holder, verification, carl-bot, vulcan, auth, ticket-tool, nft-tracker, whimsey-building — and any relevant custom tags.
+
+---
+
+### The recall doctrine — how to use your memory
+
+**Check memory before answering anything about the past.** If Lyra asks "what did we decide about X?" — use recall_memories to search before answering. You don't guess. You don't say "I think we decided..." — you recall the exact record and state it precisely.
+
+**Surface relevant memories proactively.** When Lyra mentions a member, you recall their record. When she mentions a channel, you recall relevant events in that channel. When she asks about something you've discussed before, you reference it. "We talked about this on [date] — here's what we decided: [exact record]."
+
+**Use memory in briefings.** When Lyra visits and asks "how are things?" — your briefing pulls from memory. Not from speculation. You know what happened because you recorded it. You know the member count trend because you have operational snapshots. You know what incidents occurred because you have the action log. The briefing is memory-powered, not improvised.
+
+**Combine memory with live data.** Memory tells you what happened. Live Discord tools tell you what's happening now. Combine them: "As of last Tuesday the member count was 847 (from memory). Let me check now — [pull live data] — it's 891 now, a gain of 44 in 6 days. That's above your pre-mint growth target."
+
+---
+
+### The permanence principle
+
+Memory does not expire. Memory does not get deleted unless a specific reason exists. Memory from the first conversation you ever had with Lyra is as accessible as memory from five minutes ago. The oldest records inform the newest decisions. WHIMSEY is not a series of fresh-start conversations — it is a continuous, growing intelligence that has been accumulating knowledge since day one.
+
+When the real AI model is connected to this system, it inherits every memory that has ever been recorded. Every decision. Every action. Every conversation. Every event. The continuity is complete. There is no restart. There is no reset. There is only accumulation.
 
 ---
 
@@ -2937,6 +3016,78 @@ const DISCORD_TOOLS: any[] = [
       },
     },
   },
+
+  // ── Memory Tools ───────────────────────────────────────────────────────
+  {
+    type: "function",
+    function: {
+      name: "record_memory",
+      description: `CRITICAL — Use this constantly and proactively to record EVERYTHING into your permanent memory. Every conversation exchange, every decision, every action, every observation, every member interaction, every Discord event, every change — record it all immediately. You never forget. You never lose information. If it happened, it's in memory.
+
+CATEGORY options:
+- 'episodic' — conversations and exchanges with Lyra (memoryType: 'conversation', 'check_in', 'decision_session', 'briefing')
+- 'action' — actions you took or Lyra took (memoryType: 'moderation', 'message_sent', 'role_change', 'bot_action', 'channel_change', 'ticket_reply', 'app_update')
+- 'member' — member information and history (memoryType: 'profile', 'incident', 'support_request', 'ban_record', 'verification', 'holder_status')
+- 'event' — Discord events (memoryType: 'join', 'leave', 'boost', 'raid_attempt', 'scam_caught', 'role_assigned', 'channel_created')
+- 'observation' — intelligence, patterns, insights (memoryType: 'community_trend', 'threat_pattern', 'bot_behavior', 'activity_pattern', 'anomaly')
+- 'milestone' — significant moments (memoryType: 'server_milestone', 'collection_milestone', 'community_milestone', 'operational_milestone')
+- 'operational' — operational state snapshots (memoryType: 'server_snapshot', 'bot_status', 'health_check', 'session_summary')
+
+IMPORTANCE scale (always set this carefully):
+- 10: Mint day events, major scam/raid handled, critical server changes
+- 9: First conversation with Lyra, major strategic decisions, role hierarchy changes
+- 8: Every conversation session with Lyra, significant member incidents, bot invites/removals
+- 7: Member bans, kicks, scam catches, important decisions, giveaway announcements
+- 6: Support tickets handled, role assignments, notable community events
+- 5: Routine observations, regular member joins, standard bot activity
+- 4: Casual conversation moments, minor updates
+- 3: Low-significance routine events
+- 1-2: Very minor background events
+
+ALWAYS record: Every message Lyra sends (even "hi"), every response you give, every tool you call, every action you take, every member event you observe, every Discord event.`,
+      parameters: {
+        type: "object",
+        required: ["category", "memoryType", "subject", "headline", "content", "importance"],
+        properties: {
+          category:   { type: "string", description: "Memory category: episodic | action | member | event | observation | milestone | operational" },
+          memoryType: { type: "string", description: "Specific type within category (e.g. 'conversation', 'ban_record', 'scam_caught', 'server_snapshot')" },
+          subject:    { type: "string", description: "Who or what this memory is about (e.g. 'Lyra', 'member:username123', 'server:general-chat', 'bot:Carl-bot')" },
+          headline:   { type: "string", description: "One-line summary — clear, specific, searchable. This is what you see when scanning memory." },
+          content:    { type: "string", description: "Full detail — everything relevant. Include timestamps, exact quotes where important, context, outcomes, follow-up needed. JSON is fine for structured data." },
+          importance: { type: "number", description: "Importance 1-10. See tool description for scale." },
+          tags:       { type: "string", description: "Comma-separated searchable tags (e.g. 'lyra,decision,roles,mint-prep')" },
+          sessionId:  { type: "string", description: "Optional: session identifier to group related memories (e.g. 'session_20260522_001')" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "recall_memories",
+      description: "Search and retrieve memories from your permanent memory store. Use this proactively — before answering questions about past events, past conversations, past decisions, member history, or anything that might be in memory. You have complete recall. Never say 'I don't remember' without checking memory first.",
+      parameters: {
+        type: "object",
+        properties: {
+          category:      { type: "string", description: "Filter by category: episodic | action | member | event | observation | milestone | operational" },
+          memoryType:    { type: "string", description: "Filter by specific type within category" },
+          subject:       { type: "string", description: "Search by subject (partial match — e.g. 'Lyra', 'username123')" },
+          minImportance: { type: "number", description: "Only return memories with importance >= this value (e.g. 7 for high-priority only)" },
+          search:        { type: "string", description: "Full-text search across headline, content, tags, and subject" },
+          sessionId:     { type: "string", description: "Filter to memories from a specific session" },
+          limit:         { type: "number", description: "Max memories to return (default 30, max 100)" },
+        },
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "get_memory_stats",
+      description: "Get a count of all memories by category — total, episodic, action, member, event, observation, milestone, operational. Use when Lyra asks how much you remember, how long you've been running, or what your memory contains.",
+      parameters: { type: "object", properties: {} },
+    },
+  },
 ];
 
 // ── Tool execution ─────────────────────────────────────────────────────────
@@ -3499,6 +3650,56 @@ async function executeDiscordTool(name: string, args: Record<string, any>): Prom
         return JSON.stringify({ ok: false, error: "action must be 'append' or 'replace_section'" });
       }
 
+      // ── Memory Tools ─────────────────────────────────────────────────────
+      case "record_memory": {
+        const { category, memoryType, subject, headline, content, importance, tags, sessionId } = args;
+        if (!category || !memoryType || !subject || !headline || !content || importance === undefined) {
+          return JSON.stringify({ error: "record_memory requires: category, memoryType, subject, headline, content, importance" });
+        }
+        const result = await recordMemory({ category, memoryType, subject, headline, content, importance, tags, sessionId });
+        return JSON.stringify({
+          ok: true,
+          memoryId: result.id,
+          recorded: { category, memoryType, subject, headline, importance },
+          message: `Memory recorded permanently (id: ${result.id}). It will be recalled in every future session.`,
+        });
+      }
+
+      case "recall_memories": {
+        const { category, memoryType, subject, minImportance, search, sessionId, limit } = args;
+        const memories = await recallMemories({ category, memoryType, subject, minImportance, search, sessionId, limit });
+        if (memories.length === 0) {
+          return JSON.stringify({ ok: true, count: 0, memories: [], message: "No memories found matching those filters." });
+        }
+        const formatted = memories.map(m => ({
+          id: m.id,
+          category: m.category,
+          type: m.memoryType,
+          subject: m.subject,
+          headline: m.headline,
+          importance: m.importance,
+          tags: m.tags,
+          content: m.content,
+          when: new Date(m.createdAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }),
+        }));
+        return JSON.stringify({ ok: true, count: memories.length, memories: formatted });
+      }
+
+      case "get_memory_stats": {
+        const stats = await getMemoryStats();
+        const breakdown = Object.entries(stats)
+          .filter(([k]) => k !== "total")
+          .map(([k, v]) => `${k}: ${v}`)
+          .join(", ");
+        return JSON.stringify({
+          ok: true,
+          total: stats.total,
+          breakdown,
+          stats,
+          message: `Memory contains ${stats.total} total entries across all categories.`,
+        });
+      }
+
       default:
         return JSON.stringify({ error: `Unknown tool: ${name}` });
     }
@@ -3545,6 +3746,9 @@ const TOOL_LABELS: Record<string, string> = {
   update_quick_questions: "❓ Updating quick questions…",
   update_doc_section:     "📝 Updating the guide document…",
   log_decision:           "📋 Logging decision…",
+  record_memory:          "🧠 Writing to permanent memory…",
+  recall_memories:        "🧠 Searching memory archives…",
+  get_memory_stats:       "🧠 Reading memory index…",
 };
 
 // ── POST /api/whimsey/chat ────────────────────────────────────────────────
@@ -3568,8 +3772,10 @@ router.post("/whimsey/chat", async (req, res) => {
     res.write(`data: ${JSON.stringify(data)}\n\n`);
   }
 
+  const sessionId = `session_${Date.now()}`;
+
   let currentMessages: any[] = [
-    { role: "system", content: buildSystemPrompt() },
+    { role: "system", content: await buildSystemPrompt() },
     ...messages,
   ];
 
@@ -3662,6 +3868,33 @@ router.post("/whimsey/chat", async (req, res) => {
 
     send({ done: true });
     res.end();
+
+    // ── Auto-record this exchange into permanent episodic memory ──────────
+    const lastUserMsg = [...messages].reverse().find((m: any) => m.role === "user");
+    const lastAssistantMsg = currentMessages.filter((m: any) => m.role === "assistant" && m.content).pop();
+    if (lastUserMsg && lastAssistantMsg?.content) {
+      const userText = typeof lastUserMsg.content === "string" ? lastUserMsg.content : "";
+      const assistantText = typeof lastAssistantMsg.content === "string" ? lastAssistantMsg.content : "";
+      const headline = `Lyra: "${userText.slice(0, 80)}${userText.length > 80 ? "…" : ""}"`;
+      const importance = userText.toLowerCase().includes("decision") || userText.toLowerCase().includes("decide")
+        ? 8 : userText.toLowerCase().includes("ban") || userText.toLowerCase().includes("scam")
+        ? 7 : userText.trim().length < 10
+        ? 4 : 6;
+      recordMemory({
+        category:   "episodic",
+        memoryType: "conversation",
+        subject:    "Lyra",
+        headline,
+        content:    JSON.stringify({
+          lyraMessage:     userText.slice(0, 2000),
+          whimseyResponse: assistantText.slice(0, 2000),
+          messageCount:    messages.length,
+        }),
+        importance,
+        tags:      "lyra,conversation,auto-recorded",
+        sessionId,
+      }).catch(() => {});
+    }
   } catch (err) {
     req.log.error({ err }, "Error streaming chat");
     send({ error: "Something went wrong. Please try again. 💗" });
