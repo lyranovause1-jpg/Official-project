@@ -107,5 +107,42 @@
       }
     ],
     "count": 1
+  },
+  "d29815dc-892c-47a9-8b86-d82e0d5fa09b": {
+    "sessions": [
+      {
+        "id": "1618330c-be39-4d12-918a-e516e0856e4a",
+        "name": "Session 1",
+        "messages": [],
+        "createdAt": 1779432525326,
+        "updatedAt": 1779432525326
+      }
+    ],
+    "count": 1
+  },
+  "6042dea7-c178-46e3-b2f0-7ff64e996e9c": {
+    "sessions": [
+      {
+        "id": "f4c91d5f-37f4-4820-89cb-b5b3e1e368aa",
+        "name": "Session 1",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Hey!",
+            "id": "fa0df82f-1f73-4f27-863e-248f3d270717",
+            "ts": 1779432481630
+          },
+          {
+            "role": "assistant",
+            "content": "Something went wrong. Please try again.",
+            "id": "b8b885dd-1d95-4b54-9d61-5ce9faa4a222",
+            "ts": 1779432481630
+          }
+        ],
+        "createdAt": 1779432260455,
+        "updatedAt": 1779432548111
+      }
+    ],
+    "count": 1
   }
 }

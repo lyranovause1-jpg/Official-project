@@ -2,22 +2,16 @@ import fs from "node:fs";
 import OpenAI, { toFile } from "openai";
 import { Buffer } from "node:buffer";
 
-if (!process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
-  throw new Error(
-    "AI_INTEGRATIONS_OPENAI_BASE_URL must be set. Did you forget to provision the OpenAI AI integration?",
-  );
-}
+const baseURL = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
+const apiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
 
-if (!process.env.AI_INTEGRATIONS_OPENAI_API_KEY) {
-  throw new Error(
-    "AI_INTEGRATIONS_OPENAI_API_KEY must be set. Did you forget to provision the OpenAI AI integration?",
-  );
-}
-
-export const openai = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-});
+const openai = (baseURL && apiKey)
+  ? new OpenAI({ apiKey, baseURL })
+  : (new Proxy({} as OpenAI, {
+      get() {
+        throw new Error("AI not configured — image client unavailable in brain-only mode.");
+      },
+    }) as OpenAI);
 
 export async function generateImageBuffer(
   prompt: string,

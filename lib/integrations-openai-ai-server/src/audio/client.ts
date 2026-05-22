@@ -6,22 +6,16 @@ import { randomUUID } from "crypto";
 import { tmpdir } from "os";
 import { join } from "path";
 
-if (!process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
-  throw new Error(
-    "AI_INTEGRATIONS_OPENAI_BASE_URL must be set. Did you forget to provision the OpenAI AI integration?",
-  );
-}
+const baseURL = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
+const apiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
 
-if (!process.env.AI_INTEGRATIONS_OPENAI_API_KEY) {
-  throw new Error(
-    "AI_INTEGRATIONS_OPENAI_API_KEY must be set. Did you forget to provision the OpenAI AI integration?",
-  );
-}
-
-export const openai = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-});
+const openai = (baseURL && apiKey)
+  ? new OpenAI({ apiKey, baseURL })
+  : (new Proxy({} as OpenAI, {
+      get() {
+        throw new Error("AI not configured — audio client unavailable in brain-only mode.");
+      },
+    }) as OpenAI);
 
 export type AudioFormat = "wav" | "mp3" | "webm" | "mp4" | "ogg" | "unknown";
 
@@ -126,8 +120,8 @@ export async function voiceChat(
         { type: "input_audio", input_audio: { data: audioBase64, format: inputFormat } },
       ],
     }],
-  });
-  const message = response.choices[0]?.message as any;
+  } as any);
+  const message = (response as any).choices[0]?.message as any;
   const transcript = message?.audio?.transcript || message?.content || "";
   const audioData = message?.audio?.data ?? "";
   return {
@@ -154,17 +148,17 @@ export async function voiceChatStream(
       ],
     }],
     stream: true,
-  });
+  } as any);
 
   return (async function* () {
-    for await (const chunk of stream) {
+    for await (const chunk of stream as any) {
       const delta = chunk.choices?.[0]?.delta as any;
       if (!delta) continue;
       if (delta?.audio?.transcript) {
-        yield { type: "transcript", data: delta.audio.transcript };
+        yield { type: "transcript" as const, data: delta.audio.transcript };
       }
       if (delta?.audio?.data) {
-        yield { type: "audio", data: delta.audio.data };
+        yield { type: "audio" as const, data: delta.audio.data };
       }
     }
   })();
@@ -184,8 +178,8 @@ export async function textToSpeech(
       { role: "system", content: "You are an assistant that performs text-to-speech." },
       { role: "user", content: `Repeat the following text verbatim: ${text}` },
     ],
-  });
-  const audioData = (response.choices[0]?.message as any)?.audio?.data ?? "";
+  } as any);
+  const audioData = ((response as any).choices[0]?.message as any)?.audio?.data ?? "";
   return Buffer.from(audioData, "base64");
 }
 
@@ -203,10 +197,10 @@ export async function textToSpeechStream(
       { role: "user", content: `Repeat the following text verbatim: ${text}` },
     ],
     stream: true,
-  });
+  } as any);
 
   return (async function* () {
-    for await (const chunk of stream) {
+    for await (const chunk of stream as any) {
       const delta = chunk.choices?.[0]?.delta as any;
       if (!delta) continue;
       if (delta?.audio?.data) {
@@ -225,8 +219,8 @@ export async function speechToText(
   const response = await openai.audio.transcriptions.create({
     file,
     model: "gpt-4o-mini-transcribe",
-  });
-  return response.text;
+  } as any);
+  return (response as any).text;
 }
 
 /** Streaming Speech-to-Text. */
@@ -239,10 +233,10 @@ export async function speechToTextStream(
     file,
     model: "gpt-4o-mini-transcribe",
     stream: true,
-  });
+  } as any);
 
   return (async function* () {
-    for await (const event of stream) {
+    for await (const event of stream as any) {
       if (event.type === "transcript.text.delta") {
         yield event.delta;
       }

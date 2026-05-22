@@ -1,7 +1,7 @@
 import { Router } from "express";
 import fs from "fs";
 import path from "path";
-import { openai } from "@workspace/integrations-openai-ai-server";
+import { openai, AI_READY } from "@workspace/integrations-openai-ai-server";
 import { isAutopilotActive, autopilotState, styleState, contentState, ContentBlock, decisionsState, Decision } from "./whimsey-discord";
 import { logChange, saveState } from "../lib/persistence";
 
@@ -3346,6 +3346,13 @@ router.post("/whimsey/chat", async (req, res) => {
     { role: "system", content: buildSystemPrompt() },
     ...messages,
   ];
+
+  if (!AI_READY) {
+    send({ content: "✨ Hi! I'm WHIMSEY — your AI assistant. My brain is all set up and ready, but I'm not connected to a live AI model yet. Once the real model is plugged in, I'll be fully operational! 💗" });
+    send({ done: true });
+    res.end();
+    return;
+  }
 
   try {
     // Tool loop — max 4 iterations to prevent runaway chains
