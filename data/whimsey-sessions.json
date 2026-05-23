@@ -180,5 +180,17 @@
       }
     ],
     "count": 1
+  },
+  "bf48a230-a6c2-4be8-80b4-b569e165b3f9": {
+    "sessions": [
+      {
+        "id": "9131e0c4-1cd9-481b-9303-9982c3170b98",
+        "name": "Session 1",
+        "messages": [],
+        "createdAt": 1779510506184,
+        "updatedAt": 1779510506184
+      }
+    ],
+    "count": 1
   }
 }
