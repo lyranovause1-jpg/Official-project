@@ -194,11 +194,11 @@ export default function PrivateFeed() {
   const firstNewIdx = filtered.findIndex(isNew);
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "#F4F2FC" }}>
+    <div className="min-h-screen flex flex-col" style={{ background: "transparent" }}>
 
       {/* ── Header ── */}
       <header
-        className="sticky top-0 z-40 bg-white px-4 py-3"
+        className="sticky top-0 z-40 px-4 py-3" style={{ background: "rgba(255,255,255,0.6)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderBottom: "1px solid rgba(255,255,255,0.55)" }}
         style={{ borderBottom: "1px solid rgba(124,58,237,0.1)" }}
       >
         <div className="max-w-4xl mx-auto flex items-center gap-3">
@@ -225,7 +225,7 @@ export default function PrivateFeed() {
               onClick={handleRefresh}
               disabled={loading}
               className="p-1.5 rounded-xl transition-colors disabled:opacity-40"
-              style={{ background: "#F4F2FC", color: "#9F7AEA" }}
+              style={{ background: "rgba(255,255,255,0.28)", color: "#7c3aed" }}
               title="Refresh now"
             >
               <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"

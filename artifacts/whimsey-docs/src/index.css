@@ -47,7 +47,7 @@
   * { @apply border-border; }
   body {
     @apply font-sans antialiased;
-    background-color: #F4F2FC;
+    background-color: transparent;
     color: #1A0F2E;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -71,6 +71,45 @@
   h1, h2, h3 {
     letter-spacing: -0.02em;
   }
+}
+
+/* ── Aurora glass overrides ────────────────────────────────────────────── */
+
+/* Sticky page headers (white headers on scroll) → frosted glass */
+.sticky.top-0.z-20.bg-white,
+.sticky.top-0.z-40.bg-white,
+.sticky.top-0.z-20[style*="background: #FFFFFF"],
+.sticky.top-0.z-20[style*="background:#FFFFFF"] {
+  background: rgba(255,255,255,0.68) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.55) !important;
+}
+
+/* Cards → translucent frosted glass */
+.rounded-2xl.bg-white,
+.rounded-xl.bg-white {
+  background: rgba(255,255,255,0.68) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+}
+
+/* Muted background sections */
+.bg-muted\/40, .bg-muted\/50, .bg-muted {
+  background: rgba(255,255,255,0.35) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+
+/* Inline white bg inputs → lightly frosted */
+input.bg-white, textarea.bg-white, select.bg-white {
+  background: rgba(255,255,255,0.7) !important;
+}
+
+/* Subtle border boost for cards on aurora bg */
+.rounded-2xl.border,
+.rounded-xl.border {
+  border-color: rgba(255,255,255,0.65) !important;
 }
 
 @keyframes page-in {

@@ -152,11 +152,11 @@ export default function DiscordDashboard() {
   }, {});
 
   return (
-    <div className="min-h-screen" style={{ background: "#F4F2FC" }}>
+    <div className="min-h-screen" style={{ background: "transparent" }}>
 
       {/* ── Header ── */}
       <header
-        className="sticky top-0 z-20 bg-white px-5 py-4 flex items-center gap-3"
+        className="sticky top-0 z-20 px-5 py-4 flex items-center gap-3" style={{ background: "rgba(255,255,255,0.6)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderBottom: "1px solid rgba(255,255,255,0.55)" }}
         style={{ borderBottom: "1px solid rgba(124,58,237,0.1)" }}
       >
         <div
@@ -212,7 +212,7 @@ export default function DiscordDashboard() {
       )}
 
       {/* ── Tabs ── */}
-      <div className="sticky top-[57px] z-10 bg-white border-b border-gray-200 px-5">
+      <div className="sticky top-[57px] z-10 px-5" style={{ background: "rgba(255,255,255,0.6)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderBottom: "1px solid rgba(255,255,255,0.5)" }}>
         <div className="flex gap-1 overflow-x-auto max-w-3xl mx-auto scrollbar-hide">
           {TABS.map(t => (
             <button

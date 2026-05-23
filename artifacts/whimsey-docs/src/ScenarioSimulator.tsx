@@ -151,11 +151,11 @@ export default function ScenarioSimulator() {
   const positive  = SCENARIOS.filter(s => s.type === "positive");
 
   return (
-    <div className="min-h-screen" style={{ background: "#F4F2FC" }}>
+    <div className="min-h-screen" style={{ background: "transparent" }}>
 
       {/* ── Page header ── */}
       <header
-        className="sticky top-0 z-20 bg-white px-6 py-4 flex items-center justify-between"
+        className="sticky top-0 z-20 px-6 py-4 flex items-center justify-between" style={{ background: "rgba(255,255,255,0.6)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderBottom: "1px solid rgba(255,255,255,0.55)" }}
         style={{ borderBottom: "1px solid rgba(124,58,237,0.1)" }}
       >
         <div>

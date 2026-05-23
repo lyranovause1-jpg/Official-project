@@ -284,7 +284,7 @@ export default function AiChat() {
   const hasHistory = messages.length > 0;
 
   return (
-    <div className="flex flex-col h-full" style={{ background: "#F4F2FC" }}>
+    <div className="flex flex-col h-full" style={{ background: "rgba(255,255,255,0.18)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
 
       {showClear && <ClearModal onConfirm={clearHistory} onCancel={() => setShowClear(false)} />}
 
@@ -317,7 +317,7 @@ export default function AiChat() {
           <Link href="/discord">
             <button
               className="px-2.5 py-1.5 text-xs font-medium rounded-xl transition-colors"
-              style={{ background: "#F4F2FC", color: "#6E6183", border: "1px solid rgba(124,58,237,0.12)" }}
+              style={{ background: "rgba(255,255,255,0.38)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", color: "#4c1d95", border: "1px solid rgba(255,255,255,0.6)" }}
             >
               Server
             </button>
@@ -327,7 +327,7 @@ export default function AiChat() {
               onClick={() => setShowClear(true)}
               title="New conversation"
               className="p-1.5 rounded-xl transition-colors"
-              style={{ background: "#F4F2FC", color: "#9F7AEA" }}
+              style={{ background: "rgba(255,255,255,0.25)", color: "#7c3aed" }}
             >
               <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path d="M12 5v14M5 12h14" strokeLinecap="round" strokeLinejoin="round" />

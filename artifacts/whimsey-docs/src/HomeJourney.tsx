@@ -112,7 +112,7 @@ export default function HomeJourney() {
   const currentIdx  = currentStep ? STEPS.indexOf(currentStep) : doneCount;
 
   return (
-    <div className="min-h-screen" style={{ background: "#F4F2FC" }}>
+    <div className="min-h-screen" style={{ background: "transparent" }}>
 
       {/* ── Hero banner ── */}
       <div

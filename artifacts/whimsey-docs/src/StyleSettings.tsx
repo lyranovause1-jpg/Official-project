@@ -140,10 +140,10 @@ export default function StyleSettings() {
   ];
 
   return (
-    <div className="min-h-screen" style={{ background: "#F4F2FC" }}>
+    <div className="min-h-screen" style={{ background: "transparent" }}>
       {/* Header */}
       <header
-        className="sticky top-0 z-40 bg-white px-4 py-4"
+        className="sticky top-0 z-40 px-4 py-4" style={{ background: "rgba(255,255,255,0.6)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderBottom: "1px solid rgba(255,255,255,0.55)" }}
         style={{ borderBottom: "1px solid rgba(124,58,237,0.1)" }}
       >
         <div className="max-w-3xl mx-auto flex items-center gap-3">

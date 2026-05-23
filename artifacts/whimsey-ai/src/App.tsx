@@ -624,21 +624,34 @@ export default function App() {
       {/* ── Main Column ── */}
       <div className="flex flex-col flex-1 min-w-0 h-full" style={{ position: "relative", background: "transparent" }}>
 
-        {/* ── Planet/Moon decoration (chat only) ── */}
+        {/* ── CSS Planet — naturally part of the aurora ── */}
         {view === "chat" && (
           <div style={{
-            position: "absolute",
-            right: "-8%",
-            bottom: "-6%",
-            width: "72%",
-            maxWidth: "520px",
-            pointerEvents: "none",
-            zIndex: 0,
-            opacity: 0.52,
-            mixBlendMode: "screen",
-            filter: "saturate(1.3) brightness(1.1)",
+            position: "absolute", right: "-10%", bottom: "-18%",
+            width: "72%", maxWidth: "520px", aspectRatio: "1 / 1",
+            borderRadius: "50%", pointerEvents: "none", zIndex: 0,
+            background: `
+              radial-gradient(ellipse at 36% 30%, rgba(255,255,255,0.9) 0%, rgba(255,224,240,0.72) 18%, transparent 44%),
+              radial-gradient(ellipse at 72% 22%, rgba(255,200,228,0.5) 0%, transparent 32%),
+              radial-gradient(ellipse at 24% 72%, rgba(160,118,255,0.55) 0%, transparent 40%),
+              radial-gradient(ellipse at 68% 74%, rgba(76,190,255,0.38) 0%, transparent 34%),
+              radial-gradient(circle at 50% 50%, rgba(198,148,255,0.78) 0%, rgba(128,88,255,0.62) 32%, rgba(78,48,200,0.34) 58%, rgba(28,8,100,0.08) 80%, transparent 100%)
+            `,
+            boxShadow: "0 0 70px rgba(168,85,247,0.22), 0 0 140px rgba(139,92,246,0.10), 0 0 220px rgba(168,85,247,0.06)",
+            filter: "blur(0.5px)",
           }}>
-            <img src={`${BASE}moon.jpg`} alt="" style={{ width: "100%", display: "block", borderRadius: "2px" }} />
+            <div style={{
+              position: "absolute", top: "8%", left: "11%",
+              width: "42%", height: "28%", borderRadius: "50%",
+              background: "radial-gradient(ellipse, rgba(255,255,255,0.68) 0%, transparent 75%)",
+              filter: "blur(6px)", transform: "rotate(-22deg)",
+            }} />
+            <div style={{
+              position: "absolute", top: "46%", left: "28%",
+              width: "58%", height: "30%", borderRadius: "50%",
+              background: "linear-gradient(135deg, rgba(255,158,80,0.32) 0%, rgba(255,78,160,0.28) 35%, rgba(98,78,255,0.22) 70%, rgba(78,200,255,0.18) 100%)",
+              filter: "blur(14px)", transform: "rotate(-8deg)",
+            }} />
           </div>
         )}
 
