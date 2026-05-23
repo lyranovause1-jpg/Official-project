@@ -164,10 +164,30 @@
         "name": "Session 1",
         "messages": [],
         "createdAt": 1779435799902,
-        "updatedAt": 1779435799902
+        "updatedAt": 1779510648077
+      },
+      {
+        "id": "575fe026-3491-45cc-ba6c-8bb3ba0fb0d5",
+        "name": "Session 2",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Hey!",
+            "id": "4ba68895-f047-4571-a496-d46b702eb77e",
+            "ts": 1779510651018
+          },
+          {
+            "role": "assistant",
+            "content": "✨ Hi! I'm WHIMSEY — your AI assistant. My brain is all set up and ready, but I'm not connected to a live AI model yet. Once the real model is plugged in, I'll be fully operational! 💗",
+            "id": "77e942e8-45b8-45bb-a817-5da1ae15e9f0",
+            "ts": 1779510651018
+          }
+        ],
+        "createdAt": 1779510648079,
+        "updatedAt": 1779510651275
       }
     ],
-    "count": 1
+    "count": 2
   },
   "597e184a-db35-4ce4-8d99-2d9fd03649d2": {
     "sessions": [

@@ -150,27 +150,42 @@ function MessageBubble({ msg }: { msg: Message }) {
   const isUser = msg.role === "user";
   return (
     <div className={`flex gap-3 ${isUser ? "flex-row-reverse" : "flex-row"} items-end mb-5`}>
-      <div className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shadow-sm ${
-        isUser ? "bg-pink-500 text-white" : "bg-gradient-to-br from-violet-500 to-pink-500 text-white"
-      }`}>
+      <div className={`shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold overflow-hidden ${
+        isUser
+          ? "text-white"
+          : ""
+      }`} style={isUser ? {
+        background: "linear-gradient(135deg, #ec4899, #8b5cf6)",
+        boxShadow: "0 4px 14px rgba(139,92,246,0.45)",
+      } : {
+        boxShadow: "0 4px 14px rgba(139,92,246,0.3)",
+      }}>
         {isUser ? <span className="text-[10px] font-bold">You</span> : <img src={AVATAR} alt="W" className="w-full h-full object-cover" />}
       </div>
       <div className={`flex flex-col gap-1 max-w-[78%] ${isUser ? "items-end" : "items-start"}`}>
-        <div className={`rounded-2xl px-4 py-3 shadow-sm text-sm leading-relaxed ${
-          isUser
-            ? "bg-pink-500 text-white rounded-br-sm"
-            : "bg-white text-gray-800 rounded-bl-sm border border-pink-100"
-        }`}>
+        <div className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${isUser ? "rounded-br-sm" : "rounded-bl-sm"}`}
+          style={isUser ? {
+            background: "linear-gradient(135deg, #ec4899 0%, #a855f7 60%, #7c3aed 100%)",
+            color: "white",
+            boxShadow: "0 8px 24px rgba(168,85,247,0.35), 0 2px 8px rgba(0,0,0,0.1)",
+          } : {
+            background: "rgba(255,255,255,0.62)",
+            backdropFilter: "blur(18px)",
+            WebkitBackdropFilter: "blur(18px)",
+            border: "1px solid rgba(255,255,255,0.75)",
+            color: "#1e1b4b",
+            boxShadow: "0 8px 24px rgba(139,92,246,0.12), 0 2px 8px rgba(0,0,0,0.06)",
+          }}>
           {isUser ? (
             <p className="whitespace-pre-wrap">{msg.content}</p>
           ) : (
-            <div className="prose prose-sm prose-pink max-w-none prose-p:my-1 prose-li:my-0 prose-headings:my-2 prose-headings:text-pink-700 prose-code:bg-pink-50 prose-code:text-pink-800 prose-code:px-1 prose-code:rounded prose-pre:bg-pink-50 prose-pre:border prose-pre:border-pink-100 prose-strong:text-gray-900 prose-a:text-pink-600">
+            <div className="prose prose-sm max-w-none prose-p:my-1 prose-li:my-0 prose-headings:my-2 prose-headings:text-violet-800 prose-code:bg-violet-50 prose-code:text-violet-700 prose-code:px-1 prose-code:rounded prose-pre:bg-violet-50 prose-pre:border prose-pre:border-violet-100 prose-strong:text-violet-900 prose-a:text-violet-600">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
             </div>
           )}
         </div>
         {msg.ts && (
-          <span className="text-[10px] text-gray-300 px-1">{fmtMsgTime(msg.ts)}</span>
+          <span className="text-[10px] px-1" style={{ color: "rgba(255,255,255,0.55)", textShadow: "0 1px 3px rgba(0,0,0,0.2)" }}>{fmtMsgTime(msg.ts)}</span>
         )}
       </div>
     </div>
@@ -211,7 +226,13 @@ interface SidebarProps {
 function SessionSidebar({ sessions, activeId, saveStatus, onSwitch, onNew, onSave, onClose }: SidebarProps) {
   const sorted = [...sessions].sort((a, b) => b.updatedAt - a.updatedAt);
   return (
-    <div className="flex flex-col w-72 shrink-0 bg-white/98 backdrop-blur border-r border-pink-100 h-full shadow-xl z-20">
+    <div className="flex flex-col w-72 shrink-0 h-full z-20" style={{
+      background: "rgba(255,255,255,0.52)",
+      backdropFilter: "blur(28px)",
+      WebkitBackdropFilter: "blur(28px)",
+      borderRight: "1px solid rgba(255,255,255,0.6)",
+      boxShadow: "4px 0 30px rgba(139,92,246,0.1)",
+    }}>
 
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-pink-100 bg-gradient-to-r from-pink-50 to-violet-50">
@@ -573,8 +594,19 @@ export default function App() {
 
   const activeSession = sessions.find(s => s.id === activeId);
 
+  const AURORA = `
+    radial-gradient(ellipse 75% 60% at 8% 8%,  rgba(255,182,200,0.92) 0%, transparent 55%),
+    radial-gradient(ellipse 55% 42% at 90% 4%,  rgba(255,232,160,0.72) 0%, transparent 46%),
+    radial-gradient(ellipse 88% 68% at 2% 54%,  rgba(68,202,255,0.80) 0%, transparent 56%),
+    radial-gradient(ellipse 68% 58% at 56% 33%, rgba(118,138,255,0.88) 0%, transparent 56%),
+    radial-gradient(ellipse 58% 46% at 88% 66%, rgba(255,128,218,0.72) 0%, transparent 48%),
+    radial-gradient(ellipse 46% 38% at 22% 84%, rgba(178,108,255,0.62) 0%, transparent 46%),
+    radial-gradient(ellipse 66% 46% at 50% 98%, rgba(152,98,255,0.58) 0%, transparent 52%),
+    linear-gradient(158deg, #e2cafc 0%, #9ed8f8 22%, #b8d0ff 42%, #ddb8ff 62%, #f7badb 80%, #c8aafc 100%)
+  `;
+
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: view === "vault" ? "#06060e" : undefined }}>
+    <div className="flex h-screen overflow-hidden" style={{ background: view === "vault" ? "#06060e" : AURORA }}>
 
       {/* ── Session Sidebar (chat only) ── */}
       {view === "chat" && showHistory && (
@@ -590,19 +622,46 @@ export default function App() {
       )}
 
       {/* ── Main Column ── */}
-      <div className="flex flex-col flex-1 min-w-0 h-full" style={{ background: view === "vault" ? "#06060e" : "linear-gradient(to bottom, #fdf2f8, white, #f5f3ff)" }}>
+      <div className="flex flex-col flex-1 min-w-0 h-full" style={{ position: "relative", background: "transparent" }}>
+
+        {/* ── Planet/Moon decoration (chat only) ── */}
+        {view === "chat" && (
+          <div style={{
+            position: "absolute",
+            right: "-8%",
+            bottom: "-6%",
+            width: "72%",
+            maxWidth: "520px",
+            pointerEvents: "none",
+            zIndex: 0,
+            opacity: 0.52,
+            mixBlendMode: "screen",
+            filter: "saturate(1.3) brightness(1.1)",
+          }}>
+            <img src={`${BASE}moon.jpg`} alt="" style={{ width: "100%", display: "block", borderRadius: "2px" }} />
+          </div>
+        )}
 
         {/* Header */}
-        <header className="shrink-0 backdrop-blur-md border-b px-3 py-2.5 flex items-center gap-2.5 shadow-sm" style={{
-          background: view === "vault" ? "rgba(6,6,14,0.95)" : "rgba(255,255,255,0.9)",
-          borderColor: view === "vault" ? "rgba(255,31,90,0.25)" : "rgb(252,231,243)",
+        <header className="shrink-0 border-b px-3 py-2.5 flex items-center gap-2.5" style={{
+          position: "relative", zIndex: 10,
+          background: view === "vault" ? "rgba(6,6,14,0.97)" : "rgba(255,255,255,0.28)",
+          backdropFilter: "blur(24px)",
+          WebkitBackdropFilter: "blur(24px)",
+          borderColor: view === "vault" ? "rgba(255,31,90,0.25)" : "rgba(255,255,255,0.5)",
+          boxShadow: view === "vault" ? "none" : "0 2px 20px rgba(139,92,246,0.08)",
         }}>
 
           {/* Back to Setup Guide */}
           <a
             href="/"
-            className="shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-pink-100 text-pink-500 hover:bg-pink-50 hover:border-pink-200 transition-all text-xs font-semibold"
+            className="shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all"
             title="Back to Setup Guide"
+            style={{
+              border: view === "vault" ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(255,255,255,0.45)",
+              color: view === "vault" ? "rgba(255,255,255,0.5)" : "rgba(100,50,150,0.75)",
+              background: view === "vault" ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.25)",
+            }}
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5M12 5l-7 7 7 7"/>
@@ -614,11 +673,16 @@ export default function App() {
           <button
             onClick={() => setShowHistory(v => !v)}
             title="Session history"
-            className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
-              showHistory
-                ? "bg-pink-100 text-pink-600 border border-pink-200"
-                : "border border-pink-100 text-gray-400 hover:text-pink-500 hover:bg-pink-50 hover:border-pink-200"
-            }`}
+            className="shrink-0 w-9 h-9 rounded-xl flex items-center justify-center transition-all"
+            style={{
+              border: showHistory
+                ? "1px solid rgba(168,85,247,0.5)"
+                : view === "vault" ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.45)",
+              background: showHistory
+                ? "rgba(168,85,247,0.18)"
+                : view === "vault" ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.25)",
+              color: showHistory ? "#a855f7" : view === "vault" ? "rgba(255,255,255,0.4)" : "rgba(100,50,150,0.6)",
+            }}
           >
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="3" y1="6"  x2="21" y2="6"  />
@@ -628,21 +692,28 @@ export default function App() {
           </button>
 
           {/* Avatar */}
-          <div className="shrink-0 w-8 h-8 rounded-full overflow-hidden shadow border border-pink-100">
+          <div className="shrink-0 w-9 h-9 rounded-full overflow-hidden" style={{
+            border: "2px solid rgba(255,255,255,0.7)",
+            boxShadow: "0 4px 14px rgba(139,92,246,0.35)",
+          }}>
             <img src={AVATAR} alt="WHIMSEY" className="w-full h-full object-cover" />
           </div>
 
           {/* Name + session */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <p className="text-sm font-bold text-gray-900 leading-tight">WHIMSEY AI</p>
+              <p className="text-sm font-bold leading-tight" style={{ color: view === "vault" ? "#f8fafc" : "#2d1b6b" }}>WHIMSEY AI</p>
               {activeSession && (
-                <span className="shrink-0 text-[10px] bg-pink-100 text-pink-600 px-1.5 py-0.5 rounded-full font-semibold">
+                <span className="shrink-0 text-[10px] px-1.5 py-0.5 rounded-full font-semibold" style={{
+                  background: view === "vault" ? "rgba(168,85,247,0.18)" : "rgba(168,85,247,0.15)",
+                  color: view === "vault" ? "#c084fc" : "#7c3aed",
+                  border: "1px solid rgba(168,85,247,0.3)",
+                }}>
                   {activeSession.name}
                 </span>
               )}
             </div>
-            <p className="text-[11px] text-pink-500 font-medium truncate">
+            <p className="text-[11px] font-medium truncate" style={{ color: view === "vault" ? "rgba(255,255,255,0.35)" : "rgba(139,92,246,0.8)" }}>
               Your personal Discord setup expert · $CNDY · 30,000 NFTs
             </p>
           </div>
@@ -653,7 +724,7 @@ export default function App() {
           {/* Online */}
           <div className="shrink-0 flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[11px] font-medium hidden sm:block" style={{ color: view === "vault" ? "rgba(255,255,255,0.35)" : "#9ca3af" }}>Online</span>
+            <span className="text-[11px] font-medium hidden sm:block" style={{ color: view === "vault" ? "rgba(255,255,255,0.35)" : "rgba(100,50,150,0.5)" }}>Online</span>
           </div>
 
           {/* Memory Vault toggle */}
@@ -661,30 +732,19 @@ export default function App() {
             onClick={() => setView(v => v === "chat" ? "vault" : "chat")}
             title={view === "vault" ? "Back to chat" : "Open Memory Vault"}
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "5px",
-              padding: "6px 10px",
-              borderRadius: "10px",
-              border: view === "vault"
-                ? "1px solid rgba(255,31,90,0.5)"
-                : "1px solid rgba(252,231,243,1)",
-              background: view === "vault"
-                ? "rgba(255,31,90,0.15)"
-                : "transparent",
-              color: view === "vault" ? "#ff1f5a" : "#ec4899",
-              fontSize: "11px",
-              fontWeight: 700,
-              letterSpacing: view === "vault" ? "1px" : "0",
-              cursor: "pointer",
-              transition: "all 0.2s",
-              boxShadow: view === "vault" ? "0 0 12px rgba(255,31,90,0.3)" : "none",
-              fontFamily: view === "vault" ? "'Courier New', monospace" : "inherit",
+              display: "flex", alignItems: "center", gap: "5px",
+              padding: "6px 12px", borderRadius: "10px",
+              border: view === "vault" ? "1px solid rgba(255,31,90,0.5)" : "1px solid rgba(255,255,255,0.45)",
+              background: view === "vault" ? "rgba(255,31,90,0.15)" : "rgba(255,255,255,0.28)",
+              color: view === "vault" ? "#ff4d6d" : "#7c3aed",
+              fontSize: "11px", fontWeight: 700,
+              cursor: "pointer", transition: "all 0.2s",
+              boxShadow: view === "vault" ? "0 0 14px rgba(255,31,90,0.25)" : "0 2px 10px rgba(139,92,246,0.15)",
               flexShrink: 0,
             }}
           >
             <span style={{ fontSize: "13px" }}>🔐</span>
-            <span className="hidden sm:inline">{view === "vault" ? "CHAT" : "Memory Vault"}</span>
+            <span className="hidden sm:inline">{view === "vault" ? "← Chat" : "Memory Vault"}</span>
           </button>
 
           {/* New session (chat only) */}
@@ -692,7 +752,11 @@ export default function App() {
             <button
               onClick={startNewSession}
               title="Start new session"
-              className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-pink-500 to-violet-500 text-white text-xs font-semibold shadow-sm hover:shadow-md hover:from-pink-600 hover:to-violet-600 transition-all"
+              className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-white text-xs font-semibold transition-all"
+              style={{
+                background: "linear-gradient(135deg, #ec4899, #8b5cf6)",
+                boxShadow: "0 4px 14px rgba(139,92,246,0.4)",
+              }}
             >
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
@@ -710,29 +774,60 @@ export default function App() {
         )}
 
         {/* Messages */}
-        {view === "chat" && <main className="flex-1 overflow-y-auto scroll-smooth px-4 py-6">
+        {view === "chat" && <main className="flex-1 overflow-y-auto scroll-smooth px-4 py-6" style={{ position: "relative", zIndex: 1 }}>
           {messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center gap-4 pb-8">
-              <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg border-2 border-pink-100">
+            <div className="flex flex-col items-center justify-center h-full text-center gap-5 pb-12">
+              {/* Avatar ring */}
+              <div style={{
+                width: "96px", height: "96px", borderRadius: "50%", overflow: "hidden",
+                border: "3px solid rgba(255,255,255,0.8)",
+                boxShadow: "0 0 0 8px rgba(168,85,247,0.12), 0 12px 40px rgba(139,92,246,0.35)",
+              }}>
                 <img src={AVATAR} alt="WHIMSEY" className="w-full h-full object-cover" />
               </div>
+
+              {/* Welcome text */}
               <div>
-                <h1 className="text-xl font-bold text-gray-800 mb-1">Hey there, WHIMSEY creator!</h1>
-                <p className="text-sm text-gray-500 max-w-xs leading-relaxed">
-                  I know your server inside-out — every role, every bot, every permission toggle.
-                  Ask me anything about setting it up.
+                <h1 style={{
+                  fontSize: "22px", fontWeight: 800, margin: "0 0 8px",
+                  background: "linear-gradient(135deg, #2d1b6b, #6d28d9, #be185d)",
+                  WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+                  letterSpacing: "-0.4px",
+                }}>Hey there, WHIMSEY creator!</h1>
+                <p style={{ fontSize: "14px", color: "rgba(45,27,107,0.65)", maxWidth: "300px", margin: "0 auto", lineHeight: 1.6 }}>
+                  I know your server inside-out — every role, every bot, every permission toggle. Ask me anything.
                 </p>
                 {activeSession && sessions.some(s => s.messages.length > 0) && (
-                  <p className="text-[11px] text-pink-400 mt-2">
+                  <p style={{ fontSize: "11px", color: "rgba(139,92,246,0.7)", marginTop: "8px" }}>
                     {activeSession.name} · I remember everything from all your past conversations.
                   </p>
                 )}
               </div>
+
+              {/* Suggestion cards */}
               {showSuggested && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-xl mt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-xl mt-1">
                   {SUGGESTED.map((q) => (
                     <button key={q} onClick={() => send(q)}
-                      className="text-left text-xs bg-white border border-pink-100 hover:border-pink-300 hover:bg-pink-50 rounded-xl px-3 py-2.5 text-gray-700 transition-colors shadow-sm">
+                      className="text-left text-xs rounded-2xl px-4 py-3 transition-all"
+                      style={{
+                        background: "rgba(255,255,255,0.45)",
+                        backdropFilter: "blur(16px)",
+                        WebkitBackdropFilter: "blur(16px)",
+                        border: "1px solid rgba(255,255,255,0.7)",
+                        color: "#2d1b6b",
+                        boxShadow: "0 4px 14px rgba(139,92,246,0.1)",
+                        fontWeight: 500,
+                      }}
+                      onMouseEnter={e => {
+                        (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.65)";
+                        (e.currentTarget as HTMLElement).style.boxShadow = "0 6px 20px rgba(139,92,246,0.2)";
+                      }}
+                      onMouseLeave={e => {
+                        (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.45)";
+                        (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 14px rgba(139,92,246,0.1)";
+                      }}
+                    >
                       {q}
                     </button>
                   ))}
@@ -744,10 +839,19 @@ export default function App() {
               {messages.map((msg) => <MessageBubble key={msg.id} msg={msg} />)}
               {lastIsStreaming && (
                 <div className="flex gap-3 items-end mb-4">
-                  <div className="w-8 h-8 rounded-full overflow-hidden shadow-sm shrink-0 border border-pink-100">
+                  <div className="shrink-0 w-9 h-9 rounded-full overflow-hidden" style={{
+                    border: "2px solid rgba(255,255,255,0.7)",
+                    boxShadow: "0 4px 14px rgba(139,92,246,0.3)",
+                  }}>
                     <img src={AVATAR} alt="WHIMSEY" className="w-full h-full object-cover" />
                   </div>
-                  <div className="bg-white border border-pink-100 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm">
+                  <div style={{
+                    background: "rgba(255,255,255,0.6)",
+                    backdropFilter: "blur(18px)",
+                    WebkitBackdropFilter: "blur(18px)",
+                    border: "1px solid rgba(255,255,255,0.75)",
+                    boxShadow: "0 8px 24px rgba(139,92,246,0.12)",
+                  }} className="rounded-2xl rounded-bl-sm px-4 py-3">
                     <TypingDots />
                   </div>
                 </div>
@@ -759,11 +863,19 @@ export default function App() {
 
         {/* Quick-reply pills (chat only) */}
         {view === "chat" && messages.length > 0 && !streaming && (
-          <div className="shrink-0 px-4 pb-2">
+          <div className="shrink-0 px-4 pb-2" style={{ position: "relative", zIndex: 1 }}>
             <div className="max-w-2xl mx-auto flex gap-2 flex-wrap">
               {SUGGESTED.slice(0, 3).map((q) => (
                 <button key={q} onClick={() => send(q)}
-                  className="text-[11px] bg-white border border-pink-100 hover:border-pink-300 hover:bg-pink-50 rounded-full px-3 py-1 text-gray-600 transition-colors shadow-sm truncate max-w-[200px]">
+                  className="text-[11px] rounded-full px-3 py-1.5 transition-all truncate max-w-[200px]"
+                  style={{
+                    background: "rgba(255,255,255,0.45)",
+                    backdropFilter: "blur(16px)",
+                    WebkitBackdropFilter: "blur(16px)",
+                    border: "1px solid rgba(255,255,255,0.65)",
+                    color: "#2d1b6b",
+                    fontWeight: 500,
+                  }}>
                   {q}
                 </button>
               ))}
@@ -773,7 +885,13 @@ export default function App() {
 
         {/* Input (chat only) */}
         {view === "chat" && (
-          <div className="shrink-0 bg-white/90 backdrop-blur-md border-t border-pink-100 px-4 py-3">
+          <div className="shrink-0 border-t px-4 py-3" style={{
+            position: "relative", zIndex: 1,
+            background: "rgba(255,255,255,0.22)",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            borderColor: "rgba(255,255,255,0.5)",
+          }}>
             <div className="max-w-2xl mx-auto flex gap-2 items-end">
               <textarea
                 ref={inputRef}
@@ -787,21 +905,35 @@ export default function App() {
                 onKeyDown={handleKeyDown}
                 placeholder="Ask anything about your WHIMSEY Discord setup…"
                 disabled={streaming}
-                className="flex-1 resize-none rounded-2xl border border-pink-200 bg-pink-50/50 px-4 py-2.5 text-sm text-gray-800 placeholder:text-pink-300 outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 disabled:opacity-60 transition-all overflow-hidden leading-relaxed"
-                style={{ minHeight: "42px" }}
+                className="flex-1 resize-none rounded-2xl px-4 py-2.5 text-sm outline-none overflow-hidden leading-relaxed transition-all disabled:opacity-60"
+                style={{
+                  minHeight: "44px",
+                  background: "rgba(255,255,255,0.55)",
+                  backdropFilter: "blur(12px)",
+                  WebkitBackdropFilter: "blur(12px)",
+                  border: "1.5px solid rgba(255,255,255,0.7)",
+                  color: "#2d1b6b",
+                  boxShadow: "0 4px 16px rgba(139,92,246,0.1)",
+                }}
               />
               <button
                 onClick={() => send(input)}
                 disabled={!input.trim() || streaming}
-                className="shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-violet-500 text-white flex items-center justify-center shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:scale-100"
+                className="shrink-0 w-11 h-11 rounded-full text-white flex items-center justify-center transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                 aria-label="Send"
+                style={{
+                  background: "linear-gradient(135deg, #ec4899, #8b5cf6)",
+                  boxShadow: "0 6px 20px rgba(139,92,246,0.45)",
+                }}
+                onMouseEnter={e => (e.currentTarget as HTMLElement).style.transform = "scale(1.08)"}
+                onMouseLeave={e => (e.currentTarget as HTMLElement).style.transform = "scale(1)"}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/>
                 </svg>
               </button>
             </div>
-            <p className="text-center text-[10px] text-gray-300 mt-1.5">
+            <p className="text-center text-[10px] mt-1.5" style={{ color: "rgba(100,50,150,0.45)" }}>
               Enter to send · Shift+Enter for new line · All sessions saved to database
             </p>
           </div>

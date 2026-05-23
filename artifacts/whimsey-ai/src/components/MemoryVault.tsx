@@ -100,16 +100,24 @@ function CatTab({ id, count, active, onClick }: { id: string; count: number; act
 function StatCard({ label, value, sub, color }: { label: string; value: string | number; sub?: string; color: string }) {
   return (
     <div style={{
-      background: "rgba(255,255,255,0.04)",
-      border: "1px solid rgba(255,255,255,0.08)",
-      borderRadius: "12px",
+      background: "rgba(255,255,255,0.05)",
+      borderRadius: "13px",
       padding: "16px 20px",
       minWidth: "110px",
       flex: 1,
+      position: "relative",
+      outline: "1px solid rgba(255,255,255,0.07)",
+      boxShadow: `inset 0 1px 0 rgba(255,255,255,0.08), 0 4px 20px rgba(0,0,0,0.3)`,
     }}>
-      <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", letterSpacing: "0.5px", marginBottom: "6px", fontWeight: 500 }}>{label}</p>
+      {/* Iridescent top border glow */}
+      <div style={{
+        position: "absolute", top: 0, left: "15%", right: "15%", height: "1px",
+        background: "linear-gradient(90deg, transparent, rgba(196,181,253,0.5), rgba(249,168,212,0.5), rgba(147,210,255,0.5), transparent)",
+        borderRadius: "1px",
+      }} />
+      <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.38)", letterSpacing: "0.5px", marginBottom: "6px", fontWeight: 500 }}>{label}</p>
       <p style={{ fontSize: "28px", fontWeight: 700, color, lineHeight: 1, marginBottom: "4px" }}>{value}</p>
-      {sub && <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.3)" }}>{sub}</p>}
+      {sub && <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.28)" }}>{sub}</p>}
     </div>
   );
 }
@@ -423,15 +431,38 @@ export default function MemoryVault() {
   /* Top-importance record */
   const topRecord = memories.reduce((best, m) => m.importance > (best?.importance ?? 0) ? m : best, memories[0]);
 
+  const BASE = import.meta.env.BASE_URL;
+
   return (
     <div style={{
       height: "100%",
-      background: "#0d0d17",
+      background: "#0a0a14",
       color: "#e2e8f0",
       overflowY: "auto",
       fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+      position: "relative",
     }}>
-      <div style={{ maxWidth: "920px", margin: "0 auto", padding: "24px 20px 60px" }}>
+
+      {/* Subtle aurora glow blobs */}
+      <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, pointerEvents: "none", zIndex: 0, overflow: "hidden" }}>
+        <div style={{ position: "absolute", top: "-20%", right: "-10%", width: "55%", height: "65%",
+          background: "radial-gradient(ellipse, rgba(120,80,220,0.12) 0%, transparent 70%)",
+          borderRadius: "50%", filter: "blur(40px)" }} />
+        <div style={{ position: "absolute", bottom: "-15%", left: "-5%", width: "50%", height: "60%",
+          background: "radial-gradient(ellipse, rgba(60,160,255,0.08) 0%, transparent 70%)",
+          borderRadius: "50%", filter: "blur(40px)" }} />
+        <div style={{ position: "absolute", top: "40%", right: "20%", width: "35%", height: "40%",
+          background: "radial-gradient(ellipse, rgba(255,80,130,0.06) 0%, transparent 70%)",
+          borderRadius: "50%", filter: "blur(40px)" }} />
+        {/* Moon silhouette, extremely faint */}
+        <img src={`${BASE}moon.jpg`} alt="" style={{
+          position: "absolute", right: "-15%", bottom: "-10%",
+          width: "55%", opacity: 0.06, mixBlendMode: "screen",
+          filter: "saturate(0.5) blur(2px)", pointerEvents: "none",
+        }} />
+      </div>
+
+      <div style={{ maxWidth: "920px", margin: "0 auto", padding: "24px 20px 60px", position: "relative", zIndex: 1 }}>
 
         {/* ── PAGE HEADER ── */}
         <div style={{ marginBottom: "28px" }}>
@@ -443,10 +474,14 @@ export default function MemoryVault() {
               fontSize: "18px", flexShrink: 0,
             }}>🔐</div>
             <div>
-              <h1 style={{ fontSize: "22px", fontWeight: 800, margin: 0, color: "#f8fafc", letterSpacing: "-0.3px" }}>
+              <h1 style={{
+                fontSize: "22px", fontWeight: 800, margin: 0, letterSpacing: "-0.3px",
+                background: "linear-gradient(135deg, #f8fafc 0%, #c4b5fd 40%, #f9a8d4 80%, #f8fafc 100%)",
+                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+              }}>
                 WHIMSEY Intelligence Vault
               </h1>
-              <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", margin: 0 }}>
+              <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.38)", margin: 0 }}>
                 Permanent memory archive · Clearance Level OMEGA
               </p>
             </div>
